@@ -1,18 +1,15 @@
 package com.alexmncn.flemingshop.data.network
 
-import com.alexmncn.flemingshop.utils.Constans
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import java.io.IOException
 
 object ApiClient {
-    private val retrofit by lazy {
-        Retrofit.Builder()
-            .baseUrl(Constans.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-    }
+    private val client = OkHttpClient()
 
-    val apiService: ApiService by lazy {
-        retrofit.create(ApiService::class.java)
+    @Throws(IOException::class)
+    fun makeRequest(request: Request): Response {
+        return client.newCall(request).execute()
     }
 }

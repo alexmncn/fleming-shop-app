@@ -1,23 +1,34 @@
 package com.alexmncn.flemingshop.data.network
 
-import com.alexmncn.flemingshop.data.model.Article
 import com.alexmncn.flemingshop.utils.Constans
-import retrofit2.Response
-import retrofit2.http.GET
-import retrofit2.http.Query
+import okhttp3.Request
+import okhttp3.Response
+import java.io.IOException
 
-interface ApiService {
+object ApiService {
+    private fun mkRequest(request: Request): Response? {
+        return try {
+            ApiClient.makeRequest(request)
+        } catch (e: IOException) {
+            null
+        }
+    }
+
     // API endpoints
 
-    // Ruta para obtener el total de artículos
-    @GET("${Constans.BASE_URL}/articles/total")
-    suspend fun getAllArticlesTotal(): Int
+    fun getAllArticlesTotal(): Response? {
+        val request = Request.Builder()
+            .url(Constans.BASE_URL+"articles/total")
+            .build()
 
-    // Ruta para buscar artículos
-    @GET("${Constans.BASE_URL}/articles/all")
-    suspend fun getAllArticles(
-        @Query("page") page: Int,
-        @Query("per_page") perPage: Int
-    ): List<Article>
+        return mkRequest(request)
+    }
+
+    fun getAllArticles(page: Int = 1, perPage: Int = 20): Response? {
+        val request = Request.Builder()
+            .url(Constans.BASE_URL+"articles/all?page=$page&per_page=$perPage")
+            .build()
+
+        return mkRequest(request)
+    }
 }
-

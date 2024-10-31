@@ -10,10 +10,9 @@ activityCompose = "1.9.3"
 composeBom = "2024.04.01"
 
 # Ext
-retrofitVersion = "2.11.0"
-gsonConverterVersion = "2.11.0"
-gsonVersion = "2.12.0"
 appcompat = "1.7.0"
+okhttpVersion = "4.10.0"
+gson = "2.11.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -32,9 +31,9 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 
 # Ext
-retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofitVersion" }
-gsonConverter = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "gsonConverterVersion" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+okhttp3 = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttpVersion" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
