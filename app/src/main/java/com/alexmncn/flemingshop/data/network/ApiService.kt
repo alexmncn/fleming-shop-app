@@ -6,29 +6,74 @@ import okhttp3.Response
 import java.io.IOException
 
 object ApiService {
-    private fun mkRequest(request: Request): Response? {
+    private fun  makeGetRequest(route: String): Response? {
         return try {
+            val request = Request.Builder()
+                .get()
+                .url(Constans.BASE_URL+route)
+                .build()
+
             ApiClient.makeRequest(request)
         } catch (e: IOException) {
             null
         }
     }
 
-    // API endpoints
+    // API ENDPOINTS
 
+    // Catalog routes
     fun getAllArticlesTotal(): Response? {
-        val request = Request.Builder()
-            .url(Constans.BASE_URL+"articles/total")
-            .build()
-
-        return mkRequest(request)
+        val route = "articles/total"
+        return makeGetRequest(route)
     }
 
     fun getAllArticles(page: Int = 1, perPage: Int = 20): Response? {
-        val request = Request.Builder()
-            .url(Constans.BASE_URL+"articles/all?page=$page&per_page=$perPage")
-            .build()
+        val route = "articles/all?page=$page&per_page=$perPage"
+        return makeGetRequest(route)
+    }
 
-        return mkRequest(request)
+    fun getSearchArticlesTotal(search: String): Response? {
+        val route = "articles/search/total?search=$search"
+        return makeGetRequest(route)
+    }
+
+    fun getSearchArticles(page: Int = 1, perPage: Int = 20, search: String): Response? {
+        val route = "articles/search?page=$page&per_page=$perPage&search=$search"
+        return makeGetRequest(route)
+    }
+
+    fun getFeaturedArticlesTotal(): Response? {
+        val route = "articles/featured/total"
+        return makeGetRequest(route)
+    }
+
+    fun getFeaturedArticles(page: Int = 1, perPage: Int = 20): Response? {
+        val route = "articles/featured?page=$page&per_page=$perPage"
+        return makeGetRequest(route)
+    }
+
+    fun getNewArticlesTotal(): Response? {
+        val route = "articles/new/total"
+        return makeGetRequest(route)
+    }
+
+    fun getNewArticles(page: Int = 1, perPage: Int = 20): Response? {
+        val route = "articles/new?page=$page&per_page=$perPage"
+        return makeGetRequest(route)
+    }
+
+    fun getFamilies(): Response? {
+        val route = "articles/families"
+        return  makeGetRequest(route)
+    }
+
+    fun getFamilyArticlesTotal(familyId: Int): Response? {
+        val route = "articles/families/$familyId/total"
+        return makeGetRequest(route)
+    }
+
+    fun getFamilyArticles(page: Int = 1, perPage: Int = 20, familyId: Int): Response? {
+        val route = "articles/families/$familyId?page=$page&per_page=$perPage"
+        return makeGetRequest(route)
     }
 }

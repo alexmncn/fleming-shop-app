@@ -20,28 +20,29 @@ class MainActivity : AppCompatActivity() {
 
         val gson = Gson()
 
-        var articles: List<Article>
+        var featuredArticles: List<Article>
         val textView = findViewById<TextView>(R.id.textView)
 
         // Ejecutamos la solicitud en una corrutina
         CoroutineScope(Dispatchers.IO).launch {
-            val response = ApiService.getAllArticles()
+            val response = ApiService.getFeaturedArticles()
             if (response != null && response.isSuccessful) {
                 val responseData = response.body?.string()
 
                 val listType = object : TypeToken<List<Article>>() {}.type
-                articles = gson.fromJson(responseData, listType)
+                featuredArticles = gson.fromJson(responseData, listType)
 
-                Log.d("ApiService", "Articles: $articles")
+                val article1 = featuredArticles[0]
+
+                Log.d("ApiService", "Articles: $featuredArticles")
 
                 // Actualizamos el TextView en el hilo principal
                 runOnUiThread {
-                    textView.text = articles.toString()
+                    textView.text = article1.toString()
                 }
             } else {
                 Log.e("ApiService", "Error: ${response?.code}")
             }
         }
-
     }
 }
