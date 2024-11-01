@@ -28,13 +28,17 @@ import java.util.Date
 
 @Composable
 fun ArticleList(articles: List<Article>) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = Modifier
             .padding(8.dp)
     ) {
-        items(articles.size) { index ->
-            ArticleCard(article = articles[index])
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+        ) {
+            items(articles.size) { index ->
+                ArticleCard(article = articles[index])
+            }
         }
     }
 }
@@ -50,7 +54,10 @@ fun ArticleCard(article: Article) {
             .padding(8.dp),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(
+            modifier = Modifier
+                .padding(10.dp)
+        ) {
             // Usando Coil para cargar la imagen
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
@@ -65,11 +72,11 @@ fun ArticleCard(article: Article) {
                 contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = article.detalle, style = MaterialTheme.typography.titleMedium)
+            Text(text = article.detalle, style = MaterialTheme.typography.bodyLarge)
             Text(text = "Ref: " + article.ref.toString(), style = MaterialTheme.typography.bodyMedium)
             Text(text = "Stock: " + article.stock.toString(), style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(6.dp))
-            Text(text = article.pvp.toString() + " €", style = MaterialTheme.typography.bodyLarge, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+            Text(text = article.pvp.toString() + " €", style = MaterialTheme.typography.titleSmall, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
         }
     }
 }

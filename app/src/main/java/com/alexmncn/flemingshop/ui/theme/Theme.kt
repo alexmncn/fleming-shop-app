@@ -10,6 +10,13 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import com.alexmncn.flemingshop.R
+import androidx.compose.material3.Typography
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.sp
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -33,6 +40,36 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+// Define la familia de fuente Montserrat
+val montserratFontFamily = FontFamily(
+    Font(R.font.montserrat_regular, FontWeight.Normal),
+    Font(R.font.montserrat_bold, FontWeight.Bold)
+)
+
+// Define la tipografía Montserrat
+val montserratTypography = Typography(
+    titleSmall = TextStyle(
+        fontFamily = montserratFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp
+    ),
+    titleLarge = TextStyle(
+        fontFamily = montserratFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 30.sp
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = montserratFontFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 11.sp
+    ),
+    bodyLarge = TextStyle(
+        fontFamily = montserratFontFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 13.sp
+    )
+)
+
 @Composable
 fun FlemingShopTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -52,7 +89,7 @@ fun FlemingShopTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = montserratTypography,
         content = content
     )
 }
