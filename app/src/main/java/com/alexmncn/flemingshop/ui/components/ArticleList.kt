@@ -1,11 +1,18 @@
 package com.alexmncn.flemingshop.ui.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,33 +28,29 @@ import java.util.Date
 
 @Composable
 fun ArticleList(articles: List<Article>) {
-    LazyColumn(
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
         modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+            .padding(8.dp)
     ) {
-        items(articles) { article ->
-            ArticleItem(article)
-            Spacer(modifier = Modifier.height(8.dp))
+        items(articles.size) { index ->
+            ArticleCard(article = articles[index])
         }
     }
 }
 
 @Composable
-fun ArticleItem(article: Article) {
+fun ArticleCard(article: Article) {
     val imageUrl = Constans.IMAGES_URL + "articles/${article.codebar}.webp"
 
     Card(
+        colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = article.detalle, style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(text = article.codebar.toString(), style = MaterialTheme.typography.bodyMedium)
-
             // Usando Coil para cargar la imagen
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
@@ -57,9 +60,16 @@ fun ArticleItem(article: Article) {
                 contentDescription = "Imagen del artículo",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(180.dp),
+                    .size(120.dp)
+                    .clip(RoundedCornerShape(12.dp)),
                 contentScale = ContentScale.Crop
             )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = article.detalle, style = MaterialTheme.typography.titleMedium)
+            Text(text = "Ref: " + article.ref.toString(), style = MaterialTheme.typography.bodyMedium)
+            Text(text = "Stock: " + article.stock.toString(), style = MaterialTheme.typography.bodyMedium)
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(text = article.pvp.toString() + " €", style = MaterialTheme.typography.bodyLarge, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
         }
     }
 }
