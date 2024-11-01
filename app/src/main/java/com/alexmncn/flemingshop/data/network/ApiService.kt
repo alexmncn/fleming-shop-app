@@ -2,14 +2,30 @@ package com.alexmncn.flemingshop.data.network
 
 import com.alexmncn.flemingshop.utils.Constans
 import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.Response
 import java.io.IOException
+import java.math.BigInteger
 
 object ApiService {
+    // Funcion HTTP GET que recibe la ruta, hace la peticion y devuelve la respuesta
     private fun  makeGetRequest(route: String): Response? {
         return try {
             val request = Request.Builder()
                 .get()
+                .url(Constans.BASE_URL+route)
+                .build()
+
+            ApiClient.makeRequest(request)
+        } catch (e: IOException) {
+            null
+        }
+    }
+
+    private fun  makePostRequest(route: String, body: RequestBody): Response? {
+        return try {
+            val request = Request.Builder()
+                .post(body)
                 .url(Constans.BASE_URL+route)
                 .build()
 

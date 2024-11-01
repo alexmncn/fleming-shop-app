@@ -70,5 +70,6 @@ dependencies {
 
     implementation(libs.okhttp3)
     implementation(libs.gson)
-
+    implementation(libs.coil)
+    implementation(libs.coilNetwork)
 }
