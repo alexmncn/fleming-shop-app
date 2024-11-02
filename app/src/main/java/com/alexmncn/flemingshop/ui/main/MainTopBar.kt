@@ -1,9 +1,12 @@
 package com.alexmncn.flemingshop.ui.main
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -16,18 +19,24 @@ import com.alexmncn.flemingshop.R
 fun MainTopBar() {
     TopAppBar(
         title = {
-            Image(
-                painter = painterResource(id = R.drawable.fleming_logo),
-                contentDescription = "Tienda Fleming",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.height(36.dp)
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxHeight()
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.fleming_logo),
+                    contentDescription = "Tienda Fleming",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .height(36.dp)
+                        .fillMaxHeight()
+                )
+            }
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.White,
             titleContentColor = Color.Black
         ),
-        modifier = Modifier
-            .height(56.dp)
+        modifier = Modifier.height(56.dp)
     )
 }

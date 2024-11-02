@@ -5,10 +5,17 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.alexmncn.flemingshop.data.model.Article
 import com.alexmncn.flemingshop.data.network.ApiService
 import com.alexmncn.flemingshop.ui.components.ArticleList
@@ -60,7 +67,16 @@ fun MainScreen(articles: List<Article>) {
     FlemingShopTheme {
         Scaffold(
             topBar = { MainTopBar() },
-            content = { ArticleList(articles = articles) }
+            content = { paddingValues ->
+                Column(
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .padding(horizontal = 10.dp) // Horizontal margin for the content only
+
+                ) {
+                    ArticleList(articles = articles)
+                }
+            }
         )
     }
 }

@@ -51,7 +51,12 @@ val montserratTypography = Typography(
     titleSmall = TextStyle(
         fontFamily = montserratFontFamily,
         fontWeight = FontWeight.Bold,
-        fontSize = 16.sp
+        fontSize = 18.sp
+    ),
+    titleMedium = TextStyle(
+        fontFamily = montserratFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 22.sp
     ),
     titleLarge = TextStyle(
         fontFamily = montserratFontFamily,

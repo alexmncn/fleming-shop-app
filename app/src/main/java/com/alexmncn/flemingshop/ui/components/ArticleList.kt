@@ -28,13 +28,17 @@ import java.util.Date
 
 @Composable
 fun ArticleList(articles: List<Article>) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+
+    Column (
         modifier = Modifier
-            .padding(8.dp)
+            .padding(top = 10.dp, bottom = 10.dp)
     ) {
+        Text(text = "Destacados", style = MaterialTheme.typography.titleMedium)
+        Spacer(modifier = Modifier.height(10.dp))
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
+            verticalArrangement = Arrangement.spacedBy(14.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(articles.size) { index ->
                 ArticleCard(article = articles[index])
@@ -47,16 +51,15 @@ fun ArticleList(articles: List<Article>) {
 fun ArticleCard(article: Article) {
     val imageUrl = Constans.IMAGES_URL + "articles/${article.codebar}.webp"
 
-    Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+    Box (
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
+            .padding(top = 2.dp, bottom = 10.dp) // Safe space for the card shadow
     ) {
-        Column(
+        Card(
+            colors = CardDefaults.cardColors(containerColor = Color.White),
             modifier = Modifier
-                .padding(10.dp)
+                .fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(4.dp)
         ) {
             // Usando Coil para cargar la imagen
             AsyncImage(
@@ -67,16 +70,21 @@ fun ArticleCard(article: Article) {
                 contentDescription = "Imagen del artículo",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .size(120.dp)
-                    .clip(RoundedCornerShape(12.dp)),
-                contentScale = ContentScale.Crop
+                    .size(120.dp),
+                contentScale = ContentScale.FillHeight
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = article.detalle, style = MaterialTheme.typography.bodyLarge)
-            Text(text = "Ref: " + article.ref.toString(), style = MaterialTheme.typography.bodyMedium)
-            Text(text = "Stock: " + article.stock.toString(), style = MaterialTheme.typography.bodyMedium)
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(text = article.pvp.toString() + " €", style = MaterialTheme.typography.titleSmall, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+
+            Column(
+                modifier = Modifier
+                    .padding(8.dp)
+            ) {
+                Text(text = article.detalle, style = MaterialTheme.typography.bodyLarge)
+                Text(text = "Ref: " + article.ref.toString(), style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+                Text(text = "Stock: " + article.stock.toString(), style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(text = article.pvp.toString() + " €", style = MaterialTheme.typography.titleSmall, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+
+            }
         }
     }
 }
