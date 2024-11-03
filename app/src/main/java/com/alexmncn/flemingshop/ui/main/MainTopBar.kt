@@ -28,7 +28,7 @@ fun MainTopBar() {
                     contentDescription = "Tienda Fleming",
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
-                        .height(36.dp)
+                        .height(26.dp)
                         .fillMaxHeight()
                 )
             }

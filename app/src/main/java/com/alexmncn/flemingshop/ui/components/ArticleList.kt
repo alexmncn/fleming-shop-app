@@ -24,24 +24,26 @@ import com.alexmncn.flemingshop.data.model.Article
 import com.alexmncn.flemingshop.utils.Constans
 import java.math.BigInteger
 import java.util.Date
+import com.alexmncn.flemingshop.utils.capitalizeText
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ArticleList(articles: List<Article>) {
-
+fun ArticleList(articles: List<Article>, listName: String) {
     Column (
         modifier = Modifier
             .padding(top = 10.dp, bottom = 10.dp)
     ) {
-        Text(text = "Destacados", style = MaterialTheme.typography.titleMedium)
+        Text(text = listName, style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.height(10.dp))
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
-            verticalArrangement = Arrangement.spacedBy(14.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp), // 14dp -10dp from card safe zone
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(articles.size) { index ->
                 ArticleCard(article = articles[index])
+
             }
         }
     }
@@ -51,40 +53,36 @@ fun ArticleList(articles: List<Article>) {
 fun ArticleCard(article: Article) {
     val imageUrl = Constans.IMAGES_URL + "articles/${article.codebar}.webp"
 
-    Box (
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = Modifier
-            .padding(top = 2.dp, bottom = 10.dp) // Safe space for the card shadow
+            .padding(top = 2.dp, bottom = 10.dp) // Safe zone for card shadow
+            .fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Card(
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+        // Usando Coil para cargar la imagen
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(imageUrl)
+                .crossfade(true)
+                .build(),
+            contentDescription = "Imagen del artículo",
             modifier = Modifier
-                .fillMaxWidth(),
-            elevation = CardDefaults.cardElevation(4.dp)
+                .fillMaxWidth()
+                .size(120.dp),
+            contentScale = ContentScale.FillHeight
+        )
+
+        Column(
+            modifier = Modifier
+                .background(Color(0xfff5f5f5)) // !!! PROVISIONAL !!!
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 8.dp),
         ) {
-            // Usando Coil para cargar la imagen
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(imageUrl)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = "Imagen del artículo",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .size(120.dp),
-                contentScale = ContentScale.FillHeight
-            )
-
-            Column(
-                modifier = Modifier
-                    .padding(8.dp)
-            ) {
-                Text(text = article.detalle, style = MaterialTheme.typography.bodyLarge)
-                Text(text = "Ref: " + article.ref.toString(), style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
-                Text(text = "Stock: " + article.stock.toString(), style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(text = article.pvp.toString() + " €", style = MaterialTheme.typography.titleSmall, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
-
-            }
+            Text(text = capitalizeText(article.detalle), style = MaterialTheme.typography.bodyLarge)
+            Text(text = "Ref: " + article.ref.toString(), style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+            Text(text = "Stock: " + article.stock.toString(), style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+            Text(text = article.pvp.toString() + " €", style = MaterialTheme.typography.titleSmall, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold, modifier = Modifier.padding(top = 6.dp, bottom = 2.dp))
         }
     }
 }
@@ -154,5 +152,5 @@ fun PreviewArticleList() {
             hidden = false
         )
     )
-    ArticleList(articles = sampleArticles)
+    ArticleList(sampleArticles, "Destacado")
 }
