@@ -27,12 +27,12 @@ import java.util.Date
 import com.alexmncn.flemingshop.utils.capitalizeText
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArticleList(articles: List<Article>, listName: String) {
     Column (
         modifier = Modifier
-            .padding(top = 10.dp, bottom = 10.dp)
+            .fillMaxWidth()
+            .padding(top = 10.dp)
     ) {
         Text(text = listName, style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.height(10.dp))
