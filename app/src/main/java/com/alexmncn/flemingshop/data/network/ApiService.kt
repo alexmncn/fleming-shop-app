@@ -22,7 +22,7 @@ object ApiService {
         }
     }
 
-    private fun  makePostRequest(route: String, body: RequestBody): Response? {
+    private fun makePostRequest(route: String, body: RequestBody): Response? {
         return try {
             val request = Request.Builder()
                 .post(body)

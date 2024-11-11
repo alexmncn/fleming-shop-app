@@ -7,7 +7,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -28,26 +30,49 @@ import com.alexmncn.flemingshop.utils.capitalizeText
 
 
 @Composable
-fun ArticleList(articles: List<Article>, listName: String) {
-    Column (
+fun ArticleList(total: Int, articles: List<Article>, listName: String, onShowMore: () -> Unit) {
+    // Usamos Modifier.weight para que el contenido de LazyVerticalGrid ocupe el espacio disponible
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 10.dp)
     ) {
         Text(text = listName, style = MaterialTheme.typography.titleMedium)
+        Text(text = "$total artículos", style = MaterialTheme.typography.bodyMedium)
         Spacer(modifier = Modifier.height(10.dp))
+
+        // LazyVerticalGrid para mostrar los artículos
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
-            verticalArrangement = Arrangement.spacedBy(4.dp), // 14dp -10dp from card safe zone
+            verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier.weight(1f) // Esto permite que el grid ocupe el espacio disponible y el botón quede al final
         ) {
             items(articles.size) { index ->
                 ArticleCard(article = articles[index])
-
             }
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        LinearProgressIndicator(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(2.dp)
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Button(
+            onClick = onShowMore,
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Text("Mostrar más")
         }
     }
 }
+
 
 @Composable
 fun ArticleCard(article: Article) {
@@ -152,5 +177,5 @@ fun PreviewArticleList() {
             hidden = false
         )
     )
-    ArticleList(sampleArticles, "Destacado")
+    ArticleList(sampleArticles.size+30, sampleArticles, "Destacado", onShowMore = {})
 }
