@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,14 +22,15 @@ fun MainTopBar() {
         title = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxHeight()
+                modifier = Modifier
+                    .fillMaxHeight()
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.fleming_logo),
                     contentDescription = "Tienda Fleming",
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
-                        .height(26.dp)
+                        .height(24.dp)
                         .fillMaxHeight()
                 )
             }
@@ -37,6 +39,6 @@ fun MainTopBar() {
             containerColor = Color.White,
             titleContentColor = Color.Black
         ),
-        modifier = Modifier.height(56.dp)
+        modifier = Modifier.height(50.dp)
     )
 }

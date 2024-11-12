@@ -112,9 +112,8 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, onShowMor
                     onShowMore()
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                enabled = !isLoading.value
+                    .fillMaxWidth(),
+                enabled = !isLoading.value // Deshabilita el boton si se estan cargango artículos
             ) {
                 if (isLoading.value) {
                     CircularProgressIndicator(
@@ -164,7 +163,13 @@ fun ArticleCard(article: Article) {
             Text(text = capitalizeText(article.detalle), style = MaterialTheme.typography.bodyLarge)
             Text(text = "Ref: " + article.ref.toString(), style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
             Text(text = "Stock: " + article.stock.toString(), style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
-            Text(text = article.pvp.toString() + " €", style = MaterialTheme.typography.titleSmall, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold, modifier = Modifier.padding(top = 6.dp, bottom = 2.dp))
+            Text(
+                text = article.pvp.toString() + " €",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                modifier = Modifier
+                    .padding(top = 6.dp, bottom = 2.dp)
+            )
         }
     }
 }
