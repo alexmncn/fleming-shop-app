@@ -14,6 +14,8 @@ appcompat = "1.7.0"
 okhttpVersion = "4.10.0"
 gson = "2.11.0"
 coilVersion = "3.0.1"
+material = "1.12.0"
+activity = "1.9.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -37,6 +39,8 @@ okhttp3 = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okht
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 coil = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coilVersion" }
 coilNetwork = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coilVersion"}
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
