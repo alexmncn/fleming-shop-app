@@ -20,6 +20,7 @@ import com.alexmncn.flemingshop.ui.components.ArticleList
 import com.alexmncn.flemingshop.ui.theme.FlemingShopTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.math.BigInteger
 import java.util.Date
