@@ -46,9 +46,13 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, onShowMor
 
     // Progreso de la barra que muestra la cantidad de artículos cargados
     val articlesLoadedProgress = articles.size.toFloat() / total.toFloat()
+
+    // Guardamos el tamaño anterior de la lista de articulos
     var previousArticleCount by remember { mutableIntStateOf(articles.size) }
     val isLoading = remember { mutableStateOf(false) }
 
+    //Comparamos el tamaño de la lista de articulos con el tamaño anterior para determinar
+    // si se ha terminado de cargar articulos
     LaunchedEffect(articles.size) {
         if (articles.size > previousArticleCount) {
             isLoading.value = false
