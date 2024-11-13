@@ -74,4 +74,5 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.coil)
     implementation(libs.coilNetwork)
+    implementation(libs.zxing)
 }

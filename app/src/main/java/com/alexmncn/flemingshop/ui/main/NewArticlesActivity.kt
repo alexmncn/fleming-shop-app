@@ -18,7 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class FeaturedArticlesActivity : AppCompatActivity() {
+class NewArticlesActivity : AppCompatActivity() {
     private val articleRepository: ArticleRepository by lazy {
         ArticleRepository(ApiService)
     }
@@ -31,17 +31,17 @@ class FeaturedArticlesActivity : AppCompatActivity() {
 
         // Utilizamos remember para mantener el estado de los artículos y actualizar la UI
         setContent {
-            val featuredAListName = "Destacado"
-            var featuredArticles by remember { mutableStateOf<List<Article>>(emptyList()) }
-            var featuredArticlesTotal by remember { mutableIntStateOf(0) }
+            val newAListName = "Novedades"
+            var newArticles by remember { mutableStateOf<List<Article>>(emptyList()) }
+            var newArticlesTotal by remember { mutableIntStateOf(0) }
 
             // Funcion para cargar articulos, por pagina
-            fun loadFeaturedArticles() {
+            fun loadNewArticles() {
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
-                        featuredArticlesTotal = articleRepository.getFeaturedArticlesTotal()
-                        val articles = articleRepository.getFeaturedArticles(page=currentPage)
-                        featuredArticles = featuredArticles + articles
+                        newArticlesTotal = articleRepository.getNewArticlesTotal()
+                        val articles = articleRepository.getNewArticles(page=currentPage)
+                        newArticles = newArticles + articles
                         currentPage++
                     } catch (e: Exception) {
                         Log.e("error", e.toString())
@@ -51,14 +51,14 @@ class FeaturedArticlesActivity : AppCompatActivity() {
 
             // Llama a la función de actualización cuando se crea la actividad
             LaunchedEffect(Unit) {
-                loadFeaturedArticles()
+                loadNewArticles()
             }
 
             SimpleArticlesScreen(
-                articles = featuredArticles,
-                total = featuredArticlesTotal,
-                listName = featuredAListName,
-                onShowMore = { loadFeaturedArticles() }
+                articles = newArticles,
+                total = newArticlesTotal,
+                listName = newAListName,
+                onShowMore = { loadNewArticles() }
             )
         }
 
