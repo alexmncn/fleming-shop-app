@@ -34,7 +34,6 @@ class MainActivity : AppCompatActivity() {
 }
 
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen() {
     val context = LocalContext.current
