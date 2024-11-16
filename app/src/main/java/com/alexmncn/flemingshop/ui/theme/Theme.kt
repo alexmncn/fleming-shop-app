@@ -22,17 +22,23 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80,
-    background = Color(0xFFF8FAFC)
+    primary = Blue500,
+    secondary = Blue400,
+    tertiary = Blue600,
+    background = BackgroundWhite,
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onTertiary = Color.White,
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40,
-    background = Color(0xFFF8FAFC)
+    primary = Blue500,
+    secondary = Blue400,
+    tertiary = Blue600,
+    background = BackgroundWhite,
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onTertiary = Color.White,
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),

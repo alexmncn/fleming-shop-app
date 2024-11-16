@@ -54,6 +54,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.filled.FlashlightOff
 import androidx.compose.material.icons.filled.FlashlightOn
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.ImageSearch
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -135,7 +137,6 @@ fun BarcodeScannerScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
     val articleRepository: ArticleRepository by lazy { ArticleRepository(ApiService) }
     val scanDelay = 250L // Intervalo de tiempo en milisegundos en el que se escanea una nueva imagen
-    val articleShowedTime = 10000L // Tiempo en milisegundos que se muestra el artículo escaneado antes de ser eliminado
 
     var isFlashEnabled by remember { mutableStateOf(false) } // Linterna por defecto apagada
     var zoomLevel by remember { mutableFloatStateOf(0f) } // Zoom por defecto a 0
@@ -148,10 +149,6 @@ fun BarcodeScannerScreen(
             try {
                 // Guarda la primera coincidencia de la lista de articles (solo deberia haber uno)
                 scannedArticle = articleRepository.getSearchArticles(search = codebar, filter = "codebar")[0]
-
-                // Limpia el artículo después de 3 segundos
-                delay(articleShowedTime)
-                scannedArticle = null
             } catch (e: Exception) {
                 Log.e("error", e.toString())
             }
@@ -275,24 +272,17 @@ fun BarcodeScannerScreen(
         }
         Spacer(modifier = modifier.height(8.dp))
 
-        Slider(
-            value = zoomLevel,
-            onValueChange = { newZoom ->
-                zoomLevel = newZoom
-            },
-            valueRange = 0f..1f,
-            modifier = modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = modifier.height(16.dp))
-
-        Button(
+        IconButton(
             onClick = { pickImageLauncher.launch("image/*") },
             modifier = modifier
-                .padding(top = 16.dp)
-                .fillMaxWidth()
+                .padding(8.dp)
+                .background(color = MaterialTheme.colorScheme.primary, shape = CircleShape)
         ) {
-            Text("Escanear desde Galería")
+            Icon(
+                imageVector = Icons.Filled.ImageSearch,
+                contentDescription = "Seleccionar imagen",
+                tint = androidx.compose.ui.graphics.Color.White
+            )
         }
     }
 }
@@ -303,6 +293,7 @@ private fun processBarcodeFromBitmap(bitmap: Bitmap, onScan: (String) -> Unit) {
     getBarcodeFromImage(inputImage, onScan = onScan)
 }
 
+// Función para detectar codigos de barrras de una imagen
 private fun getBarcodeFromImage(inputImage: InputImage, imageProxy: ImageProxy? = null, onScan: (String) -> Unit) {
     val barcodeScanner = BarcodeScanning.getClient()
     barcodeScanner.process(inputImage)
