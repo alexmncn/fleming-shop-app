@@ -49,12 +49,12 @@ object ApiService {
     }
 
     fun getSearchArticlesTotal(search: String, filter: String = "detalle"): Response? {
-        val route = "articles/search/total?search=$search"
+        val route = "articles/search/total?search=$search&filter=$filter"
         return makeGetRequest(route)
     }
 
     fun getSearchArticles(page: Int = 1, perPage: Int = 20, search: String, filter: String = "detalle"): Response? {
-        val route = "articles/search?page=$page&per_page=$perPage&search=$search"
+        val route = "articles/search?page=$page&per_page=$perPage&search=$search&filter=$filter"
         return makeGetRequest(route)
     }
 

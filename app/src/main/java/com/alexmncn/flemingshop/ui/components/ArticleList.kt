@@ -166,6 +166,7 @@ fun ArticleCard(article: Article) {
             Text(
                 text = article.pvp.toString() + " €",
                 style = MaterialTheme.typography.titleSmall,
+                color = Color.Black,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                 modifier = Modifier
                     .padding(top = 6.dp, bottom = 2.dp)

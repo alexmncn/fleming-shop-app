@@ -36,28 +36,44 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.content.res.Resources.Theme
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.Camera
+import androidx.camera.core.ImageProxy
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.filled.FlashlightOff
 import androidx.compose.material.icons.filled.FlashlightOn
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import com.alexmncn.flemingshop.data.model.Article
 import com.alexmncn.flemingshop.data.network.ApiService
 import com.alexmncn.flemingshop.data.repository.ArticleRepository
 import com.alexmncn.flemingshop.ui.components.ArticleCard
+import com.alexmncn.flemingshop.ui.components.MainTopBar
+import com.alexmncn.flemingshop.ui.theme.FlemingShopTheme
+import com.google.android.material.color.utilities.Scheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class CodebarScannerActivity : AppCompatActivity() {
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -66,13 +82,21 @@ class CodebarScannerActivity : AppCompatActivity() {
         if (cameraPermissionGranted) {
             // Si los permisos son concedidos, inicia la cámara
             setContent {
-                BarcodeScannerScreen()
+                FlemingShopTheme {
+                    Scaffold (
+                        topBar = { MainTopBar() },
+                        content = {
+                            BarcodeScannerScreen()
+                        }
+                    )
+                }
             }
         } else {
             Toast.makeText(this, "Permisos requeridos no concedidos", Toast.LENGTH_SHORT).show()
         }
     }
 
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     private fun checkPermissions() {
         val cameraPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
 
@@ -84,7 +108,12 @@ class CodebarScannerActivity : AppCompatActivity() {
         } else {
             // Si ya están concedidos, inicia la cámara
             setContent {
-                BarcodeScannerScreen()
+                FlemingShopTheme {
+                    Scaffold (
+                        topBar = { MainTopBar() },
+                        content = { BarcodeScannerScreen() }
+                    )
+                }
             }
         }
     }
@@ -105,20 +134,43 @@ fun BarcodeScannerScreen(
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val articleRepository: ArticleRepository by lazy { ArticleRepository(ApiService) }
+    val scanDelay = 250L // Intervalo de tiempo en milisegundos en el que se escanea una nueva imagen
+    val articleShowedTime = 10000L // Tiempo en milisegundos que se muestra el artículo escaneado antes de ser eliminado
 
     var isFlashEnabled by remember { mutableStateOf(false) } // Linterna por defecto apagada
     var zoomLevel by remember { mutableFloatStateOf(0f) } // Zoom por defecto a 0
     var camera: Camera? by remember { mutableStateOf(null) } // Variable para almacenar la referencia de la cámara
-    var scannedArticle by remember { mutableStateOf<Article?>(null) } // Articulo escaneado
+    var scannedArticle by remember { mutableStateOf<Article?>(null) } // Artículo escaneado
 
     fun onScan(codebar: String) {
+        Log.d("codebar", codebar)
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 // Guarda la primera coincidencia de la lista de articles (solo deberia haber uno)
                 scannedArticle = articleRepository.getSearchArticles(search = codebar, filter = "codebar")[0]
+
+                // Limpia el artículo después de 3 segundos
+                delay(articleShowedTime)
+                scannedArticle = null
             } catch (e: Exception) {
                 Log.e("error", e.toString())
             }
+        }
+    }
+
+    // Contexto actual para la funcionalidad de cargar imágenes
+    val context = LocalContext.current
+    // Evento para eleccionar imágenes desde la galería
+    val pickImageLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let {
+            val inputStream = context.contentResolver.openInputStream(it)
+            val bitmap = BitmapFactory.decodeStream(inputStream)
+            inputStream?.close()
+
+            // Procesar la imagen seleccionada y luego llama a onScan
+            processBarcodeFromBitmap(bitmap, onScan = { codebar -> onScan(codebar) })
         }
     }
 
@@ -134,28 +186,29 @@ fun BarcodeScannerScreen(
             val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
             cameraProviderFuture.addListener({
                 val cameraProvider = cameraProviderFuture.get()
-                val barcodeScanner = BarcodeScanning.getClient()
                 val analyzer = ImageAnalysis.Builder()
                     .build()
                     .also {
+                        var lastScanTime = 0L // Tiempo del último escaneo
+
                         it.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
-                            val mediaImage = imageProxy.image
-                            if (mediaImage != null) {
-                                val inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-                                barcodeScanner.process(inputImage)
-                                    .addOnSuccessListener { barcodes -> // Cuando detecta el codebar ejecuta la funcion onScan
-                                        for (barcode in barcodes) {
-                                            barcode.rawValue?.let { value ->
-                                                onScan(value) // Salida
-                                            }
-                                        }
-                                    }
-                                    .addOnCompleteListener {
-                                        imageProxy.close()
-                                    }
+                            val currentTime = System.currentTimeMillis()
+
+                            // Procesa la imagen si ha pasado el intervalo deseado (ejemplo: 500 ms)
+                            if (currentTime - lastScanTime >= scanDelay) {
+                                val mediaImage = imageProxy.image
+                                if (mediaImage != null) {
+                                    val inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+                                    // Llama a la funcion para obtener el codebar y luego llamar a onScan
+                                    getBarcodeFromImage(inputImage, imageProxy, onScan = { codebar -> onScan(codebar)})
+                                }
+                                lastScanTime = currentTime // Actualiza el tiempo del último análisis
+                            } else {
+                                imageProxy.close() // Cierra la imagen si no es tiempo de analizar
                             }
                         }
                     }
+
 
                 val preview = Preview.Builder().build().also {
                     it.surfaceProvider = previewView.surfaceProvider
@@ -186,14 +239,15 @@ fun BarcodeScannerScreen(
     )
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
     ) {
         // Mostrar el ArticleCard si hay un artículo escaneado
         scannedArticle?.let { article ->
             Box(
-                modifier = Modifier
+                modifier = modifier
                     .align(Alignment.Center)
+                    .width(200.dp)
             ) {
                 ArticleCard(article = article)
             }
@@ -209,9 +263,9 @@ fun BarcodeScannerScreen(
     ) {
         IconButton(
             onClick = { isFlashEnabled = !isFlashEnabled }, // Cambia el estado del flash al pulsar
-            modifier = Modifier
+            modifier = modifier
                 .padding(8.dp)
-                .background(Color.Blue, shape = CircleShape)
+                .background(color = MaterialTheme.colorScheme.primary, shape = CircleShape)
         ) {
             Icon(
                 imageVector = if (isFlashEnabled) Icons.Filled.FlashlightOn else Icons.Filled.FlashlightOff,
@@ -219,7 +273,7 @@ fun BarcodeScannerScreen(
                 tint = androidx.compose.ui.graphics.Color.White
             )
         }
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = modifier.height(8.dp))
 
         Slider(
             value = zoomLevel,
@@ -227,7 +281,42 @@ fun BarcodeScannerScreen(
                 zoomLevel = newZoom
             },
             valueRange = 0f..1f,
-            modifier = Modifier.fillMaxWidth()
+            modifier = modifier.fillMaxWidth()
         )
+
+        Spacer(modifier = modifier.height(16.dp))
+
+        Button(
+            onClick = { pickImageLauncher.launch("image/*") },
+            modifier = modifier
+                .padding(top = 16.dp)
+                .fillMaxWidth()
+        ) {
+            Text("Escanear desde Galería")
+        }
     }
+}
+
+// Función para procesar un Bitmap de una imagen cargada desde la galería y detectar códigos de barras
+private fun processBarcodeFromBitmap(bitmap: Bitmap, onScan: (String) -> Unit) {
+    val inputImage = InputImage.fromBitmap(bitmap, 0)
+    getBarcodeFromImage(inputImage, onScan = onScan)
+}
+
+private fun getBarcodeFromImage(inputImage: InputImage, imageProxy: ImageProxy? = null, onScan: (String) -> Unit) {
+    val barcodeScanner = BarcodeScanning.getClient()
+    barcodeScanner.process(inputImage)
+        .addOnSuccessListener { barcodes ->
+            for (barcode in barcodes) {
+                barcode.rawValue?.let { value ->
+                    onScan(value)
+                }
+            }
+        }
+        .addOnFailureListener { exception ->
+            Log.e("BarcodeScanner", "Error al procesar la imagen: ${exception.message}")
+        }
+        .addOnCompleteListener {
+            imageProxy?.close() // Libera el recurso
+        }
 }
