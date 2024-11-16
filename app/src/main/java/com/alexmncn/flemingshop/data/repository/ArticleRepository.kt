@@ -33,8 +33,8 @@ class ArticleRepository(private val apiService: ApiService) {
         }
     }
 
-    suspend fun getSearchArticles(page: Int = 1, perPage: Int = 20, search: String): List<Article> {
-        val response = apiService.getSearchArticles(page, perPage, search)
+    suspend fun getSearchArticles(page: Int = 1, perPage: Int = 20, search: String, filter: String = "detalle"): List<Article> {
+        val response = apiService.getSearchArticles(page, perPage, search, filter)
         if (response != null && response.isSuccessful) {
             val responseData = response.body?.string()
             val listType = object : TypeToken<List<Article>>() {}.type
@@ -44,8 +44,8 @@ class ArticleRepository(private val apiService: ApiService) {
         }
     }
 
-    suspend fun getSearchArticlesTotal(search: String): Int {
-        val response = apiService.getSearchArticlesTotal(search)
+    suspend fun getSearchArticlesTotal(search: String, filter: String = "detalle"): Int {
+        val response = apiService.getSearchArticlesTotal(search, filter)
         if (response != null && response.isSuccessful) {
             val responseData = response.body?.string()
             return JsonParser.parseString(responseData).asJsonObject.get("total").asInt

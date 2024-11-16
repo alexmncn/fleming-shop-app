@@ -160,7 +160,7 @@ fun ArticleCard(article: Article) {
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp, vertical = 8.dp),
         ) {
-            Text(text = capitalizeText(article.detalle), style = MaterialTheme.typography.bodyLarge)
+            Text(text = capitalizeText(article.detalle), style = MaterialTheme.typography.bodyLarge, color = Color.Black)
             Text(text = "Ref: " + article.ref.toString(), style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
             Text(text = "Stock: " + article.stock.toString(), style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
             Text(

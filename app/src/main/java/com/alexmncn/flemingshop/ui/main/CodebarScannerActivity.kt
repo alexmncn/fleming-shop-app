@@ -20,9 +20,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Slider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -41,7 +39,23 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.Camera
-
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.filled.FlashlightOff
+import androidx.compose.material.icons.filled.FlashlightOn
+import androidx.compose.ui.graphics.Color
+import com.alexmncn.flemingshop.data.model.Article
+import com.alexmncn.flemingshop.data.network.ApiService
+import com.alexmncn.flemingshop.data.repository.ArticleRepository
+import com.alexmncn.flemingshop.ui.components.ArticleCard
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class CodebarScannerActivity : AppCompatActivity() {
     private val requestPermissionLauncher = registerForActivityResult(
@@ -52,22 +66,11 @@ class CodebarScannerActivity : AppCompatActivity() {
         if (cameraPermissionGranted) {
             // Si los permisos son concedidos, inicia la cámara
             setContent {
-                BarcodeScannerScreen(onScanResult = { result ->
-                    Log.d("ScanResult", result)
-                    Toast.makeText(this, result, Toast.LENGTH_LONG).show()
-                })
+                BarcodeScannerScreen()
             }
         } else {
             Toast.makeText(this, "Permisos requeridos no concedidos", Toast.LENGTH_SHORT).show()
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        supportActionBar?.hide() // Hide default topbar with app name
-
-        // Verificar permisos antes de iniciar la actividad
-        checkPermissions()
     }
 
     private fun checkPermissions() {
@@ -81,26 +84,43 @@ class CodebarScannerActivity : AppCompatActivity() {
         } else {
             // Si ya están concedidos, inicia la cámara
             setContent {
-                BarcodeScannerScreen(onScanResult = { result ->
-                    Log.d("ScanResult", result)
-                    Toast.makeText(this, result, Toast.LENGTH_LONG).show()
-                })
+                BarcodeScannerScreen()
             }
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        supportActionBar?.hide() // Hide default topbar with app name
+
+        // Verificar permisos antes de iniciar la actividad
+        checkPermissions()
     }
 }
 
 @OptIn(ExperimentalGetImage::class)
 @Composable
 fun BarcodeScannerScreen(
-    onScanResult: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val articleRepository: ArticleRepository by lazy { ArticleRepository(ApiService) }
+
     var isFlashEnabled by remember { mutableStateOf(false) } // Linterna por defecto apagada
     var zoomLevel by remember { mutableFloatStateOf(0f) } // Zoom por defecto a 0
-
-    val lifecycleOwner = LocalLifecycleOwner.current
     var camera: Camera? by remember { mutableStateOf(null) } // Variable para almacenar la referencia de la cámara
+    var scannedArticle by remember { mutableStateOf<Article?>(null) } // Articulo escaneado
+
+    fun onScan(codebar: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // Guarda la primera coincidencia de la lista de articles (solo deberia haber uno)
+                scannedArticle = articleRepository.getSearchArticles(search = codebar, filter = "codebar")[0]
+            } catch (e: Exception) {
+                Log.e("error", e.toString())
+            }
+        }
+    }
 
     AndroidView(
         factory = { context ->
@@ -123,10 +143,10 @@ fun BarcodeScannerScreen(
                             if (mediaImage != null) {
                                 val inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
                                 barcodeScanner.process(inputImage)
-                                    .addOnSuccessListener { barcodes ->
+                                    .addOnSuccessListener { barcodes -> // Cuando detecta el codebar ejecuta la funcion onScan
                                         for (barcode in barcodes) {
                                             barcode.rawValue?.let { value ->
-                                                onScanResult(value)
+                                                onScan(value) // Salida
                                             }
                                         }
                                     }
@@ -161,10 +181,24 @@ fun BarcodeScannerScreen(
             camera?.let {
                 it.cameraControl.enableTorch(isFlashEnabled)
                 it.cameraControl.setLinearZoom(zoomLevel)
-                Log.d("UI", "Linterna: $isFlashEnabled, Zoom: $zoomLevel")
             }
         }
     )
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        // Mostrar el ArticleCard si hay un artículo escaneado
+        scannedArticle?.let { article ->
+            Box(
+                modifier = Modifier
+                    .align(Alignment.Center)
+            ) {
+                ArticleCard(article = article)
+            }
+        }
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -173,11 +207,17 @@ fun BarcodeScannerScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Button(onClick = {
-            isFlashEnabled = !isFlashEnabled
-            Log.d("UI", "Linterna cambiada a: $isFlashEnabled")
-        }) {
-            Text(text = if (isFlashEnabled) "Apagar Linterna" else "Encender Linterna")
+        IconButton(
+            onClick = { isFlashEnabled = !isFlashEnabled }, // Cambia el estado del flash al pulsar
+            modifier = Modifier
+                .padding(8.dp)
+                .background(Color.Blue, shape = CircleShape)
+        ) {
+            Icon(
+                imageVector = if (isFlashEnabled) Icons.Filled.FlashlightOn else Icons.Filled.FlashlightOff,
+                contentDescription = if (isFlashEnabled) "Apagar Linterna" else "Encender Linterna",
+                tint = androidx.compose.ui.graphics.Color.White
+            )
         }
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -185,7 +225,6 @@ fun BarcodeScannerScreen(
             value = zoomLevel,
             onValueChange = { newZoom ->
                 zoomLevel = newZoom
-                Log.d("UI", "Zoom cambiado a: $zoomLevel")
             },
             valueRange = 0f..1f,
             modifier = Modifier.fillMaxWidth()
