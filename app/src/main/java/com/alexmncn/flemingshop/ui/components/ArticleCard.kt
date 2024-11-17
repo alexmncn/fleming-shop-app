@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -59,7 +60,7 @@ fun ArticleCard(article: Article) {
                 text = article.pvp.toString() + " €",
                 style = MaterialTheme.typography.titleSmall,
                 color = Color.Black,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .padding(top = 6.dp, bottom = 2.dp)
             )
