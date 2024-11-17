@@ -23,31 +23,25 @@ import androidx.compose.ui.unit.sp
 private val DarkColorScheme = darkColorScheme(
     primary = Blue500,
     secondary = Blue400,
+    secondaryContainer = Blue200, // Color para fondos secundarios
     tertiary = Blue600,
     background = BackgroundWhite,
     onPrimary = Color.White,
     onSecondary = Color.White,
+    onSecondaryContainer = Color.Black,
     onTertiary = Color.White,
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = Blue500,
     secondary = Blue400,
+    secondaryContainer = Blue200,
     tertiary = Blue600,
     background = BackgroundWhite,
     onPrimary = Color.White,
     onSecondary = Color.White,
+    onSecondaryContainer = Color.Black,
     onTertiary = Color.White,
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
 )
 
 // Define la familia de fuente Montserrat
@@ -82,7 +76,18 @@ val montserratTypography = Typography(
         fontFamily = montserratFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 13.sp
+    ),
+    labelSmall = TextStyle(
+        fontFamily = montserratFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 12.sp
+    ),
+    labelLarge = TextStyle(
+        fontFamily = montserratFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 14.sp
     )
+
 )
 
 @Composable
@@ -107,7 +112,6 @@ fun FlemingShopTheme(
         typography = montserratTypography,
         content = {
             Surface(
-                color = Color.White, // Set the background color to custom-white
                 modifier = androidx.compose.ui.Modifier.fillMaxSize(),
                 content = content
             )

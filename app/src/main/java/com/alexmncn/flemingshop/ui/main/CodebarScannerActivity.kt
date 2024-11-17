@@ -98,7 +98,7 @@ class CodebarScannerActivity : AppCompatActivity() {
         val cameraPermissionGranted = permissions[Manifest.permission.CAMERA] ?: false
 
         if (cameraPermissionGranted) {
-            // Si los permisos son concedidos, inicia la cámara
+            // Si los permisos son concedidos, muestra la interfaz
             setContent {
                 FlemingShopTheme {
                     Scaffold (
@@ -123,7 +123,7 @@ class CodebarScannerActivity : AppCompatActivity() {
                 arrayOf(Manifest.permission.CAMERA)
             )
         } else {
-            // Si ya están concedidos, inicia la cámara
+            // Si ya están concedidos, muestra la interfaz
             setContent {
                 FlemingShopTheme {
                     Scaffold (
@@ -354,7 +354,8 @@ fun BarcodeScannerScreen(
             if (scannedArticle == null) {
                 Text(
                     text = statusMessage,
-                    color = Color.White
+                        style = MaterialTheme.typography.titleSmall,
+                    color = Color.White,
                 )
             }
         }

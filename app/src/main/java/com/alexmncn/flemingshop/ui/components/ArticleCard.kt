@@ -65,7 +65,6 @@ fun ArticleCard(article: Article) {
         ) {
             Text(text = capitalizeText(article.detalle), style = MaterialTheme.typography.bodyLarge, color = Color.Black)
             Text(text = "Ref: " + article.ref.toString(), style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
-            Text(text = "Stock: " + article.stock.toString(), style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
             Text(
                 text = article.pvp.toString() + " €",
                 style = MaterialTheme.typography.titleSmall,

@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.alexmncn.flemingshop.data.model.Article
 import com.alexmncn.flemingshop.ui.components.ArticleList
+import com.alexmncn.flemingshop.ui.components.MainBottomBar
 import com.alexmncn.flemingshop.ui.components.MainTopBar
 import com.alexmncn.flemingshop.ui.theme.FlemingShopTheme
 
@@ -31,6 +32,7 @@ fun SimpleArticlesScreen(total: Int, articles: List<Article>, listName: String, 
                     )
                 }
             },
+            bottomBar = { MainBottomBar() }
         )
     }
 }
