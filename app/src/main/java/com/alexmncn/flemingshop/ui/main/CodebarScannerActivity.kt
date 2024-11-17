@@ -45,6 +45,11 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.Camera
 import androidx.camera.core.ImageProxy
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -62,6 +67,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
@@ -152,22 +158,42 @@ fun BarcodeScannerScreen(
     var isFlashEnabled by remember { mutableStateOf(false) } // Linterna por defecto apagada
     var zoomLevel by remember { mutableFloatStateOf(0f) } // Zoom por defecto a 0
     var camera: Camera? by remember { mutableStateOf(null) } // Variable para almacenar la referencia de la cámara
+    var statusMessage by remember { mutableStateOf("Escanea un código de barras") } // Mensaje de estado
     var scannedArticle by remember { mutableStateOf<Article?>(null) } // Artículo escaneado
+    var articleVisible: Boolean by remember { mutableStateOf(false) } // Estado del articleCard (para controlar animacion)
 
-    fun onScan(codebar: String) {
-        Log.d("codebar", codebar)
+
+    fun onScan(scannedCodebar: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            try {
-                // Guarda la primera coincidencia de la lista de articles (solo deberia haber uno)
-                scannedArticle = articleRepository.getSearchArticles(search = codebar, filter = "codebar")[0]
-            } catch (e: Exception) {
-                Log.e("error", e.toString())
+            val lastCodebar = scannedArticle?.codebar.toString()
+
+            // Si hay un artículo cargado y el escaneado es diferente, lo oculta para mostrar este último
+            if ((scannedArticle != null) && (scannedCodebar != lastCodebar)) {
+                articleVisible = false
+                delay(350) // Reservado para la animacion (300 + 50 de margen)
+                scannedArticle = null
+            }
+
+            // Se carga el articulo escaneado si no lo está
+            if (scannedCodebar != lastCodebar) {
+                try {
+                    statusMessage = "Cargando artículo..."
+
+                    // Guarda la primera coincidencia de la lista de articles (solo deberia haber uno)
+                    scannedArticle = articleRepository.getSearchArticles(search = scannedCodebar, filter = "codebar")[0]
+
+                    articleVisible = true
+                } catch (e: Exception) {
+                    Log.e("error", e.toString())
+                    statusMessage = "Articulo desconocido"
+                }
             }
         }
     }
 
     // Contexto actual para la funcionalidad de cargar imágenes
     val context = LocalContext.current
+
     // Evento para eleccionar imágenes desde la galería
     val pickImageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -303,21 +329,31 @@ fun BarcodeScannerScreen(
                 )
             }
 
-            // Mostrar el ArticleCard si hay un artículo escaneado
-            scannedArticle?.let { article ->
-                Box(
-                    modifier = Modifier
-                        .width(200.dp)
-                ) {
-                    ArticleCard(article = article)
-                }
+            Column {
+                // Animación al mostrar el ArticleCard
+                AnimatedVisibility(
+                    visible = articleVisible, // Se muestra solo si hay un artículo escaneado
+                    enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(), // Animación de entrada
+                    exit = fadeOut(), // Animación de salida
+                    content = {
+                        scannedArticle?.let { article ->
+                            Box(
+                                modifier = Modifier
+                                    .width(200.dp)
+                            ) {
+                                ArticleCard(article = article)
+                            }
+                        }
+                    }
+                )
             }
 
             // Placeholder
             if (scannedArticle == null) {
                 Text(
-                    text = "Escanea un código de barras",
-                    color = Color.White)
+                    text = statusMessage,
+                    color = Color.White
+                )
             }
         }
     }
@@ -341,7 +377,8 @@ fun BarcodeScannerScreen(
                 tint = if (isFlashEnabled) MaterialTheme.colorScheme.primary else Color.White
             )
         }
-        Spacer(modifier = Modifier.height(16.dp)) // Separación entre los botones
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         IconButton(
             onClick = { pickImageLauncher.launch("image/*") },
