@@ -105,7 +105,8 @@ class CodebarScannerActivity : AppCompatActivity() {
                         topBar = { MainTopBar() },
                         content = {
                             BarcodeScannerScreen()
-                        }
+                        },
+                        bottomBar = { MainBottomBar() }
                     )
                 }
             }
