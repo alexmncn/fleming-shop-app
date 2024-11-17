@@ -45,7 +45,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.Camera
 import androidx.camera.core.ImageProxy
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -60,13 +62,21 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import com.alexmncn.flemingshop.data.model.Article
 import com.alexmncn.flemingshop.data.network.ApiService
 import com.alexmncn.flemingshop.data.repository.ArticleRepository
 import com.alexmncn.flemingshop.ui.components.ArticleCard
+import com.alexmncn.flemingshop.ui.components.MainBottomBar
 import com.alexmncn.flemingshop.ui.components.MainTopBar
+import com.alexmncn.flemingshop.ui.theme.Blue300
+import com.alexmncn.flemingshop.ui.theme.Blue400
+import com.alexmncn.flemingshop.ui.theme.Blue500
 import com.alexmncn.flemingshop.ui.theme.FlemingShopTheme
 import com.google.android.material.color.utilities.Scheme
 import kotlinx.coroutines.CoroutineScope
@@ -113,7 +123,8 @@ class CodebarScannerActivity : AppCompatActivity() {
                 FlemingShopTheme {
                     Scaffold (
                         topBar = { MainTopBar() },
-                        content = { BarcodeScannerScreen() }
+                        content = { paddingValues -> BarcodeScannerScreen(modifier = Modifier.padding(paddingValues)) },
+                        bottomBar = { MainBottomBar() }
                     )
                 }
             }
@@ -171,6 +182,7 @@ fun BarcodeScannerScreen(
         }
     }
 
+    // Camera preview and scanner logic
     AndroidView(
         factory = { context ->
             val previewView = PreviewView(context).apply {
@@ -191,13 +203,13 @@ fun BarcodeScannerScreen(
                         it.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
                             val currentTime = System.currentTimeMillis()
 
-                            // Procesa la imagen si ha pasado el intervalo deseado (ejemplo: 500 ms)
+                            // Procesa la imagen si ha pasado el intervalo deseado
                             if (currentTime - lastScanTime >= scanDelay) {
                                 val mediaImage = imageProxy.image
                                 if (mediaImage != null) {
                                     val inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
                                     // Llama a la funcion para obtener el codebar y luego llamar a onScan
-                                    getBarcodeFromImage(inputImage, imageProxy, onScan = { codebar -> onScan(codebar)})
+                                    getBarcodeFromImage(inputImage, imageProxy, onScan = { codebar -> onScan(codebar) })
                                 }
                                 lastScanTime = currentTime // Actualiza el tiempo del último análisis
                             } else {
@@ -205,7 +217,6 @@ fun BarcodeScannerScreen(
                             }
                         }
                     }
-
 
                 val preview = Preview.Builder().build().also {
                     it.surfaceProvider = previewView.surfaceProvider
@@ -219,15 +230,14 @@ fun BarcodeScannerScreen(
                     preview,
                     analyzer
                 )
-
             }, ContextCompat.getMainExecutor(context))
 
             previewView
         },
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize(),
-        update = { previewView -> // En un AndroidView se debe utilizar esta seccion para reflejar los cambios de la UI
-            // Usar la referencia de la cámara almacenada en la variable `camera` para actulizar la configuración
+        update = { previewView -> // En un AndroidView se debe utilizar esta sección para reflejar los cambios de la UI
+            // Usar la referencia de la cámara almacenada en la variable `camera` para actualizar la configuración
             camera?.let {
                 it.cameraControl.enableTorch(isFlashEnabled)
                 it.cameraControl.setLinearZoom(zoomLevel)
@@ -235,53 +245,113 @@ fun BarcodeScannerScreen(
         }
     )
 
-    Box(
+
+    Column(
         modifier = modifier
             .fillMaxSize()
     ) {
-        // Mostrar el ArticleCard si hay un artículo escaneado
-        scannedArticle?.let { article ->
-            Box(
-                modifier = modifier
-                    .align(Alignment.Center)
-                    .width(200.dp)
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            // Fondo semitransparente con recorte del rectángulo indicador
+            Canvas(
+                modifier = Modifier.fillMaxSize()
             ) {
-                ArticleCard(article = article)
+                val rectPadding = 25.dp.toPx()
+                val rectWidth = size.width - rectPadding * 2
+                val rectHeight = size.height - rectPadding * 2
+
+                // Fondo negro semitransparente
+                drawRect(
+                    color = Color.Black.copy(alpha = 0.3f)
+                )
+
+                // Área recortada transparente
+                drawRect(
+                    color = Color.Transparent,
+                    topLeft = Offset(rectPadding, rectPadding),
+                    size = Size(rectWidth, rectHeight),
+                    blendMode = BlendMode.Clear
+                )
+
+                // Borde blanco alrededor del área transparente
+                drawRect(
+                    color = Color.White,
+                    topLeft = Offset(rectPadding, rectPadding),
+                    size = Size(rectWidth, rectHeight),
+                    style = Stroke(width = 1.dp.toPx())
+                )
+            }
+        }
+
+        // Contenedor mitad inferior
+        Box(
+            modifier = Modifier
+                .weight(1f) // Ocupa la otra mitad del espacio disponible
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+        ) {
+            // Fondo negro semitransparente
+            Canvas(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                drawRect(
+                    color = Color.Black.copy(alpha = 0.3f)
+                )
+            }
+
+            // Mostrar el ArticleCard si hay un artículo escaneado
+            scannedArticle?.let { article ->
+                Box(
+                    modifier = Modifier
+                        .width(200.dp)
+                ) {
+                    ArticleCard(article = article)
+                }
+            }
+
+            // Placeholder
+            if (scannedArticle == null) {
+                Text(
+                    text = "Escanea un código de barras",
+                    color = Color.White)
             }
         }
     }
 
+    // Botones alineados en el borde inferior izquierdo
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.Bottom,
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(end = 16.dp, bottom = 16.dp) // Margen desde la esquina inferior izquierda
     ) {
         IconButton(
             onClick = { isFlashEnabled = !isFlashEnabled }, // Cambia el estado del flash al pulsar
-            modifier = modifier
-                .padding(8.dp)
-                .background(color = MaterialTheme.colorScheme.primary, shape = CircleShape)
+            modifier = Modifier
+                .background(if (isFlashEnabled) Color.White else MaterialTheme.colorScheme.primary , CircleShape)
         ) {
             Icon(
                 imageVector = if (isFlashEnabled) Icons.Filled.FlashlightOn else Icons.Filled.FlashlightOff,
                 contentDescription = if (isFlashEnabled) "Apagar Linterna" else "Encender Linterna",
-                tint = androidx.compose.ui.graphics.Color.White
+                tint = if (isFlashEnabled) MaterialTheme.colorScheme.primary else Color.White
             )
         }
-        Spacer(modifier = modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(16.dp)) // Separación entre los botones
 
         IconButton(
             onClick = { pickImageLauncher.launch("image/*") },
-            modifier = modifier
-                .padding(8.dp)
-                .background(color = MaterialTheme.colorScheme.primary, shape = CircleShape)
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.primary, CircleShape)
         ) {
             Icon(
                 imageVector = Icons.Filled.ImageSearch,
                 contentDescription = "Seleccionar imagen",
-                tint = androidx.compose.ui.graphics.Color.White
+                tint = Color.White
             )
         }
     }
