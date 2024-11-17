@@ -130,51 +130,6 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, onShowMor
 }
 
 
-@Composable
-fun ArticleCard(article: Article) {
-    val imageUrl = Constans.IMAGES_URL + "articles/${article.codebar}.webp"
-
-    Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        modifier = Modifier
-            .padding(top = 2.dp, bottom = 10.dp) // Safe zone for card shadow
-            .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
-        // Usando Coil para cargar la imagen
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(imageUrl)
-                .crossfade(true)
-                .build(),
-            contentDescription = "Imagen del artículo",
-            modifier = Modifier
-                .fillMaxWidth()
-                .size(120.dp),
-            contentScale = ContentScale.FillHeight
-        )
-
-        Column(
-            modifier = Modifier
-                .background(Color(0xfff5f5f5)) // !!! PROVISIONAL !!!
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-        ) {
-            Text(text = capitalizeText(article.detalle), style = MaterialTheme.typography.bodyLarge, color = Color.Black)
-            Text(text = "Ref: " + article.ref.toString(), style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
-            Text(text = "Stock: " + article.stock.toString(), style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
-            Text(
-                text = article.pvp.toString() + " €",
-                style = MaterialTheme.typography.titleSmall,
-                color = Color.Black,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                modifier = Modifier
-                    .padding(top = 6.dp, bottom = 2.dp)
-            )
-        }
-    }
-}
-
 @Preview
 @Composable
 fun PreviewArticleList() {
