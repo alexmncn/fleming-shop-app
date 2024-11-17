@@ -103,9 +103,7 @@ class CodebarScannerActivity : AppCompatActivity() {
                 FlemingShopTheme {
                     Scaffold (
                         topBar = { MainTopBar() },
-                        content = {
-                            BarcodeScannerScreen()
-                        },
+                        content = { paddingValues -> BarcodeScannerScreen(modifier = Modifier.padding(paddingValues)) },
                         bottomBar = { MainBottomBar() }
                     )
                 }
