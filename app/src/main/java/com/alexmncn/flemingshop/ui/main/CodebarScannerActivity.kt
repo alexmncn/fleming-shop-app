@@ -161,12 +161,11 @@ fun BarcodeScannerScreen(
     var statusMessage by remember { mutableStateOf("Escanea un código de barras") } // Mensaje de estado
     var scannedArticle by remember { mutableStateOf<Article?>(null) } // Artículo escaneado
     var articleVisible: Boolean by remember { mutableStateOf(false) } // Estado del articleCard (para controlar animacion)
+    var lastCodebar: String by remember { mutableStateOf("") } // Ultimo codebar escaneado
 
 
     fun onScan(scannedCodebar: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            val lastCodebar = scannedArticle?.codebar.toString()
-
             // Si hay un artículo cargado y el escaneado es diferente, lo oculta para mostrar este último
             if ((scannedArticle != null) && (scannedCodebar != lastCodebar)) {
                 articleVisible = false
@@ -188,6 +187,8 @@ fun BarcodeScannerScreen(
                     statusMessage = "Articulo desconocido"
                 }
             }
+
+            lastCodebar = scannedCodebar
         }
     }
 
@@ -271,7 +272,9 @@ fun BarcodeScannerScreen(
         }
     )
 
+    // Interfaz sobre la cámara
 
+    // Contenedor mitad superior
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -348,7 +351,7 @@ fun BarcodeScannerScreen(
                 )
             }
 
-            // Placeholder
+            // Status message
             if (scannedArticle == null) {
                 Text(
                     text = statusMessage,

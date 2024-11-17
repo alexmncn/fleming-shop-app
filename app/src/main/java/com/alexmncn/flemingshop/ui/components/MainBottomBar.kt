@@ -6,13 +6,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import okhttp3.internal.wait
 
 @Composable
 fun MainBottomBar() {
     BottomAppBar (
         modifier = Modifier.height(50.dp),
-        containerColor = Color.White,
-        contentColor = MaterialTheme.colorScheme.primary
+        containerColor = MaterialTheme.colorScheme.primary,
+        contentColor = Color.White
     ) {
 
     }

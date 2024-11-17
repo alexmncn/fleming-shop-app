@@ -1,12 +1,11 @@
 package com.alexmncn.flemingshop.ui.screens.shared
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -16,14 +15,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.alexmncn.flemingshop.data.model.Article
-import com.alexmncn.flemingshop.ui.components.ArticleList
+import com.alexmncn.flemingshop.ui.components.MainBottomBar
 import com.alexmncn.flemingshop.ui.components.MainTopBar
 import com.alexmncn.flemingshop.ui.theme.FlemingShopTheme
 import com.alexmncn.flemingshop.utils.Constans
@@ -32,7 +30,7 @@ import java.math.BigInteger
 import java.util.Date
 
 @Composable
-fun ArticleScreen(article: Article) {
+fun DetailArticleScreen(article: Article) {
     val imageUrl = Constans.IMAGES_URL + "articles/${article.codebar}.webp"
 
     FlemingShopTheme {
@@ -41,7 +39,7 @@ fun ArticleScreen(article: Article) {
             content = { paddingValues ->
                 Column(
                     modifier = Modifier
-                        .padding(paddingValues) // Safe zone from topbar
+                        .padding(paddingValues) // Safe zone
                 ) {
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
@@ -50,8 +48,7 @@ fun ArticleScreen(article: Article) {
                             .build(),
                         contentDescription = "Imagen del artículo",
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp),
+                            .fillMaxWidth(),
                         contentScale = ContentScale.FillWidth
                     )
                     Spacer(modifier = Modifier.height(10.dp))
@@ -80,6 +77,7 @@ fun ArticleScreen(article: Article) {
                     }
                 }
             },
+            bottomBar = { MainBottomBar() }
         )
     }
 }
@@ -99,5 +97,5 @@ fun PreviewArticle() {
             destacado = true,
             hidden = false
         )
-    ArticleScreen(article = article)
+    DetailArticleScreen(article = article)
 }

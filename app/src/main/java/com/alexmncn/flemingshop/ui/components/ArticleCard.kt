@@ -1,6 +1,8 @@
 package com.alexmncn.flemingshop.ui.components
 
+import android.content.Intent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,18 +22,26 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.alexmncn.flemingshop.data.model.Article
+import com.alexmncn.flemingshop.ui.main.DetailArticleActivity
 import com.alexmncn.flemingshop.utils.Constans
 import com.alexmncn.flemingshop.utils.capitalizeText
 
 @Composable
 fun ArticleCard(article: Article) {
+    val context = LocalContext.current
     val imageUrl = Constans.IMAGES_URL + "articles/${article.codebar}.webp"
 
     Card(
         colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = Modifier
             .padding(top = 2.dp, bottom = 10.dp) // Safe zone for card shadow
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable {
+                val intent = Intent(context, DetailArticleActivity::class.java).apply {
+                    putExtra("codebar", article.codebar.toString())
+                }
+                context.startActivity(intent)
+            },
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         // Usando Coil para cargar la imagen
