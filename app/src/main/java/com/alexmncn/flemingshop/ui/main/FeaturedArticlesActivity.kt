@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.alexmncn.flemingshop.data.model.Article
+import com.alexmncn.flemingshop.data.network.ApiClient
 import com.alexmncn.flemingshop.data.network.ApiService
 import com.alexmncn.flemingshop.data.repository.ArticleRepository
 import com.alexmncn.flemingshop.ui.screens.shared.SimpleArticlesScreen
@@ -19,9 +20,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class FeaturedArticlesActivity : AppCompatActivity() {
-    private val articleRepository: ArticleRepository by lazy {
-        ArticleRepository(ApiService)
-    }
+    private val apiClient = ApiClient.provideOkHttpClient(this)
+    private val articleRepository: ArticleRepository by lazy { ArticleRepository(ApiService(apiClient)) }
 
     var currentPage = 1
 

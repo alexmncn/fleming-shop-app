@@ -15,6 +15,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.alexmncn.flemingshop.R
 import com.alexmncn.flemingshop.data.model.Article
+import com.alexmncn.flemingshop.data.network.ApiClient
 import com.alexmncn.flemingshop.data.network.ApiService
 import com.alexmncn.flemingshop.data.repository.ArticleRepository
 import com.alexmncn.flemingshop.ui.screens.shared.DetailArticleScreen
@@ -24,9 +25,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class DetailArticleActivity : AppCompatActivity() {
-    private val articleRepository: ArticleRepository by lazy {
-        ArticleRepository(ApiService)
-    }
+    private val apiClient = ApiClient.provideOkHttpClient(this)
+    private val articleRepository: ArticleRepository by lazy { ArticleRepository(ApiService(apiClient)) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

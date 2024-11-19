@@ -75,6 +75,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import com.alexmncn.flemingshop.data.model.Article
+import com.alexmncn.flemingshop.data.network.ApiClient
 import com.alexmncn.flemingshop.data.network.ApiService
 import com.alexmncn.flemingshop.data.repository.ArticleRepository
 import com.alexmncn.flemingshop.ui.components.ArticleCard
@@ -150,8 +151,10 @@ class CodebarScannerActivity : AppCompatActivity() {
 fun BarcodeScannerScreen(
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val articleRepository: ArticleRepository by lazy { ArticleRepository(ApiService) }
+    val apiClient = ApiClient.provideOkHttpClient(context)
+    val articleRepository: ArticleRepository by lazy { ArticleRepository(ApiService(apiClient)) }
     val scanDelay = 250L // Intervalo de tiempo en milisegundos en el que se escanea una nueva imagen
 
     var isFlashEnabled by remember { mutableStateOf(false) } // Linterna por defecto apagada
@@ -162,7 +165,7 @@ fun BarcodeScannerScreen(
     var articleVisible: Boolean by remember { mutableStateOf(false) } // Estado del articleCard (para controlar animacion)
     var lastCodebar: String by remember { mutableStateOf("") } // Ultimo codebar escaneado
 
-
+    // Funcion que se llama al detectar un codigo de barras
     fun onScan(scannedCodebar: String) {
         CoroutineScope(Dispatchers.IO).launch {
             // Si hay un artículo cargado y el escaneado es diferente, lo oculta para mostrar este último
@@ -190,9 +193,6 @@ fun BarcodeScannerScreen(
             lastCodebar = scannedCodebar
         }
     }
-
-    // Contexto actual para la funcionalidad de cargar imágenes
-    val context = LocalContext.current
 
     // Evento para eleccionar imágenes desde la galería
     val pickImageLauncher = rememberLauncherForActivityResult(

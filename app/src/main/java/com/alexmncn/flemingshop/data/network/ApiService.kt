@@ -1,13 +1,16 @@
 package com.alexmncn.flemingshop.data.network
 
 import com.alexmncn.flemingshop.utils.Constans
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
+import org.json.JSONObject
 import java.io.IOException
-import java.math.BigInteger
 
-object ApiService {
+class ApiService(private val client: OkHttpClient) {
     // Funcion HTTP GET que recibe la ruta, hace la peticion y devuelve la respuesta
     private fun  makeGetRequest(route: String): Response? {
         return try {
@@ -16,7 +19,7 @@ object ApiService {
                 .url(Constans.BASE_URL+route)
                 .build()
 
-            ApiClient.makeRequest(request)
+            client.newCall(request).execute()
         } catch (e: IOException) {
             null
         }
@@ -29,7 +32,7 @@ object ApiService {
                 .url(Constans.BASE_URL+route)
                 .build()
 
-            ApiClient.makeRequest(request)
+            client.newCall(request).execute()
         } catch (e: IOException) {
             null
         }
@@ -91,5 +94,25 @@ object ApiService {
     fun getFamilyArticles(page: Int = 1, perPage: Int = 20, familyId: Int): Response? {
         val route = "articles/families/$familyId?page=$page&per_page=$perPage"
         return makeGetRequest(route)
+    }
+
+
+    // Auth routes
+    fun login(username: String, password: String): Response? {
+        val route = "login"
+        val jsonBody = JSONObject()
+        jsonBody.put("username", username)
+        jsonBody.put("password", password)
+
+        // Crear el cuerpo de la solicitud con JSON
+        val body = jsonBody.toString().toRequestBody("application/json".toMediaTypeOrNull())
+        return makePostRequest(route, body)
+    }
+
+    fun logout(): Response? {
+        val route = "logout"
+        val body = ByteArray(0).toRequestBody(null, 0) // Empty body
+
+        return makePostRequest(route, body)
     }
 }
