@@ -93,7 +93,7 @@ fun PreviewArticle() {
             pcosto = 10.50f,
             pvp = 15.75f,
             stock = 100,
-            factualizacion = Date(),
+            factualizacion = "",
             destacado = true,
             hidden = false
         )

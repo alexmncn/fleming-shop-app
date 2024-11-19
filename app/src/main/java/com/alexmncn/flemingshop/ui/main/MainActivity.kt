@@ -84,6 +84,19 @@ fun MainScreen() {
                     ) {
                         Text(text = "Codebar Reader")
                     }
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // Login
+                    Button(
+                        onClick = {
+                            val intent = Intent(context, LoginActivity::class.java)
+                            context.startActivity(intent)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Text(text = "Login")
+                    }
                 }
             }
         )

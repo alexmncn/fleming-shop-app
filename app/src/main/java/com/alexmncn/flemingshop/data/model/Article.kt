@@ -11,7 +11,7 @@ data class Article(
     val pcosto: Float,
     val pvp: Float,
     val stock: Int,
-    val factualizacion: Date,
+    val factualizacion: String,
     val destacado: Boolean,
     val hidden: Boolean
 )

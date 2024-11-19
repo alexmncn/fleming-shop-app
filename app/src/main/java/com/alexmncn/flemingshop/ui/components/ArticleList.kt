@@ -143,7 +143,7 @@ fun PreviewArticleList() {
             pcosto = 10.50f,
             pvp = 15.75f,
             stock = 100,
-            factualizacion = Date(),
+            factualizacion = "",
             destacado = true,
             hidden = false
         ),
@@ -155,7 +155,7 @@ fun PreviewArticleList() {
             pcosto = 20.00f,
             pvp = 30.00f,
             stock = 50,
-            factualizacion = Date(),
+            factualizacion = "",
             destacado = false,
             hidden = false
         ),
@@ -167,7 +167,7 @@ fun PreviewArticleList() {
             pcosto = 5.00f,
             pvp = 7.50f,
             stock = 200,
-            factualizacion = Date(),
+            factualizacion = "",
             destacado = true,
             hidden = true
         ),
@@ -179,7 +179,7 @@ fun PreviewArticleList() {
             pcosto = 12.25f,
             pvp = 18.99f,
             stock = 25,
-            factualizacion = Date(),
+            factualizacion = "",
             destacado = false,
             hidden = false
         ),
@@ -191,7 +191,7 @@ fun PreviewArticleList() {
             pcosto = 8.75f,
             pvp = 13.50f,
             stock = 75,
-            factualizacion = Date(),
+            factualizacion = "",
             destacado = true,
             hidden = false
         )
