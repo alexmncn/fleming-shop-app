@@ -153,7 +153,7 @@ fun BarcodeScannerScreen(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val apiClient = ApiClient.provideOkHttpClient(context)
+    val apiClient = ApiClient.provideOkHttpClient()
     val articleRepository: ArticleRepository by lazy { ArticleRepository(ApiService(apiClient)) }
     val scanDelay = 250L // Intervalo de tiempo en milisegundos en el que se escanea una nueva imagen
 
@@ -262,7 +262,7 @@ fun BarcodeScannerScreen(
         },
         modifier = Modifier
             .fillMaxSize(),
-        update = { previewView -> // En un AndroidView se debe utilizar esta sección para reflejar los cambios de la UI
+        update = {   // En un AndroidView se debe utilizar esta sección para reflejar los cambios de la UI
             // Usar la referencia de la cámara almacenada en la variable `camera` para actualizar la configuración
             camera?.let {
                 it.cameraControl.enableTorch(isFlashEnabled)

@@ -71,7 +71,6 @@ class ArticleRepository(private val apiService: ApiService) {
         val response = apiService.getFeaturedArticlesTotal()
         if (response != null && response.isSuccessful) {
             val responseData = response.body?.string()
-            Log.d("articles", responseData.toString())
             return JsonParser.parseString(responseData).asJsonObject.get("total").asInt
         } else {
             throw Exception("Failed to fetch total number of featured articles")

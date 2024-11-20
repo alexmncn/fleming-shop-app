@@ -20,7 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class NewArticlesActivity : AppCompatActivity() {
-    private val apiClient = ApiClient.provideOkHttpClient(this)
+    private val apiClient = ApiClient.provideOkHttpClient()
     private val articleRepository: ArticleRepository by lazy { ArticleRepository(ApiService(apiClient)) }
 
     var currentPage = 1

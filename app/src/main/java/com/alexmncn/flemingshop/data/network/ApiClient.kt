@@ -4,9 +4,9 @@ import android.content.Context
 import okhttp3.OkHttpClient
 
 object ApiClient {
-    fun provideOkHttpClient(context: Context): OkHttpClient {
+    fun provideOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor { AuthManager.getToken(context) })
+            .addInterceptor(AuthInterceptor { AuthManager.getToken() })
             .build()
     }
 }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.alexmncn.flemingshop.data.network.AuthManager
 
 import com.alexmncn.flemingshop.ui.components.MainTopBar
 import com.alexmncn.flemingshop.ui.theme.FlemingShopTheme
@@ -26,6 +28,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide() // Hide default topbar with app name
+
+        AuthManager.initialize(this)
+        Log.d("MainActivity", "Username: ${AuthManager.getUsername()}")
 
         setContent {
             MainScreen()
