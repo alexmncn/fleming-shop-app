@@ -41,6 +41,7 @@ import android.content.pm.PackageManager
 import android.content.res.Resources.Theme
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.Camera
@@ -292,18 +293,20 @@ fun BarcodeScannerScreen(
                 val rectWidth = size.width - rectPadding * 2
                 val rectHeight = size.height - rectPadding * 2
 
-                // Fondo negro semitransparente
-                drawRect(
-                    color = Color.Black.copy(alpha = 0.3f)
-                )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    // Fondo negro semitransparente
+                    drawRect(
+                        color = Color.Black.copy(alpha = 0.3f)
+                    )
 
-                // Área recortada transparente
-                drawRect(
-                    color = Color.Transparent,
-                    topLeft = Offset(rectPadding, rectPadding),
-                    size = Size(rectWidth, rectHeight),
-                    blendMode = BlendMode.Clear
-                )
+                    // Área recortada transparente
+                    drawRect(
+                        color = Color.Transparent,
+                        topLeft = Offset(rectPadding, rectPadding),
+                        size = Size(rectWidth, rectHeight),
+                        blendMode = BlendMode.Clear
+                    )
+                }
 
                 // Borde blanco alrededor del área transparente
                 drawRect(

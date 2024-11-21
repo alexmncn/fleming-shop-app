@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.alexmncn.flemingshop"
-        minSdk = 28
+        minSdk = 22
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
