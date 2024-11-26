@@ -17,7 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.alexmncn.flemingshop.ui.main.CodebarScannerActivity
 import com.alexmncn.flemingshop.ui.main.FeaturedArticlesActivity
-import com.alexmncn.flemingshop.ui.main.MainActivity
+import com.alexmncn.flemingshop.ui.main.HomeActivity
 import com.alexmncn.flemingshop.ui.main.NewArticlesActivity
 
 @Composable
@@ -36,13 +36,13 @@ fun MainBottomBar() {
         NavigationBarItem(
             selected = false,
             onClick = {
-                val intent = Intent(context, MainActivity::class.java)
+                val intent = Intent(context, HomeActivity::class.java)
                 context.startActivity(intent)
             },
             icon = {
                 Icon(
                     imageVector = Icons.Default.Home,
-                    contentDescription = "Home",
+                    contentDescription = "Inicio",
                     tint = Color.White
                 )
             },

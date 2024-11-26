@@ -1,6 +1,5 @@
 package com.alexmncn.flemingshop.ui.main
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -24,7 +23,7 @@ import com.alexmncn.flemingshop.data.network.AuthManager
 import com.alexmncn.flemingshop.ui.components.MainTopBar
 import com.alexmncn.flemingshop.ui.theme.FlemingShopTheme
 
-class MainActivity : AppCompatActivity() {
+class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide() // Hide default topbar with app name
@@ -75,6 +74,19 @@ fun MainScreen() {
                             .fillMaxWidth()
                     ) {
                         Text(text = "New Articles")
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // Families
+                    Button(
+                        onClick = {
+                            val intent = Intent(context, FamiliesActivity::class.java)
+                            context.startActivity(intent)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Text(text = "Families")
                     }
                     Spacer(modifier = Modifier.height(10.dp))
 
