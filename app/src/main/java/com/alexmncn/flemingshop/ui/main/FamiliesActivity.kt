@@ -46,6 +46,8 @@ import com.alexmncn.flemingshop.data.network.ApiClient
 import com.alexmncn.flemingshop.data.network.ApiService
 import com.alexmncn.flemingshop.data.repository.ArticleRepository
 import com.alexmncn.flemingshop.ui.components.ArticleCard
+import com.alexmncn.flemingshop.ui.components.FamilyCard
+import com.alexmncn.flemingshop.ui.components.FamilyList
 import com.alexmncn.flemingshop.ui.components.MainBottomBar
 import com.alexmncn.flemingshop.ui.components.MainTopBar
 import com.alexmncn.flemingshop.ui.theme.FlemingShopTheme
@@ -102,50 +104,5 @@ fun FamiliesScreen(families: List<Family>) {
             },
             bottomBar = { MainBottomBar() }
         )
-    }
-}
-
-@Composable
-fun FamilyList(families: List<Family>) {
-    val scrollState = rememberScrollState()  // Estado de desplazamiento general
-    val screenHeight = LocalConfiguration.current.screenHeightDp.dp  // Altura de la pantalla
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-            .padding(vertical = 10.dp)
-    ) {
-        // Encabezado
-        Text(text = "Familias", style = MaterialTheme.typography.titleMedium)
-        Spacer(modifier = Modifier.height(10.dp))
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier.heightIn(max = screenHeight) // Limita el alto del grid para que el scroll no cause errores
-        ) {
-            items(families.size) { index ->
-                FamilyCard(family = families[index])
-            }
-        }
-    }
-}
-
-@Composable
-fun FamilyCard(family: Family) {
-
-    Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        modifier = Modifier
-            .padding(top = 2.dp, bottom = 4.dp) // Safe zone for card shadow
-            .fillMaxWidth()
-            .clickable {
-
-            },
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
-        Text(text = family.nomfam, modifier = Modifier.padding(10.dp))
     }
 }
