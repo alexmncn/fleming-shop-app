@@ -68,7 +68,7 @@ fun DetailArticleScreen(article: Article) {
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
                             text = article.pvp.toString() + " €",
-                            style = MaterialTheme.typography.titleMedium,
+                            style = MaterialTheme.typography.titleLarge,
                             color = Color.Black,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier

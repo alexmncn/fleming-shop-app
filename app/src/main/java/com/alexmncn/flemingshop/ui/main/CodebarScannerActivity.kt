@@ -154,7 +154,7 @@ fun BarcodeScannerScreen(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val apiClient = ApiClient.provideOkHttpClient()
+    val apiClient = ApiClient.provideOkHttpClient(context)
     val articleRepository: ArticleRepository by lazy { ArticleRepository(ApiService(apiClient)) }
     val scanDelay = 250L // Intervalo de tiempo en milisegundos en el que se escanea una nueva imagen
 

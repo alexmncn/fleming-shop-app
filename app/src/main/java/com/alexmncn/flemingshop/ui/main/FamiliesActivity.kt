@@ -54,7 +54,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class FamiliesActivity : AppCompatActivity() {
-    private val apiClient = ApiClient.provideOkHttpClient()
+    private val apiClient = ApiClient.provideOkHttpClient(this)
     private val articleRepository: ArticleRepository by lazy { ArticleRepository(ApiService(apiClient)) }
 
     override fun onCreate(savedInstanceState: Bundle?) {

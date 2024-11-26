@@ -40,7 +40,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class UserPanelActivity : AppCompatActivity() {
-    private val client = ApiClient.provideOkHttpClient()
+    private val client = ApiClient.provideOkHttpClient(this)
     private val apiService = ApiService(client)
     private val articleRepository: ArticleRepository by lazy { ArticleRepository(apiService) }
 

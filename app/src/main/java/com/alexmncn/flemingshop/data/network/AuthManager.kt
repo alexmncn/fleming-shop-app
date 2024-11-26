@@ -1,7 +1,6 @@
 package com.alexmncn.flemingshop.data.network
 
 import android.content.Context
-import android.util.Log
 import android.util.Base64
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
