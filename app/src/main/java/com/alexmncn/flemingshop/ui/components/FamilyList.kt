@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.alexmncn.flemingshop.data.model.Family
 
 @Composable
-fun FamilyList(families: List<Family>) {
+fun FamilyList(families: List<Family>, onShowFamily: (codfam: Int, nomfam: String) -> Unit) {
     val scrollState = rememberScrollState()  // Estado de desplazamiento general
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp  // Altura de la pantalla
 
@@ -41,7 +41,10 @@ fun FamilyList(families: List<Family>) {
             modifier = Modifier.heightIn(max = screenHeight) // Limita el alto del grid para que el scroll no cause errores
         ) {
             items(families.size) { index ->
-                FamilyCard(family = families[index])
+                FamilyCard(
+                    family = families[index],
+                    onShowFamily = { codfam, nomfam -> onShowFamily(codfam, nomfam) }
+                )
             }
         }
     }

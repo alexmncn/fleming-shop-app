@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.barcode.scanning)
+    implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

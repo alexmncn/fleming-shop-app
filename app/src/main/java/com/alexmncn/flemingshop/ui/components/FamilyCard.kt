@@ -13,16 +13,14 @@ import androidx.compose.ui.unit.dp
 import com.alexmncn.flemingshop.data.model.Family
 
 @Composable
-fun FamilyCard(family: Family) {
+fun FamilyCard(family: Family, onShowFamily: (codfam: Int, nomfam: String) -> Unit) {
 
     Card(
         colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = Modifier
             .padding(top = 2.dp, bottom = 4.dp) // Safe zone for card shadow
             .fillMaxWidth()
-            .clickable {
-
-            },
+            .clickable { onShowFamily(family.codfam, family.nomfam) },
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Text(text = family.nomfam, modifier = Modifier.padding(10.dp))

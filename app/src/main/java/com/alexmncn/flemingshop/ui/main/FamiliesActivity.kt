@@ -1,30 +1,12 @@
 package com.alexmncn.flemingshop.ui.main
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,23 +15,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.alexmncn.flemingshop.R
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.alexmncn.flemingshop.data.model.Article
 import com.alexmncn.flemingshop.data.model.Family
 import com.alexmncn.flemingshop.data.network.ApiClient
 import com.alexmncn.flemingshop.data.network.ApiService
 import com.alexmncn.flemingshop.data.repository.ArticleRepository
-import com.alexmncn.flemingshop.ui.components.ArticleCard
-import com.alexmncn.flemingshop.ui.components.FamilyCard
 import com.alexmncn.flemingshop.ui.components.FamilyList
 import com.alexmncn.flemingshop.ui.components.MainBottomBar
 import com.alexmncn.flemingshop.ui.components.MainTopBar
+import com.alexmncn.flemingshop.ui.screens.shared.SimpleArticlesScreen
 import com.alexmncn.flemingshop.ui.theme.FlemingShopTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -80,14 +61,41 @@ class FamiliesActivity : AppCompatActivity() {
                 loadFamilies()
             }
 
-            FamiliesScreen(families = families)
+            // Navegador entre componentes en la misma activity
+            val navController = rememberNavController()
+
+            NavHost(
+                navController = navController,
+                startDestination = "families"
+            ) {
+                composable("families") {
+                    FamiliesScreen(
+                        families = families,
+                        onShowFamily = { codfam, nomfam ->
+                            navController.navigate("family_articles/$codfam/$nomfam")
+                        }
+                    )
+                }
+                composable(
+                    route = "family_articles/{codfam}/{nomfam}",
+                    arguments = listOf(
+                        navArgument("codfam") { type = NavType.IntType },
+                        navArgument("nomfam") { type = NavType.StringType }
+                    )
+                ) { backStackEntry ->
+                    val codfam = backStackEntry.arguments?.getInt("codfam") ?: 0
+                    val nomfam = backStackEntry.arguments?.getString("nomfam") ?: ""
+
+                    FamilyArticlesScreen(codfam, nomfam)
+                }
+            }
         }
     }
 }
 
 
 @Composable
-fun FamiliesScreen(families: List<Family>) {
+fun FamiliesScreen(families: List<Family>, onShowFamily: (codfam: Int, nomfam: String) -> Unit) {
     FlemingShopTheme {
         Scaffold(
             topBar = { MainTopBar() },
@@ -98,11 +106,49 @@ fun FamiliesScreen(families: List<Family>) {
                         .padding(horizontal = 10.dp) // Horizontal margin for the content only
                 ) {
                     FamilyList(
-                        families = families
+                        families = families,
+                        onShowFamily = { codfam, nomfam -> onShowFamily(codfam, nomfam)}
                     )
                 }
             },
             bottomBar = { MainBottomBar() }
         )
     }
+}
+
+@Composable
+fun FamilyArticlesScreen(codfam: Int, nomfam: String) {
+    val context = LocalContext.current
+    val apiClient = ApiClient.provideOkHttpClient(context)
+    val articleRepository: ArticleRepository by lazy { ArticleRepository(ApiService(apiClient)) }
+
+    var familyArticles by remember { mutableStateOf<List<Article>>(emptyList()) }
+    var familyArticlesTotal by remember { mutableIntStateOf(0) }
+    var currentPage by remember { mutableIntStateOf(1) }
+
+    // Funcion para cargar articulos, por pagina
+    fun loadFamilyArticles() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                familyArticlesTotal = articleRepository.getFamilyArticlesTotal(codfam)
+                val articles = articleRepository.getFamilyArticles(familyId = codfam, page = currentPage)
+                familyArticles = familyArticles + articles
+                currentPage++
+            } catch (e: Exception) {
+                Log.e("error", e.toString())
+            }
+        }
+    }
+
+    // Llama a la función de actualización cuando se crea la actividad
+    LaunchedEffect(Unit) {
+        loadFamilyArticles()
+    }
+
+    SimpleArticlesScreen(
+        articles = familyArticles,
+        total = familyArticlesTotal,
+        listName = nomfam,
+        onShowMore = { loadFamilyArticles() }
+    )
 }
