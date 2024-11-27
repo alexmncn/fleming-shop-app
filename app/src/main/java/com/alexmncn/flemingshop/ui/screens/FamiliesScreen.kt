@@ -123,11 +123,16 @@ fun FamilyArticlesScreen(codfam: Int, nomfam: String, navController: NavControll
         loadFamilyArticles()
     }
 
-    ArticleList (
-        articles = familyArticles,
-        total = familyArticlesTotal,
-        listName = nomfam,
-        onShowMore = { loadFamilyArticles() },
-        navController = navController
-    )
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 10.dp) // Horizontal margin for the content only
+    ) {
+        ArticleList(
+            articles = familyArticles,
+            total = familyArticlesTotal,
+            listName = nomfam,
+            onShowMore = { loadFamilyArticles() },
+            navController = navController
+        )
+    }
 }
