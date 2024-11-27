@@ -34,7 +34,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun DetailArticleScreen(codebar: Int) {
+fun DetailArticleScreen(codebar: String) {
     val context = LocalContext.current
     val apiClient = ApiClient.provideOkHttpClient(context)
     val articleRepository: ArticleRepository by lazy { ArticleRepository(ApiService(apiClient)) }
@@ -46,7 +46,7 @@ fun DetailArticleScreen(codebar: Int) {
     fun loadFeaturedArticles() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                article = articleRepository.getSearchArticles(search = codebar.toString(), filter = "codebar")[0]
+                article = articleRepository.getSearchArticles(search = codebar, filter = "codebar")[0]
             } catch (e: Exception) {
                 Log.e("error", e.toString())
             }

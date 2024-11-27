@@ -60,9 +60,9 @@ fun FlemingShopApp() {
                     composable("families") { FamiliesScreen(navController) }
                     composable("barcode_scanner") { BarcodeScannerScreen(navController) }
                     composable("article_detail/{codebar}",
-                        arguments = listOf(navArgument("codebar") { type = NavType.IntType })
+                        arguments = listOf(navArgument("codebar") { type = NavType.StringType })
                     ) {
-                        val codebar = it.arguments?.getInt("codebar") ?: 0
+                        val codebar = it.arguments?.getString("codebar") ?: ""
                         DetailArticleScreen(codebar)
                     }
                 }
