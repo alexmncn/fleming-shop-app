@@ -55,6 +55,19 @@ fun HomeScreen(navController: NavController) {
         }
         Spacer(modifier = Modifier.height(10.dp))
 
+        // Search Articles
+        Button(
+            onClick = {
+                navController.navigate("search_articles")
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Text(text = "Search Articles")
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+
+
         // Codebar Reader
         Button(
             onClick = {

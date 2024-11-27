@@ -3,9 +3,12 @@ package com.alexmncn.flemingshop.ui.components
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.FiberNew
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -109,12 +112,12 @@ fun MainBottomBar(navController: NavController) {
             }
         )
 
-        // Escáner
+        // Familias
         NavigationBarItem(
-            selected = currentRoute == "barcode_scanner",
+            selected = currentRoute == "families",
             onClick = {
-                if (currentRoute != "barcode_scanner") {
-                    navController.navigate("barcode_scanner") {
+                if (currentRoute != "families") {
+                    navController.navigate("families") {
                         popUpTo(navController.graph.startDestinationId) { saveState = true }
                         launchSingleTop = true
                         restoreState = true
@@ -123,14 +126,42 @@ fun MainBottomBar(navController: NavController) {
             },
             icon = {
                 Icon(
-                    imageVector = Icons.Default.QrCodeScanner,
-                    contentDescription = "Escaner de códigos de barras",
+                    imageVector = Icons.AutoMirrored.Filled.List,
+                    contentDescription = "Familias",
                     tint = Color.White
                 )
             },
             label = {
                 Text(
-                    text = "Escaner",
+                    text = "Familias",
+                    color = Color.White,
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
+        )
+
+        // Busqueda
+        NavigationBarItem(
+            selected = currentRoute == "search_articles",
+            onClick = {
+                if (currentRoute != "search_articles") {
+                    navController.navigate("search_articles") {
+                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Búsqueda",
+                    tint = Color.White
+                )
+            },
+            label = {
+                Text(
+                    text = "Búsqueda",
                     color = Color.White,
                     style = MaterialTheme.typography.labelSmall
                 )

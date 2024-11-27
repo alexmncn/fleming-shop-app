@@ -21,6 +21,7 @@ import com.alexmncn.flemingshop.ui.screens.FeaturedArticlesScreen
 import com.alexmncn.flemingshop.ui.screens.HomeScreen
 import com.alexmncn.flemingshop.ui.screens.LoginScreen
 import com.alexmncn.flemingshop.ui.screens.NewArticlesScreen
+import com.alexmncn.flemingshop.ui.screens.SearchArticlesScreen
 import com.alexmncn.flemingshop.ui.screens.UserPanelScreen
 import com.alexmncn.flemingshop.ui.screens.shared.DetailArticleScreen
 import com.alexmncn.flemingshop.ui.theme.FlemingShopTheme
@@ -58,6 +59,7 @@ fun FlemingShopApp() {
                     composable("featured_articles") { FeaturedArticlesScreen(navController) }
                     composable("new_articles") { NewArticlesScreen(navController) }
                     composable("families") { FamiliesScreen(navController) }
+                    composable("search_articles") { SearchArticlesScreen(navController) }
                     composable("barcode_scanner") { BarcodeScannerScreen(navController) }
                     composable("article_detail/{codebar}",
                         arguments = listOf(navArgument("codebar") { type = NavType.StringType })
