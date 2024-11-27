@@ -59,7 +59,7 @@ fun FlemingShopApp() {
                     composable("new_articles") { NewArticlesScreen(navController) }
                     composable("families") { FamiliesScreen(navController) }
                     composable("barcode_scanner") { BarcodeScannerScreen(navController) }
-                    composable("detail_article/{codebar}",
+                    composable("article_detail/{codebar}",
                         arguments = listOf(navArgument("codebar") { type = NavType.IntType })
                     ) {
                         val codebar = it.arguments?.getInt("codebar") ?: 0
