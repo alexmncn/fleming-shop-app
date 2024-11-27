@@ -1,21 +1,28 @@
 package com.alexmncn.flemingshop.ui.components
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,25 +30,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
+import androidx.navigation.NavController
 import com.alexmncn.flemingshop.data.model.Article
-import com.alexmncn.flemingshop.utils.Constans
 import java.math.BigInteger
-import java.util.Date
-import com.alexmncn.flemingshop.utils.capitalizeText
-
 
 @Composable
-fun ArticleList(total: Int, articles: List<Article>, listName: String, onShowMore: () -> Unit) {
+fun ArticleList(total: Int, articles: List<Article>, listName: String, onShowMore: () -> Unit, navController: NavController) {
     val scrollState = rememberScrollState()  // Estado de desplazamiento general
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp  // Altura de la pantalla
 
@@ -80,7 +78,10 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, onShowMor
             modifier = Modifier.heightIn(max = screenHeight) // Limita el alto del grid para que el scroll no cause errores
         ) {
             items(articles.size) { index ->
-                ArticleCard(article = articles[index])
+                ArticleCard(
+                    article = articles[index],
+                    navController = navController
+                )
             }
         }
 
@@ -128,73 +129,4 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, onShowMor
             }
         }
     }
-}
-
-
-@Preview
-@Composable
-fun PreviewArticleList() {
-    val sampleArticles = listOf(
-        Article(
-            ref = BigInteger("1000000001"),
-            codebar = BigInteger("1"),
-            detalle = "Artículo de prueba A",
-            codfam = 1,
-            pcosto = 10.50f,
-            pvp = 15.75f,
-            stock = 100,
-            factualizacion = "",
-            destacado = true,
-            hidden = false
-        ),
-        Article(
-            ref = BigInteger("1000000002"),
-            codebar = BigInteger("2"),
-            detalle = "Artículo de prueba B",
-            codfam = 2,
-            pcosto = 20.00f,
-            pvp = 30.00f,
-            stock = 50,
-            factualizacion = "",
-            destacado = false,
-            hidden = false
-        ),
-        Article(
-            ref = BigInteger("1000000003"),
-            codebar = BigInteger("3"),
-            detalle = "Artículo de prueba C",
-            codfam = 3,
-            pcosto = 5.00f,
-            pvp = 7.50f,
-            stock = 200,
-            factualizacion = "",
-            destacado = true,
-            hidden = true
-        ),
-        Article(
-            ref = BigInteger("1000000004"),
-            codebar = BigInteger("4"),
-            detalle = "Artículo de prueba D",
-            codfam = 4,
-            pcosto = 12.25f,
-            pvp = 18.99f,
-            stock = 25,
-            factualizacion = "",
-            destacado = false,
-            hidden = false
-        ),
-        Article(
-            ref = BigInteger("1000000005"),
-            codebar = BigInteger("5"),
-            detalle = "Artículo de prueba E",
-            codfam = 5,
-            pcosto = 8.75f,
-            pvp = 13.50f,
-            stock = 75,
-            factualizacion = "",
-            destacado = true,
-            hidden = false
-        )
-    )
-    ArticleList(sampleArticles.size+30, sampleArticles, "Destacado", onShowMore = {})
 }

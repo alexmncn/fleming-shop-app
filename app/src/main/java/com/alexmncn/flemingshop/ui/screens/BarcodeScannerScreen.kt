@@ -1,27 +1,51 @@
-package com.alexmncn.flemingshop.ui.main
+package com.alexmncn.flemingshop.ui.screens
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import android.Manifest
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.os.Build
 import android.util.Log
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.compose.setContent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.OptIn
+import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Slider
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FlashlightOff
+import androidx.compose.material.icons.filled.FlashlightOn
+import androidx.compose.material.icons.filled.ImageSearch
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -29,129 +53,70 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.google.mlkit.vision.barcode.BarcodeScanning
-import com.google.mlkit.vision.common.InputImage
-import android.Manifest
-import android.annotation.SuppressLint
-import android.content.pm.PackageManager
-import android.content.res.Resources.Theme
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.camera.core.Camera
-import androidx.camera.core.ImageProxy
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material.icons.filled.FlashlightOff
-import androidx.compose.material.icons.filled.FlashlightOn
-import androidx.compose.material.icons.filled.Image
-import androidx.compose.material.icons.filled.ImageSearch
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.navigation.NavController
 import com.alexmncn.flemingshop.data.model.Article
 import com.alexmncn.flemingshop.data.network.ApiClient
 import com.alexmncn.flemingshop.data.network.ApiService
 import com.alexmncn.flemingshop.data.repository.ArticleRepository
 import com.alexmncn.flemingshop.ui.components.ArticleCard
-import com.alexmncn.flemingshop.ui.components.MainBottomBar
-import com.alexmncn.flemingshop.ui.components.MainTopBar
-import com.alexmncn.flemingshop.ui.theme.Blue300
-import com.alexmncn.flemingshop.ui.theme.Blue400
-import com.alexmncn.flemingshop.ui.theme.Blue500
-import com.alexmncn.flemingshop.ui.theme.FlemingShopTheme
-import com.google.android.material.color.utilities.Scheme
+import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.common.InputImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class CodebarScannerActivity : AppCompatActivity() {
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val cameraPermissionGranted = permissions[Manifest.permission.CAMERA] ?: false
+@Composable
+fun BarcodeScannerScreen(navController: NavController) {
+    val context = LocalContext.current
+    val cameraPermissionState = remember { mutableStateOf(false) }
 
-        if (cameraPermissionGranted) {
-            // Si los permisos son concedidos, muestra la interfaz
-            setContent {
-                FlemingShopTheme {
-                    Scaffold (
-                        topBar = { MainTopBar() },
-                        content = { paddingValues -> BarcodeScannerScreen(modifier = Modifier.padding(paddingValues)) },
-                        bottomBar = { MainBottomBar() }
-                    )
-                }
-            }
-        } else {
-            Toast.makeText(this, "Permisos requeridos no concedidos", Toast.LENGTH_SHORT).show()
+    // Gestor de permisos
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        cameraPermissionState.value = isGranted
+        if (!isGranted) {
+            Toast.makeText(context, "Permiso de cámara denegado", Toast.LENGTH_SHORT).show()
         }
     }
 
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-    private fun checkPermissions() {
-        val cameraPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-
-        if (cameraPermission != PackageManager.PERMISSION_GRANTED) {
-            // Solicitar permisos si no están concedidos
-            requestPermissionLauncher.launch(
-                arrayOf(Manifest.permission.CAMERA)
-            )
+    // Verificar permisos iniciales
+    LaunchedEffect(Unit) {
+        val cameraPermission = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.CAMERA
+        )
+        if (cameraPermission == PackageManager.PERMISSION_GRANTED) {
+            cameraPermissionState.value = true
         } else {
-            // Si ya están concedidos, muestra la interfaz
-            setContent {
-                FlemingShopTheme {
-                    Scaffold (
-                        topBar = { MainTopBar() },
-                        content = { paddingValues -> BarcodeScannerScreen(modifier = Modifier.padding(paddingValues)) },
-                        bottomBar = { MainBottomBar() }
-                    )
-                }
-            }
+            permissionLauncher.launch(Manifest.permission.CAMERA)
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        supportActionBar?.hide() // Hide default topbar with app name
 
-        // Verificar permisos antes de iniciar la actividad
-        checkPermissions()
+    if (cameraPermissionState.value) {
+        BarcodeScanner(navController = navController)
+    } else {
+        PermissionDeniedView(
+            onRequestPermission = { permissionLauncher.launch(Manifest.permission.CAMERA) }
+        )
     }
 }
 
 @OptIn(ExperimentalGetImage::class)
 @Composable
-fun BarcodeScannerScreen(
-    modifier: Modifier = Modifier
-) {
+fun BarcodeScanner(modifier: Modifier = Modifier, navController: NavController) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val apiClient = ApiClient.provideOkHttpClient(context)
@@ -165,6 +130,7 @@ fun BarcodeScannerScreen(
     var scannedArticle by remember { mutableStateOf<Article?>(null) } // Artículo escaneado
     var articleVisible: Boolean by remember { mutableStateOf(false) } // Estado del articleCard (para controlar animacion)
     var lastCodebar: String by remember { mutableStateOf("") } // Ultimo codebar escaneado
+
 
     // Funcion que se llama al detectar un codigo de barras
     fun onScan(scannedCodebar: String) {
@@ -195,6 +161,31 @@ fun BarcodeScannerScreen(
         }
     }
 
+    // Función para detectar codigos de barrras de una imagen
+    fun getBarcodeFromImage(inputImage: InputImage, imageProxy: ImageProxy? = null, onScan: (String) -> Unit) {
+        val barcodeScanner = BarcodeScanning.getClient()
+        barcodeScanner.process(inputImage)
+            .addOnSuccessListener { barcodes ->
+                for (barcode in barcodes) {
+                    barcode.rawValue?.let { value ->
+                        onScan(value)
+                    }
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("BarcodeScanner", "Error al procesar la imagen: ${exception.message}")
+            }
+            .addOnCompleteListener {
+                imageProxy?.close() // Libera el recurso
+            }
+    }
+
+    // Función para procesar un Bitmap de una imagen cargada desde la galería y detectar códigos de barras
+    fun processBarcodeFromBitmap(bitmap: Bitmap, onScan: (String) -> Unit) {
+        val inputImage = InputImage.fromBitmap(bitmap, 0)
+        getBarcodeFromImage(inputImage, onScan = onScan)
+    }
+
     // Evento para eleccionar imágenes desde la galería
     val pickImageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -208,6 +199,7 @@ fun BarcodeScannerScreen(
             processBarcodeFromBitmap(bitmap, onScan = { codebar -> onScan(codebar) })
         }
     }
+
 
     // Camera preview and scanner logic
     AndroidView(
@@ -346,7 +338,10 @@ fun BarcodeScannerScreen(
                                 modifier = Modifier
                                     .width(200.dp)
                             ) {
-                                ArticleCard(article = article)
+                                ArticleCard(
+                                    article = article,
+                                    navController = navController
+                                )
                             }
                         }
                     }
@@ -357,7 +352,7 @@ fun BarcodeScannerScreen(
             if (scannedArticle == null) {
                 Text(
                     text = statusMessage,
-                        style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.titleSmall,
                     color = Color.White,
                 )
             }
@@ -400,27 +395,19 @@ fun BarcodeScannerScreen(
     }
 }
 
-// Función para procesar un Bitmap de una imagen cargada desde la galería y detectar códigos de barras
-private fun processBarcodeFromBitmap(bitmap: Bitmap, onScan: (String) -> Unit) {
-    val inputImage = InputImage.fromBitmap(bitmap, 0)
-    getBarcodeFromImage(inputImage, onScan = onScan)
-}
-
-// Función para detectar codigos de barrras de una imagen
-private fun getBarcodeFromImage(inputImage: InputImage, imageProxy: ImageProxy? = null, onScan: (String) -> Unit) {
-    val barcodeScanner = BarcodeScanning.getClient()
-    barcodeScanner.process(inputImage)
-        .addOnSuccessListener { barcodes ->
-            for (barcode in barcodes) {
-                barcode.rawValue?.let { value ->
-                    onScan(value)
-                }
-            }
+@Composable
+fun PermissionDeniedView(onRequestPermission: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text("Se necesita permiso de cámara para escanear códigos de barras.")
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = onRequestPermission) {
+            Text("Conceder Permiso")
         }
-        .addOnFailureListener { exception ->
-            Log.e("BarcodeScanner", "Error al procesar la imagen: ${exception.message}")
-        }
-        .addOnCompleteListener {
-            imageProxy?.close() // Libera el recurso
-        }
+    }
 }

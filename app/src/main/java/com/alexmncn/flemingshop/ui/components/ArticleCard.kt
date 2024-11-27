@@ -1,6 +1,5 @@
 package com.alexmncn.flemingshop.ui.components
 
-import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -18,17 +17,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.alexmncn.flemingshop.data.model.Article
-import com.alexmncn.flemingshop.ui.main.DetailArticleActivity
 import com.alexmncn.flemingshop.utils.Constans
 import com.alexmncn.flemingshop.utils.capitalizeText
 
 @Composable
-fun ArticleCard(article: Article) {
-    val context = LocalContext.current
+fun ArticleCard(article: Article, navController: NavController) {
     val imageUrl = Constans.IMAGES_URL + "articles/${article.codebar}.webp"
 
     Card(
@@ -37,10 +35,7 @@ fun ArticleCard(article: Article) {
             .padding(top = 2.dp, bottom = 10.dp) // Safe zone for card shadow
             .fillMaxWidth()
             .clickable {
-                val intent = Intent(context, DetailArticleActivity::class.java).apply {
-                    putExtra("codebar", article.codebar.toString())
-                }
-                context.startActivity(intent)
+                navController.navigate("article_detail/${article.codebar}")
             },
         elevation = CardDefaults.cardElevation(4.dp)
     ) {

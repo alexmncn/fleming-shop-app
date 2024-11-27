@@ -4,12 +4,21 @@ import android.content.Context
 import android.util.Base64
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 object AuthManager {
     private var token: String? = null
     private var username: String? = null
     private var expiresAt: Long? = null
 
+    private val _authState = MutableStateFlow(AuthState())
+    val authState: StateFlow<AuthState> = _authState
+
+    data class AuthState(
+        val isAuthenticated: Boolean = false,
+        val username: String? = null
+    )
 
     // Inicializa el AuthManager cargando los datos de sesión desde SharedPreferences
     fun initialize(context: Context) {
@@ -17,6 +26,8 @@ object AuthManager {
         token = sharedPreferences.getString("token", null)
         username = sharedPreferences.getString("username", null)
         expiresAt = sharedPreferences.getLong("expires_at", 0L)
+
+        _authState.value = AuthState(isAuthenticated(), username)
     }
 
     // Verifica si el usuario está autenticado
@@ -43,6 +54,8 @@ object AuthManager {
         this.token = token
         this.username = usernameFromToken
         this.expiresAt = expiresAtFromToken
+
+        _authState.value = AuthState(isAuthenticated = isAuthenticated(), username)
     }
 
     // Limpia los datos de sesión (tanto en memoria como en SharedPreferences)
@@ -55,6 +68,8 @@ object AuthManager {
         token = null
         username = null
         expiresAt = null
+
+        _authState.value = AuthState(isAuthenticated = isAuthenticated(), username = username)
     }
 
     private fun decodeJwtPayload(token: String): JsonObject? {

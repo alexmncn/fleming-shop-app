@@ -1,7 +1,5 @@
 package com.alexmncn.flemingshop.ui.components
 
-import android.app.Activity
-import android.content.Intent
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
@@ -15,29 +13,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.alexmncn.flemingshop.ui.main.CodebarScannerActivity
-import com.alexmncn.flemingshop.ui.main.FeaturedArticlesActivity
-import com.alexmncn.flemingshop.ui.main.HomeActivity
-import com.alexmncn.flemingshop.ui.main.NewArticlesActivity
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
-fun MainBottomBar() {
-    val context = LocalContext.current
-    val currentActivity = (context as? Activity)?.javaClass?.simpleName // Actividad donde nos encontramos
+fun MainBottomBar(navController: NavController) {
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
-    BottomAppBar (
-        modifier = Modifier
-            .height(60.dp),
+    BottomAppBar(
+        modifier = Modifier.height(60.dp),
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = Color.White,
         contentPadding = PaddingValues(vertical = 10.dp)
     ) {
         // Home
         NavigationBarItem(
-            selected = false,
+            selected = currentRoute == "home",
             onClick = {
-                val intent = Intent(context, HomeActivity::class.java)
-                context.startActivity(intent)
+                if (currentRoute != "home") {
+                    navController.navigate("home") {
+                        popUpTo(navController.graph.startDestinationId)
+                        launchSingleTop = true
+                    }
+                }
             },
             icon = {
                 Icon(
@@ -48,7 +46,7 @@ fun MainBottomBar() {
             },
             label = {
                 Text(
-                    text = "Home",
+                    text = "Inicio",
                     color = Color.White,
                     style = MaterialTheme.typography.labelSmall
                 )
@@ -57,10 +55,15 @@ fun MainBottomBar() {
 
         // Destacados
         NavigationBarItem(
-            selected = currentActivity == FeaturedArticlesActivity::class.java.simpleName,
+            selected = currentRoute == "featured_articles",
             onClick = {
-                val intent = Intent(context, FeaturedArticlesActivity::class.java)
-                context.startActivity(intent)
+                if (currentRoute != "featured_articles") {
+                    navController.navigate("featured_articles") {
+                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
             },
             icon = {
                 Icon(
@@ -80,10 +83,15 @@ fun MainBottomBar() {
 
         // Novedades
         NavigationBarItem(
-            selected = currentActivity == NewArticlesActivity::class.java.simpleName,
+            selected = currentRoute == "new_articles",
             onClick = {
-                val intent = Intent(context, NewArticlesActivity::class.java)
-                context.startActivity(intent)
+                if (currentRoute != "new_articles") {
+                    navController.navigate("new_articles") {
+                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
             },
             icon = {
                 Icon(
@@ -101,17 +109,22 @@ fun MainBottomBar() {
             }
         )
 
-        // Escaner
+        // Escáner
         NavigationBarItem(
-            selected = currentActivity == CodebarScannerActivity::class.java.simpleName,
+            selected = currentRoute == "barcode_scanner",
             onClick = {
-                val intent = Intent(context, CodebarScannerActivity::class.java)
-                context.startActivity(intent)
+                if (currentRoute != "barcode_scanner") {
+                    navController.navigate("barcode_scanner") {
+                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
             },
             icon = {
                 Icon(
                     imageVector = Icons.Default.QrCodeScanner,
-                    contentDescription = "Escaner de codigos de barras",
+                    contentDescription = "Escaner de códigos de barras",
                     tint = Color.White
                 )
             },
