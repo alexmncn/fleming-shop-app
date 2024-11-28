@@ -89,35 +89,29 @@ fun SearchArticlesScreen(navController: NavController) {
 
     fun loadSearchArticles() {
         if (query != lastQuery) {
-            Log.d("query", query)
-            Log.d("lastQuery", lastQuery)
             currentPage = 1
             CoroutineScope(Dispatchers.IO).launch {
                 try {
                     searchArticlesTotal = articleRepository.getSearchArticlesTotal(search = query)
                     searchArticles = articleRepository.getSearchArticles(search = query, page = currentPage)
-
                     currentPage++
-                    lastQuery = query
                 } catch (e: Exception) {
                     Log.e("error", e.toString())
+                    searchArticles = emptyList()
                 }
             }
         } else {
-            Log.d("query", query)
-            Log.d("lastQuery", lastQuery)
-            Log.d("currentPage", currentPage.toString())
             CoroutineScope(Dispatchers.IO).launch {
                 try {
                     val articles = articleRepository.getSearchArticles(search = query, page = currentPage)
                     searchArticles = searchArticles + articles
                     currentPage++
-                    lastQuery = query
                 } catch (e: Exception) {
                     Log.e("error", e.toString())
                 }
             }
         }
+        lastQuery = query
     }
 
     fun onSearch () {
@@ -135,7 +129,7 @@ fun SearchArticlesScreen(navController: NavController) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Barra de búsqueda con fondo transparente
+            // Barra de búsqueda
             SearchBar(
                 query = query,
                 onQueryChange = { query = it; onSearch() },
@@ -146,26 +140,28 @@ fun SearchArticlesScreen(navController: NavController) {
                 content = { },
                 colors = SearchBarDefaults.colors(
                     containerColor = Color.White
-                )
+                ),
+                modifier = Modifier
+                    .weight(6f)
             )
 
             Spacer(modifier = Modifier.width(10.dp))
 
-            // Icono alineado a la derecha
-            Icon(
-                imageVector = Icons.Default.QrCodeScanner,
-                contentDescription = "Escaner",
-                tint = Color.Black,
-                modifier = Modifier
-                    .size(25.dp)
-                    .clickable {
-                        navController.navigate("barcode_scanner") {
-                            popUpTo(navController.graph.startDestinationId) { saveState = true }
-                            launchSingleTop = true
-                            restoreState = false
+                Icon(
+                    imageVector = Icons.Default.QrCodeScanner,
+                    contentDescription = "Escaner",
+                    tint = Color.Black,
+                    modifier = Modifier
+                        .weight(1f)
+                        .size(25.dp)
+                        .clickable {
+                            navController.navigate("barcode_scanner") {
+                                popUpTo(navController.graph.startDestinationId) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = false
+                            }
                         }
-                    }
-            )
+                )
         }
 
         Spacer(modifier = Modifier.height(10.dp))
