@@ -45,6 +45,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -131,37 +132,40 @@ fun BarcodeScanner(modifier: Modifier = Modifier, navController: NavController) 
     var articleVisible: Boolean by remember { mutableStateOf(false) } // Estado del articleCard (para controlar animacion)
     var lastCodebar: String by remember { mutableStateOf("") } // Ultimo codebar escaneado
 
+    var isCameraInitialized by remember { mutableStateOf(false) }
+    var cameraProvider: ProcessCameraProvider? by remember { mutableStateOf(null) }
 
-    // Funcion que se llama al detectar un codigo de barras
+    DisposableEffect(Unit) {
+        onDispose {
+            cameraProvider?.unbindAll() // Libera todos los casos de uso de la cámara al salir
+            cameraProvider = null // Libera la referencia al proveedor de la cámara
+        }
+    }
+
+    // Se llama cuando se escanea un nuevo código de barras
     fun onScan(scannedCodebar: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            // Si hay un artículo cargado y el escaneado es diferente, lo oculta para mostrar este último
             if ((scannedArticle != null) && (scannedCodebar != lastCodebar)) {
-                articleVisible = false
-                delay(350) // Reservado para la animacion (300 + 50 de margen)
-                scannedArticle = null
+                articleVisible = false // Oculta el articulo para la animación
+                delay(350) // Delay para que la animación se complete
+                scannedArticle = null // Se limpia la variable del articulo
             }
 
-            // Se carga el articulo escaneado si no lo está
             if (scannedCodebar != lastCodebar) {
                 try {
-                    statusMessage = "Cargando artículo..."
-
-                    // Guarda la primera coincidencia de la lista de articles (solo deberia haber uno)
+                    statusMessage = "Cargando artículo..." // Mensaje de status
                     scannedArticle = articleRepository.getSearchArticles(search = scannedCodebar, filter = "codebar")[0]
-
-                    articleVisible = true
+                    articleVisible = true // Mostramos la articleCard cuando tenemos un nuevo articulo escaneado y cargado
                 } catch (e: Exception) {
                     Log.e("error", e.toString())
-                    statusMessage = "Articulo desconocido"
+                    statusMessage = "Articulo desconocido" // Mensaje de status
                 }
             }
-
             lastCodebar = scannedCodebar
         }
     }
 
-    // Función para detectar codigos de barrras de una imagen
+    // Obtiene código de barras desde imagen
     fun getBarcodeFromImage(inputImage: InputImage, imageProxy: ImageProxy? = null, onScan: (String) -> Unit) {
         val barcodeScanner = BarcodeScanning.getClient()
         barcodeScanner.process(inputImage)
@@ -176,17 +180,17 @@ fun BarcodeScanner(modifier: Modifier = Modifier, navController: NavController) 
                 Log.e("BarcodeScanner", "Error al procesar la imagen: ${exception.message}")
             }
             .addOnCompleteListener {
-                imageProxy?.close() // Libera el recurso
+                imageProxy?.close()
             }
     }
 
-    // Función para procesar un Bitmap de una imagen cargada desde la galería y detectar códigos de barras
+    // Extrae codigo de barras desde bitmap (para imagen de galería) usando la funcion principal
     fun processBarcodeFromBitmap(bitmap: Bitmap, onScan: (String) -> Unit) {
         val inputImage = InputImage.fromBitmap(bitmap, 0)
         getBarcodeFromImage(inputImage, onScan = onScan)
     }
 
-    // Evento para eleccionar imágenes desde la galería
+    // Seleccionar imagen de galería
     val pickImageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
@@ -194,14 +198,11 @@ fun BarcodeScanner(modifier: Modifier = Modifier, navController: NavController) 
             val inputStream = context.contentResolver.openInputStream(it)
             val bitmap = BitmapFactory.decodeStream(inputStream)
             inputStream?.close()
-
-            // Procesar la imagen seleccionada y luego llama a onScan
             processBarcodeFromBitmap(bitmap, onScan = { codebar -> onScan(codebar) })
         }
     }
 
-
-    // Camera preview and scanner logic
+    // Vista de la cámara
     AndroidView(
         factory = { context ->
             val previewView = PreviewView(context).apply {
@@ -213,56 +214,61 @@ fun BarcodeScanner(modifier: Modifier = Modifier, navController: NavController) 
 
             val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
             cameraProviderFuture.addListener({
-                val cameraProvider = cameraProviderFuture.get()
-                val analyzer = ImageAnalysis.Builder()
-                    .build()
-                    .also {
-                        var lastScanTime = 0L // Tiempo del último escaneo
+                // Controla la inicialización de la cámara (evita que se inicie más de una vez)
+                if (!isCameraInitialized) {
+                    val provider = cameraProviderFuture.get()
+                    provider.unbindAll()
+                    cameraProvider = provider
 
-                        it.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
-                            val currentTime = System.currentTimeMillis()
-
-                            // Procesa la imagen si ha pasado el intervalo deseado
-                            if (currentTime - lastScanTime >= scanDelay) {
-                                val mediaImage = imageProxy.image
-                                if (mediaImage != null) {
-                                    val inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-                                    // Llama a la funcion para obtener el codebar y luego llamar a onScan
-                                    getBarcodeFromImage(inputImage, imageProxy, onScan = { codebar -> onScan(codebar) })
+                    val analyzer = ImageAnalysis.Builder()
+                        .build()
+                        .also {
+                            var lastScanTime = 0L
+                            it.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
+                                val currentTime = System.currentTimeMillis()
+                                if (currentTime - lastScanTime >= scanDelay) {
+                                    val mediaImage = imageProxy.image
+                                    if (mediaImage != null) {
+                                        val inputImage = InputImage.fromMediaImage(
+                                            mediaImage,
+                                            imageProxy.imageInfo.rotationDegrees
+                                        )
+                                        getBarcodeFromImage(inputImage, imageProxy, onScan = { codebar -> onScan(codebar) })
+                                    }
+                                    lastScanTime = currentTime
+                                } else {
+                                    imageProxy.close()
                                 }
-                                lastScanTime = currentTime // Actualiza el tiempo del último análisis
-                            } else {
-                                imageProxy.close() // Cierra la imagen si no es tiempo de analizar
                             }
                         }
+
+                    val preview = Preview.Builder().build().also {
+                        it.surfaceProvider = previewView.surfaceProvider
                     }
 
-                val preview = Preview.Builder().build().also {
-                    it.surfaceProvider = previewView.surfaceProvider
+                    val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+                    camera = provider.bindToLifecycle(
+                        lifecycleOwner,
+                        cameraSelector,
+                        preview,
+                        analyzer
+                    )
+                    isCameraInitialized = true
                 }
-
-                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-                // Guardar la referencia de la cámara después de enlazar el flujo de trabajo
-                camera = cameraProvider.bindToLifecycle(
-                    lifecycleOwner,
-                    cameraSelector,
-                    preview,
-                    analyzer
-                )
             }, ContextCompat.getMainExecutor(context))
 
             previewView
         },
         modifier = Modifier
             .fillMaxSize(),
-        update = {   // En un AndroidView se debe utilizar esta sección para reflejar los cambios de la UI
-            // Usar la referencia de la cámara almacenada en la variable `camera` para actualizar la configuración
+        update = {
             camera?.let {
                 it.cameraControl.enableTorch(isFlashEnabled)
                 it.cameraControl.setLinearZoom(zoomLevel)
             }
         }
     )
+
 
     // Interfaz sobre la cámara
 
