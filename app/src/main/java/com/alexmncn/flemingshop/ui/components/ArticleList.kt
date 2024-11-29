@@ -40,7 +40,6 @@ import java.math.BigInteger
 
 @Composable
 fun ArticleList(total: Int, articles: List<Article>, listName: String, onShowMore: () -> Unit, navController: NavController) {
-    val scrollState = rememberScrollState()  // Estado de desplazamiento general
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp  // Altura de la pantalla
 
     // Progreso de la barra que muestra la cantidad de artículos cargados
@@ -62,7 +61,7 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, onShowMor
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(scrollState)
+            .verticalScroll(rememberScrollState())
             .padding(vertical = 10.dp)  // Margen vertical para todos los elementos sin dejar huecos en el desp.
     ) {
         // Encabezado
