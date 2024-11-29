@@ -8,6 +8,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -53,6 +57,70 @@ fun StockLabel(stock: Int, modifier: Modifier) {
             Text(
                 text = if (stock > 0) "Disponible" else "Sin stock",
                 color = Color.Black,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 3.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun FeaturedLabel(modifier: Modifier) {
+    Box(
+        modifier = modifier
+            .wrapContentSize()
+            .shadow(6.dp, shape = RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(20.dp))
+            .background(MaterialTheme.colorScheme.primary), // !!! PROVISIONAL !!!
+    ) {
+        Row (
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(top = 3.dp, bottom = 3.dp, start = 6.dp, end = 6.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Star,
+                contentDescription = "Destacado",
+                tint = Color.White,
+                modifier = Modifier.size(10.dp) // Tamaño del ícono
+            )
+
+            // Texto según el stock
+            Text(
+                text = "Destacado",
+                color = Color.White,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 3.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun HiddenLabel(modifier: Modifier) {
+    Box(
+        modifier = modifier
+            .wrapContentSize()
+            .shadow(6.dp, shape = RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(20.dp))
+            .background(color = Color(0xff424242)), // !!! PROVISIONAL !!!
+    ) {
+        Row (
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(top = 3.dp, bottom = 3.dp, start = 6.dp, end = 6.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.VisibilityOff,
+                contentDescription = "Oculto",
+                tint = Color.White,
+                modifier = Modifier.size(10.dp) // Tamaño del ícono
+            )
+
+            // Texto según el stock
+            Text(
+                text = "Oculto",
+                color = Color.White,
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(start = 3.dp)
             )

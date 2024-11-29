@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.PersonOutline
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -69,11 +70,11 @@ fun MainTopBar(navController: NavController) {
                         }
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Person,
+                        imageVector = Icons.Outlined.PersonOutline,
                         contentDescription = "User",
                         tint = Color.Black,
                         modifier = Modifier
-                            .size(20.dp)
+                            .size(17.dp)
                     )
 
                     if (authState.isAuthenticated) {
@@ -81,7 +82,7 @@ fun MainTopBar(navController: NavController) {
 
                         Text(
                             text = authState.username ?: "",
-                            style = MaterialTheme.typography.titleSmall
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     }
                 }

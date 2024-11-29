@@ -94,7 +94,7 @@ fun ArticleCard(article: Article, navController: NavController) {
                 ) {
                     Icon(
                         imageVector = Icons.Default.VisibilityOff,
-                        contentDescription = "Favorito",
+                        contentDescription = "Oculto",
                         tint = Color.White,
                         modifier = Modifier.size(15.dp) // Tamaño del ícono
                     )

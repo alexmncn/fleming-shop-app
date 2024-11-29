@@ -34,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -55,6 +56,8 @@ import com.alexmncn.flemingshop.data.network.ApiClient
 import com.alexmncn.flemingshop.data.network.ApiService
 import com.alexmncn.flemingshop.data.network.AuthManager
 import com.alexmncn.flemingshop.data.repository.ArticleRepository
+import com.alexmncn.flemingshop.ui.components.FeaturedLabel
+import com.alexmncn.flemingshop.ui.components.HiddenLabel
 import com.alexmncn.flemingshop.ui.components.StockLabel
 import com.alexmncn.flemingshop.utils.Constans
 import com.alexmncn.flemingshop.utils.capitalizeText
@@ -71,11 +74,29 @@ fun DetailArticleScreen(codebar: String) {
     var article by remember { mutableStateOf<Article?>(null) }
     val imageUrl = Constans.IMAGES_URL + "articles/${article?.codebar}.webp"
 
+    var tags by remember { mutableIntStateOf(0) }
+
+    fun checkTags(article: Article?) {
+        if (article != null) {
+            // Comprobamos las etiquetas
+            if (article.hidden) {
+                tags++
+            }
+
+            // Destacado
+            if (article.destacado) {
+                tags++
+            }
+        }
+    }
+
     // Funcion para cargar articulos, por pagina
-    fun loadFeaturedArticles() {
+    fun loadArticle() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 article = articleRepository.getSearchArticles(search = codebar, filter = "codebar")[0]
+
+                checkTags(article)
             } catch (e: Exception) {
                 Log.e("error", e.toString())
             }
@@ -84,7 +105,7 @@ fun DetailArticleScreen(codebar: String) {
 
     // Llama a la función de actualización cuando se crea la actividad
     LaunchedEffect(Unit) {
-        loadFeaturedArticles()
+        loadArticle()
     }
 
     article?.let {
@@ -104,11 +125,34 @@ fun DetailArticleScreen(codebar: String) {
                 contentScale = ContentScale.FillWidth
             )
 
+            if (tags > 0) {
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Fila de Etiquetas
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    // Oculto
+                    if (article!!.hidden) {
+                        HiddenLabel(modifier = Modifier.shadow(2.dp, shape = RoundedCornerShape(20.dp)))
+                    }
+
+                    // Destacado
+                    if (article!!.destacado) {
+                        FeaturedLabel(modifier = Modifier.shadow(2.dp, shape = RoundedCornerShape(20.dp)))
+                    }
+                }
+            }
+
             // Detalles del articulo
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                    .padding(horizontal = 12.dp, vertical = 12.dp),
             ) {
                 Text(
                     text = capitalizeText(article?.detalle),
