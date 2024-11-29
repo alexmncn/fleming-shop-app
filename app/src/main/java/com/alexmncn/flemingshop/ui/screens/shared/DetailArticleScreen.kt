@@ -245,7 +245,7 @@ fun DetailArticleScreen(codebar: String) {
                                 .fillMaxWidth()
                                 .padding(top = 5.dp, bottom = 5.dp)
                                 .shadow(4.dp, shape = RoundedCornerShape(10.dp))
-                                .clip(RoundedCornerShape(3.dp))
+                                .clip(RoundedCornerShape(10.dp))
                                 .background(Color.White)
                                 .clickable {  }
                         ) {
@@ -270,7 +270,7 @@ fun DetailArticleScreen(codebar: String) {
                                 .fillMaxWidth()
                                 .padding(top = 5.dp, bottom = 5.dp)
                                 .shadow(4.dp, shape = RoundedCornerShape(10.dp))
-                                .clip(RoundedCornerShape(3.dp))
+                                .clip(RoundedCornerShape(10.dp))
                                 .background(Color.White)
                                 .clickable {  }
                         ) {
@@ -295,7 +295,7 @@ fun DetailArticleScreen(codebar: String) {
                                 .fillMaxWidth()
                                 .padding(top = 5.dp, bottom = 5.dp)
                                 .shadow(4.dp, shape = RoundedCornerShape(10.dp))
-                                .clip(RoundedCornerShape(3.dp))
+                                .clip(RoundedCornerShape(10.dp))
                                 .background(Color.White)
                                 .clickable {  }
                         ) {

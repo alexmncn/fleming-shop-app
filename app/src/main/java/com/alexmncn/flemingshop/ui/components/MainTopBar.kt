@@ -70,7 +70,7 @@ fun MainTopBar(navController: NavController) {
                         }
                 ) {
                     Icon(
-                        imageVector = Icons.Outlined.PersonOutline,
+                        imageVector = Icons.Default.Person,
                         contentDescription = "User",
                         tint = Color.Black,
                         modifier = Modifier
