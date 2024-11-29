@@ -3,6 +3,7 @@ package com.alexmncn.flemingshop.ui.screens.shared
 import android.util.Log
 import android.widget.LinearLayout
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -198,8 +199,8 @@ fun DetailArticleScreen(codebar: String) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 10.dp, bottom = 10.dp)
-                                .shadow(4.dp, shape = RoundedCornerShape(3.dp))
+                                .padding(top = 5.dp, bottom = 5.dp)
+                                .shadow(4.dp, shape = RoundedCornerShape(10.dp))
                                 .clip(RoundedCornerShape(3.dp))
                                 .background(Color.White)
                                 .clickable {  }
@@ -214,7 +215,6 @@ fun DetailArticleScreen(codebar: String) {
                                 Text(
                                     text = if (article!!.destacado) "Destacado" else "Destacar",
                                     style = MaterialTheme.typography.bodyLarge,
-                                    fontWeight = FontWeight.Normal,
                                 )
 
                                 Checkbox(checked = article!!.destacado, onCheckedChange = {}, modifier = Modifier.size(20.dp))
@@ -224,8 +224,8 @@ fun DetailArticleScreen(codebar: String) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 10.dp, bottom = 10.dp)
-                                .shadow(4.dp, shape = RoundedCornerShape(3.dp))
+                                .padding(top = 5.dp, bottom = 5.dp)
+                                .shadow(4.dp, shape = RoundedCornerShape(10.dp))
                                 .clip(RoundedCornerShape(3.dp))
                                 .background(Color.White)
                                 .clickable {  }
@@ -240,7 +240,6 @@ fun DetailArticleScreen(codebar: String) {
                                 Text(
                                     text = if (article!!.hidden) "Oculto" else "Ocultar",
                                     style = MaterialTheme.typography.bodyLarge,
-                                    fontWeight = FontWeight.Normal,
                                 )
 
                                 Checkbox(checked = article!!.hidden, onCheckedChange = {}, modifier = Modifier.size(20.dp))
@@ -250,8 +249,8 @@ fun DetailArticleScreen(codebar: String) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 10.dp, bottom = 10.dp)
-                                .shadow(4.dp, shape = RoundedCornerShape(3.dp))
+                                .padding(top = 5.dp, bottom = 5.dp)
+                                .shadow(4.dp, shape = RoundedCornerShape(10.dp))
                                 .clip(RoundedCornerShape(3.dp))
                                 .background(Color.White)
                                 .clickable {  }
@@ -266,7 +265,6 @@ fun DetailArticleScreen(codebar: String) {
                                 Text(
                                     text = "Subir imagen",
                                     style = MaterialTheme.typography.bodyLarge,
-                                    fontWeight = FontWeight.Normal,
                                 )
 
                                 Icon(
