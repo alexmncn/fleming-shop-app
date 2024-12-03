@@ -25,10 +25,11 @@ class ApiService(private val client: OkHttpClient) {
         }
     }
 
-    private fun makePostRequest(route: String, body: RequestBody): Response? {
+    private fun makePostRequest(route: String, body: RequestBody? = null): Response? {
         return try {
+            val emptyBody = ByteArray(0).toRequestBody(null, 0) // Cuerpo vacío
             val request = Request.Builder()
-                .post(body)
+                .post(body?: emptyBody)
                 .url(Constans.BASE_URL+route)
                 .build()
 
@@ -111,8 +112,28 @@ class ApiService(private val client: OkHttpClient) {
 
     fun logout(): Response? {
         val route = "logout"
-        val body = ByteArray(0).toRequestBody(null, 0) // Empty body
+        return makePostRequest(route)
+    }
 
-        return makePostRequest(route, body)
+
+    // Admin actions routes
+    fun featureArticle(codebar: String, featured: Boolean = true): Response? {
+        val route = "articles/feature?codebar=$codebar&featured=$featured"
+        return makePostRequest(route)
+    }
+
+    fun hideArticle(codebar: String, hidden: Boolean = true): Response? {
+        val route = "articles/hide?codebar=$codebar&hidden=$hidden"
+        return makePostRequest(route)
+    }
+
+    fun hideFamily(codfam: String, hidden: Boolean, recursive: Boolean = true): Response? {
+        val route = "articles/feature?codebar=$codfam&hidden=$hidden&recursive=$recursive"
+        return makePostRequest(route)
+    }
+
+    fun hideFamilyArticles(codfam: String, hidden: Boolean = true): Response? {
+        val route = "articles/hide?codebar=$codfam&hidden=$hidden"
+        return makePostRequest(route)
     }
 }
