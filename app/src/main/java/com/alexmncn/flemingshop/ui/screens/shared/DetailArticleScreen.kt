@@ -1,9 +1,7 @@
 package com.alexmncn.flemingshop.ui.screens.shared
 
 import android.util.Log
-import android.widget.LinearLayout
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,18 +13,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material.icons.outlined.FileUpload
-import androidx.compose.material.icons.outlined.Upload
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -43,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.PathNode
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -55,7 +47,7 @@ import com.alexmncn.flemingshop.data.model.Article
 import com.alexmncn.flemingshop.data.network.ApiClient
 import com.alexmncn.flemingshop.data.network.ApiService
 import com.alexmncn.flemingshop.data.network.AuthManager
-import com.alexmncn.flemingshop.data.repository.ArticleRepository
+import com.alexmncn.flemingshop.data.repository.CatalogRepository
 import com.alexmncn.flemingshop.ui.components.FeaturedLabel
 import com.alexmncn.flemingshop.ui.components.HiddenLabel
 import com.alexmncn.flemingshop.ui.components.StockLabel
@@ -69,7 +61,7 @@ import kotlinx.coroutines.launch
 fun DetailArticleScreen(codebar: String) {
     val context = LocalContext.current
     val apiClient = ApiClient.provideOkHttpClient(context)
-    val articleRepository: ArticleRepository by lazy { ArticleRepository(ApiService(apiClient)) }
+    val catalogRepository: CatalogRepository by lazy { CatalogRepository(ApiService(apiClient)) }
 
     var article by remember { mutableStateOf<Article?>(null) }
     val imageUrl = Constans.IMAGES_URL + "articles/${article?.codebar}.webp"
@@ -94,7 +86,7 @@ fun DetailArticleScreen(codebar: String) {
     fun loadArticle() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                article = articleRepository.getSearchArticles(search = codebar, filter = "codebar")[0]
+                article = catalogRepository.getSearchArticles(search = codebar, filter = "codebar")[0]
 
                 checkTags(article)
             } catch (e: Exception) {

@@ -1,7 +1,6 @@
 package com.alexmncn.flemingshop.ui.screens
 
 import android.content.Context
-import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -12,12 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -25,7 +18,7 @@ import androidx.navigation.NavController
 import com.alexmncn.flemingshop.data.network.ApiClient
 import com.alexmncn.flemingshop.data.network.ApiService
 import com.alexmncn.flemingshop.data.network.AuthManager
-import com.alexmncn.flemingshop.data.repository.ArticleRepository
+import com.alexmncn.flemingshop.data.repository.AuthRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,12 +28,12 @@ import kotlinx.coroutines.withContext
 fun UserPanelScreen(navController: NavController) {
     val context = LocalContext.current
     val apiClient = ApiClient.provideOkHttpClient(context)
-    val articleRepository: ArticleRepository by lazy { ArticleRepository(ApiService(apiClient)) }
+    val authRepository: AuthRepository by lazy { AuthRepository(ApiService(apiClient)) }
 
-    fun logout(context: Context, articleRepository: ArticleRepository) {
+    fun logout() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = articleRepository.logout()
+                val response = authRepository.logout()
                 AuthManager.clearSession(context)
 
                 withContext(Dispatchers.Main) {
@@ -63,7 +56,7 @@ fun UserPanelScreen(navController: NavController) {
     ) {
         Button(
             onClick = {
-                logout(context, articleRepository)
+                logout()
             },
             modifier = Modifier.fillMaxWidth()
         ) {

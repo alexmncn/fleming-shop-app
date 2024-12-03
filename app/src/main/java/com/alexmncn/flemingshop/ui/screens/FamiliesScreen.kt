@@ -23,7 +23,7 @@ import com.alexmncn.flemingshop.data.model.Article
 import com.alexmncn.flemingshop.data.model.Family
 import com.alexmncn.flemingshop.data.network.ApiClient
 import com.alexmncn.flemingshop.data.network.ApiService
-import com.alexmncn.flemingshop.data.repository.ArticleRepository
+import com.alexmncn.flemingshop.data.repository.CatalogRepository
 import com.alexmncn.flemingshop.ui.components.ArticleList
 import com.alexmncn.flemingshop.ui.components.FamilyList
 import kotlinx.coroutines.CoroutineScope
@@ -66,13 +66,13 @@ fun FamiliesScreen(navController: NavController) {
 fun FamilyListScreen(onShowFamily: (codfam: Int, nomfam: String) -> Unit) {
     val context = LocalContext.current
     val apiClient = ApiClient.provideOkHttpClient(context)
-    val articleRepository: ArticleRepository by lazy { ArticleRepository(ApiService(apiClient)) }
+    val catalogRepository: CatalogRepository by lazy { CatalogRepository(ApiService(apiClient)) }
     var families by remember { mutableStateOf<List<Family>>(emptyList()) }
 
     fun loadFamilies() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                families = articleRepository.getFamilies()
+                families = catalogRepository.getFamilies()
             } catch (e: Exception) {
                 Log.e("error", e.toString())
             }
@@ -98,7 +98,7 @@ fun FamilyListScreen(onShowFamily: (codfam: Int, nomfam: String) -> Unit) {
 fun FamilyArticlesScreen(codfam: Int, nomfam: String, navController: NavController) {
     val context = LocalContext.current
     val apiClient = ApiClient.provideOkHttpClient(context)
-    val articleRepository: ArticleRepository by lazy { ArticleRepository(ApiService(apiClient)) }
+    val catalogRepository: CatalogRepository by lazy { CatalogRepository(ApiService(apiClient)) }
 
     var familyArticles by remember { mutableStateOf<List<Article>>(emptyList()) }
     var familyArticlesTotal by remember { mutableIntStateOf(0) }
@@ -108,8 +108,8 @@ fun FamilyArticlesScreen(codfam: Int, nomfam: String, navController: NavControll
     fun loadFamilyArticles() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                familyArticlesTotal = articleRepository.getFamilyArticlesTotal(codfam)
-                val articles = articleRepository.getFamilyArticles(familyId = codfam, page = currentPage)
+                familyArticlesTotal = catalogRepository.getFamilyArticlesTotal(codfam)
+                val articles = catalogRepository.getFamilyArticles(familyId = codfam, page = currentPage)
                 familyArticles = familyArticles + articles
                 currentPage++
             } catch (e: Exception) {

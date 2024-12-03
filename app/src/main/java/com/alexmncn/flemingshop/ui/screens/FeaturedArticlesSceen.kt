@@ -17,7 +17,7 @@ import androidx.navigation.NavController
 import com.alexmncn.flemingshop.data.model.Article
 import com.alexmncn.flemingshop.data.network.ApiClient
 import com.alexmncn.flemingshop.data.network.ApiService
-import com.alexmncn.flemingshop.data.repository.ArticleRepository
+import com.alexmncn.flemingshop.data.repository.CatalogRepository
 import com.alexmncn.flemingshop.ui.components.ArticleList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 fun FeaturedArticlesScreen(navController: NavController) {
     val context = LocalContext.current
     val apiClient = ApiClient.provideOkHttpClient(context)
-    val articleRepository: ArticleRepository by lazy { ArticleRepository(ApiService(apiClient)) }
+    val catalogRepository: CatalogRepository by lazy { CatalogRepository(ApiService(apiClient)) }
 
     val featuredAListName = "Destacado"
     var featuredArticles by remember { mutableStateOf<List<Article>>(emptyList()) }
@@ -38,8 +38,8 @@ fun FeaturedArticlesScreen(navController: NavController) {
     fun loadFeaturedArticles() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                featuredArticlesTotal = articleRepository.getFeaturedArticlesTotal()
-                val articles = articleRepository.getFeaturedArticles(page=currentPage)
+                featuredArticlesTotal = catalogRepository.getFeaturedArticlesTotal()
+                val articles = catalogRepository.getFeaturedArticles(page=currentPage)
                 featuredArticles = featuredArticles + articles
                 currentPage++
             } catch (e: Exception) {

@@ -68,7 +68,7 @@ import androidx.navigation.NavController
 import com.alexmncn.flemingshop.data.model.Article
 import com.alexmncn.flemingshop.data.network.ApiClient
 import com.alexmncn.flemingshop.data.network.ApiService
-import com.alexmncn.flemingshop.data.repository.ArticleRepository
+import com.alexmncn.flemingshop.data.repository.CatalogRepository
 import com.alexmncn.flemingshop.ui.components.ArticleCard
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
@@ -121,7 +121,7 @@ fun BarcodeScanner(modifier: Modifier = Modifier, navController: NavController) 
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val apiClient = ApiClient.provideOkHttpClient(context)
-    val articleRepository: ArticleRepository by lazy { ArticleRepository(ApiService(apiClient)) }
+    val catalogRepository: CatalogRepository by lazy { CatalogRepository(ApiService(apiClient)) }
     val scanDelay = 250L // Intervalo de tiempo en milisegundos en el que se escanea una nueva imagen
 
     var isFlashEnabled by remember { mutableStateOf(false) } // Linterna por defecto apagada
@@ -154,7 +154,7 @@ fun BarcodeScanner(modifier: Modifier = Modifier, navController: NavController) 
             if (scannedCodebar != lastCodebar) {
                 try {
                     statusMessage = "Cargando artículo..." // Mensaje de status
-                    scannedArticle = articleRepository.getSearchArticles(search = scannedCodebar, filter = "codebar")[0]
+                    scannedArticle = catalogRepository.getSearchArticles(search = scannedCodebar, filter = "codebar")[0]
                     articleVisible = true // Mostramos la articleCard cuando tenemos un nuevo articulo escaneado y cargado
                 } catch (e: Exception) {
                     Log.e("error", e.toString())

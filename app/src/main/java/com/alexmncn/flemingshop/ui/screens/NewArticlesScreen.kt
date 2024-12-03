@@ -17,7 +17,7 @@ import androidx.navigation.NavController
 import com.alexmncn.flemingshop.data.model.Article
 import com.alexmncn.flemingshop.data.network.ApiClient
 import com.alexmncn.flemingshop.data.network.ApiService
-import com.alexmncn.flemingshop.data.repository.ArticleRepository
+import com.alexmncn.flemingshop.data.repository.CatalogRepository
 import com.alexmncn.flemingshop.ui.components.ArticleList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 fun NewArticlesScreen(navController: NavController) {
     val context = LocalContext.current
     val apiClient = ApiClient.provideOkHttpClient(context)
-    val articleRepository: ArticleRepository by lazy { ArticleRepository(ApiService(apiClient)) }
+    val catalogRepository: CatalogRepository by lazy { CatalogRepository(ApiService(apiClient)) }
 
     val newAListName = "Novedades"
     var newArticles by remember { mutableStateOf<List<Article>>(emptyList()) }
@@ -38,8 +38,8 @@ fun NewArticlesScreen(navController: NavController) {
     fun loadNewArticles() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                newArticlesTotal = articleRepository.getNewArticlesTotal()
-                val articles = articleRepository.getNewArticles(page=currentPage)
+                newArticlesTotal = catalogRepository.getNewArticlesTotal()
+                val articles = catalogRepository.getNewArticles(page=currentPage)
                 newArticles = newArticles + articles
                 currentPage++
             } catch (e: Exception) {
