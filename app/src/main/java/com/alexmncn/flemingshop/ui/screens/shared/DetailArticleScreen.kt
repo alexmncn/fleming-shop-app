@@ -1,6 +1,7 @@
 package com.alexmncn.flemingshop.ui.screens.shared
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -47,6 +48,7 @@ import com.alexmncn.flemingshop.data.model.Article
 import com.alexmncn.flemingshop.data.network.ApiClient
 import com.alexmncn.flemingshop.data.network.ApiService
 import com.alexmncn.flemingshop.data.network.AuthManager
+import com.alexmncn.flemingshop.data.repository.AdminActionsRepository
 import com.alexmncn.flemingshop.data.repository.CatalogRepository
 import com.alexmncn.flemingshop.ui.components.FeaturedLabel
 import com.alexmncn.flemingshop.ui.components.HiddenLabel
@@ -56,12 +58,14 @@ import com.alexmncn.flemingshop.utils.capitalizeText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun DetailArticleScreen(codebar: String) {
     val context = LocalContext.current
     val apiClient = ApiClient.provideOkHttpClient(context)
     val catalogRepository: CatalogRepository by lazy { CatalogRepository(ApiService(apiClient)) }
+    val adminActionsRepository: AdminActionsRepository by lazy { AdminActionsRepository(ApiService(apiClient)) }
 
     var article by remember { mutableStateOf<Article?>(null) }
     val imageUrl = Constans.IMAGES_URL + "articles/${article?.codebar}.webp"
@@ -88,7 +92,7 @@ fun DetailArticleScreen(codebar: String) {
             try {
                 article = catalogRepository.getSearchArticles(search = codebar, filter = "codebar")[0]
 
-                checkTags(article)
+                checkTags(article) // Comprobamos las etiquetas
             } catch (e: Exception) {
                 Log.e("error", e.toString())
             }
@@ -99,6 +103,91 @@ fun DetailArticleScreen(codebar: String) {
     LaunchedEffect(Unit) {
         loadArticle()
     }
+
+
+    fun onFeature() {
+        var messageStatus = ""
+        CoroutineScope(Dispatchers.IO).launch {
+            if (article!!.destacado) { // Si está destacado, lo quita
+
+                try {
+                    val response =
+                        adminActionsRepository.unfeatureArticle(article!!.codebar.toString())
+                    if (response) {
+                        article =
+                            article!!.copy(destacado = false) // Actualiza el estado local del parametro
+                        checkTags(article) // Actualiza las
+                        messageStatus = "Articulo eliminado de destacados"
+                    } else {
+                        messageStatus = "Error al eliminar el articulo de destacados"
+                    }
+                } catch (e: Exception) {
+                    Log.e("error", e.toString())
+                    messageStatus = "Error desconocido al eliminar el articulo de destacados"
+                }
+            } else if (!article!!.destacado) { // Si no lo está, lo destaca
+                try {
+                    val response =
+                        adminActionsRepository.featureArticle(article!!.codebar.toString())
+                    if (response) {
+                        article = article!!.copy(destacado = true)
+                        checkTags(article)
+                        messageStatus = "Se ha destacado el artículo"
+                    } else {
+                        messageStatus = "Error al destacar el articulo"
+                    }
+                } catch (e: Exception) {
+                    Log.e("error", e.toString())
+                    messageStatus = "Error desconocido al destacar el articulo"
+                }
+            }
+
+            // Muestra el mensaje de estado
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, messageStatus, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun onHide() {
+        var messageStatus = ""
+        CoroutineScope(Dispatchers.IO).launch {
+            if (article!!.hidden) { // Si está oculto, lo quita
+                try {
+                    val response = adminActionsRepository.unhideArticle(article!!.codebar.toString())
+                    if (response) {
+                        article = article!!.copy(hidden = false) // Actualiza el estado local del parametro
+                        checkTags(article) // Actualiza las etiquetas
+                        messageStatus = "Articulo eliminado de ocultos"
+                    } else {
+                        Toast.makeText(context, "Error al eliminar el articulo de ocultos", Toast.LENGTH_SHORT).show()
+                    }
+                }catch (e: Exception) {
+                    Log.e("error", e.toString())
+                    messageStatus = "Error desconocido al eliminar el articulo"
+                }
+            } else if (!article!!.hidden) { // Si no lo está, lo oculta
+                try {
+                    val response = adminActionsRepository.hideArticle(article!!.codebar.toString())
+                    if (response) {
+                        article = article!!.copy(hidden = true)
+                        checkTags(article)
+                        messageStatus = "Se ha ocultado el artículo"
+                    } else {
+                        messageStatus = "Error al ocultar el articulo"
+                    }
+                } catch (e: Exception) {
+                    Log.e("error", e.toString())
+                    messageStatus = "Error desconocido al ocultar el articulo"
+                }
+            }
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, messageStatus, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
 
     article?.let {
         Column (
@@ -232,6 +321,7 @@ fun DetailArticleScreen(codebar: String) {
 
                     // Opciones
                     Column {
+                        // Destacar
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -239,7 +329,7 @@ fun DetailArticleScreen(codebar: String) {
                                 .shadow(4.dp, shape = RoundedCornerShape(10.dp))
                                 .clip(RoundedCornerShape(10.dp))
                                 .background(Color.White)
-                                .clickable {  }
+                                .clickable { onFeature() }
                         ) {
                             Row(
                                 modifier = Modifier
@@ -257,6 +347,7 @@ fun DetailArticleScreen(codebar: String) {
                             }
                         }
 
+                        // Ocultar
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -264,7 +355,7 @@ fun DetailArticleScreen(codebar: String) {
                                 .shadow(4.dp, shape = RoundedCornerShape(10.dp))
                                 .clip(RoundedCornerShape(10.dp))
                                 .background(Color.White)
-                                .clickable {  }
+                                .clickable { onHide() }
                         ) {
                             Row(
                                 modifier = Modifier
@@ -282,6 +373,7 @@ fun DetailArticleScreen(codebar: String) {
                             }
                         }
 
+                        // Subir imagen
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
