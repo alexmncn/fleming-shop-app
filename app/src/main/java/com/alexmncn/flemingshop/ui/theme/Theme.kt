@@ -85,7 +85,7 @@ val montserratTypography = Typography(
     labelSmall = TextStyle(
         fontFamily = montserratFontFamily,
         fontWeight = FontWeight.Bold,
-        fontSize = 12.sp
+        fontSize = 10.sp
     ),
     labelLarge = TextStyle(
         fontFamily = montserratFontFamily,

@@ -2,19 +2,22 @@ package com.alexmncn.flemingshop.ui.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.FiberNew
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.*
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -51,7 +54,8 @@ fun MainBottomBar(navController: NavController) {
                 Text(
                     text = "Inicio",
                     color = Color.White,
-                    style = MaterialTheme.typography.labelSmall
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1
                 )
             }
         )
@@ -79,7 +83,8 @@ fun MainBottomBar(navController: NavController) {
                 Text(
                     text = "Destacados",
                     color = Color.White,
-                    style = MaterialTheme.typography.labelSmall
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1
                 )
             }
         )
@@ -107,7 +112,8 @@ fun MainBottomBar(navController: NavController) {
                 Text(
                     text = "Novedades",
                     color = Color.White,
-                    style = MaterialTheme.typography.labelSmall
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1
                 )
             }
         )
@@ -135,7 +141,8 @@ fun MainBottomBar(navController: NavController) {
                 Text(
                     text = "Familias",
                     color = Color.White,
-                    style = MaterialTheme.typography.labelSmall
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1
                 )
             }
         )
@@ -155,15 +162,16 @@ fun MainBottomBar(navController: NavController) {
             icon = {
                 Icon(
                     imageVector = Icons.Default.Search,
-                    contentDescription = "Búsqueda",
+                    contentDescription = "Buscar",
                     tint = Color.White
                 )
             },
             label = {
                 Text(
-                    text = "Búsqueda",
+                    text = "Buscar",
                     color = Color.White,
-                    style = MaterialTheme.typography.labelSmall
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1
                 )
             }
         )
