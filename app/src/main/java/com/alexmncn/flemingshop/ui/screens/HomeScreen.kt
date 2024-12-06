@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -26,69 +28,129 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 @Composable
 fun HomeScreen(navController: NavController) {
-    var viewOptions by remember { mutableStateOf(false) }
+    val configuration = LocalConfiguration.current
+    var isCollapsed by remember { mutableStateOf(false) } // Estado de si está colapsado o no
+    var offsetY by remember { mutableFloatStateOf(0f) } // Desplazamiento temporal durante el gesto
+    var finalHeight by remember { mutableStateOf(configuration.screenHeightDp.dp) } // Altura final
 
-    // Altura animada cuando está colapsado
-    val boxHeight by animateDpAsState(
-        targetValue = if (viewOptions) 200.dp else LocalConfiguration.current.screenHeightDp.dp,
-        animationSpec = tween(durationMillis = 500) // Duración de la animación
+    // Definir la altura final del Box cuando está colapsado
+    val targetHeight = 150.dp
+
+    // Para controlar el desplazamiento real durante el gesto
+    val height = (finalHeight + offsetY.dp).coerceIn(targetHeight, configuration.screenHeightDp.dp)
+
+    // Animación solo cuando se "fija" el tamaño al final del gesto, es decir, con el tamaño cuando soltamos el dedo
+    val animatedHeight by animateDpAsState(
+        targetValue = height, // Usar el valor calculado directamente
+        animationSpec = tween(durationMillis = 300) // Animación de la altura
     )
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
+        // Bienvenida
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(boxHeight) // Altura animada
+                .height(animatedHeight) // Usamos el valor animado para la altura
                 .background(MaterialTheme.colorScheme.primary)
+                .pointerInput(Unit) {
+                    detectVerticalDragGestures(
+                        onDragEnd = {
+                            // Al finalizar el gesto, si el desplazamiento es suficientemente grande, colapsa
+                            if (offsetY < 100f) {
+                                finalHeight = targetHeight // Colapsar
+                                isCollapsed = true
+                            } else {
+                                finalHeight = configuration.screenHeightDp.dp // Expandir
+                                isCollapsed = false
+                            }
+                            offsetY = 0f // Resetear el desplazamiento
+                        },
+                        onDragCancel = {
+                            offsetY = 0f // Resetear el desplazamiento si se cancela el gesto
+                        },
+                        onVerticalDrag = { _, dragAmount ->
+                            // Actualizar el desplazamiento mientras el usuario desliza
+                            offsetY += dragAmount
+                        }
+                    )
+                }
         ) {
             // Texto de bienvenida
-            Text(
-                text = "Bienvenido/a a \nTienda Fleming",
-                color = Color.White,
-                style = MaterialTheme.typography.titleLarge,
+
+
+            Column (
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .padding(50.dp)
-            )
+                    .padding(horizontal = 20.dp),
+                Arrangement.spacedBy(5.dp)
+            ) {
+                if (!isCollapsed) {
+                    // Linea 1
+                    Text(
+                        text = "Bienvenido/a a",
+                        color = Color.White,
+                        style = MaterialTheme.typography.titleLarge,
+                    )
 
-            // Botón para cambiar estado
-            if (!viewOptions) {
+                    // Linea 3
+                    Text(
+                        text = "Tienda Fleming",
+                        color = Color.White,
+                        style = MaterialTheme.typography.titleLarge.copy(fontSize = 30.sp),
+                    )
+                } else {
+                    // Linea 1
+                    Text(
+                        text = "Catálogo",
+                        color = Color.White,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                }
+            }
+
+            // Indicador para deslizar hacia arriba cuando está expandido
+            if (!isCollapsed) {
                 Column(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .padding(bottom = 20.dp)
-                        .fillMaxWidth()
-                        .clickable { viewOptions = true },
+                        .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Icon(
                         imageVector = Icons.Default.KeyboardArrowUp,
                         contentDescription = "Explorar",
                         tint = Color.White,
-                        modifier = Modifier.size(25.dp)
+                        modifier = Modifier.size(30.dp)
                     )
                     Text(
-                        text = "Explora nuestro catálogo",
+                        text = "Desliza para explorar",
                         color = Color.White,
                         style = MaterialTheme.typography.titleSmall,
                     )
                 }
             }
         }
+
+
 
         Column(
             modifier = Modifier
