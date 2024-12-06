@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
@@ -34,6 +35,9 @@ import com.alexmncn.flemingshop.data.network.ApiClient
 import com.alexmncn.flemingshop.data.network.ApiService
 import com.alexmncn.flemingshop.data.repository.CatalogRepository
 import com.alexmncn.flemingshop.ui.components.ArticleList
+import com.alexmncn.flemingshop.ui.theme.Blue100
+import com.alexmncn.flemingshop.ui.theme.Blue200
+import com.alexmncn.flemingshop.ui.theme.Blue300
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -124,7 +128,7 @@ fun SearchArticlesScreen(navController: NavController) {
                 placeholder = { Text(placeholder) },
                 content = { },
                 colors = SearchBarDefaults.colors(
-                    containerColor = Color.White
+                    containerColor = Blue100,
                 ),
                 modifier = Modifier
                     .weight(6f)
