@@ -50,7 +50,7 @@ fun HomeScreen(navController: NavController) {
     var finalHeight by remember { mutableStateOf(configuration.screenHeightDp.dp) } // Altura final
 
     // Definir la altura final del Box cuando está colapsado
-    val targetHeight = 150.dp
+    val targetHeight = 100.dp
 
     // Para controlar el desplazamiento real durante el gesto
     val height = (finalHeight + offsetY.dp).coerceIn(targetHeight, configuration.screenHeightDp.dp)
@@ -158,7 +158,7 @@ fun HomeScreen(navController: NavController) {
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(5.dp))
 
             // Featured Articles
             Card(
@@ -232,7 +232,7 @@ fun HomeScreen(navController: NavController) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(5.dp))
         }
     }
 }
