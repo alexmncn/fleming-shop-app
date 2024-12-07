@@ -3,7 +3,6 @@ package com.alexmncn.flemingshop.ui.screens.shared
 import android.app.AlertDialog
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -24,9 +23,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.FileUpload
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -63,6 +64,7 @@ import com.alexmncn.flemingshop.utils.Constans
 import com.alexmncn.flemingshop.utils.capitalizeText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -75,8 +77,9 @@ fun DetailArticleScreen(codebar: String) {
 
     var article by remember { mutableStateOf<Article?>(null) }
     val imageUrl = Constans.IMAGES_URL + "articles/${article?.codebar}.webp"
-
     var tags by remember { mutableIntStateOf(0) }
+    var uploadingImg by remember { mutableStateOf(false) }
+    var imgUploadSuccess by remember { mutableStateOf(false) }
 
     fun checkTags(article: Article?) {
         if (article != null) {
@@ -197,6 +200,31 @@ fun DetailArticleScreen(codebar: String) {
         }
     }
 
+    // Sube la imagen seleccionada/tomada
+    fun uploadImage(bitmap: Bitmap) {
+        var messageStatus = ""
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                uploadingImg = true
+                adminActionsRepository.uploadArticleImage(article!!.codebar.toString(), bitmap, context)
+                messageStatus = "Imagen subida correctamente"
+                uploadingImg = false
+                imgUploadSuccess = true
+            } catch (e: Exception) {
+                Log.e("error", e.toString())
+                messageStatus = "Error al subir la imagen"
+                uploadingImg = false
+            }
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, messageStatus, Toast.LENGTH_SHORT).show()
+            }
+            if (imgUploadSuccess) {
+                delay(2000)
+                imgUploadSuccess = false
+            }
+        }
+    }
 
     // Seleccionar imagen de galería
     val pickImageLauncher = rememberLauncherForActivityResult(
@@ -206,7 +234,8 @@ fun DetailArticleScreen(codebar: String) {
             val inputStream = context.contentResolver.openInputStream(it)
             val bitmap = BitmapFactory.decodeStream(inputStream)
             inputStream?.close()
-            //processBarcodeFromBitmap(bitmap, onScan = { codebar -> onScan(codebar) })
+
+            uploadImage(bitmap)
         }
     }
 
@@ -215,13 +244,13 @@ fun DetailArticleScreen(codebar: String) {
         contract = ActivityResultContracts.TakePicturePreview()
     ) { bitmap: Bitmap? ->
         bitmap?.let { capturedImage ->
-            // Convierte el Bitmap a un archivo y luego lo subes
-            //uploadImageFromBitmap(capturedImage, context)
+            uploadImage(bitmap)
         }
     }
 
+    // Al subir imagen del articulo
     fun onUploadImage() {
-        val options = arrayOf("Cámara", "Galería")
+        val options = arrayOf("Tomar foto", "De Galería")
         AlertDialog.Builder(context)
             .setTitle("Seleccionar imagen")
             .setItems(options) { _, which ->
@@ -232,6 +261,7 @@ fun DetailArticleScreen(codebar: String) {
             }
             .show()
     }
+
 
     article?.let {
         Column (
@@ -439,14 +469,30 @@ fun DetailArticleScreen(codebar: String) {
                                     style = MaterialTheme.typography.bodyLarge,
                                 )
 
-                                Icon(
-                                    imageVector = Icons.Outlined.FileUpload,
-                                    contentDescription = "Subir imagen",
-                                    tint = Color.Black
-                                )
+                                if (uploadingImg) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(24.dp),
+                                        color = MaterialTheme.colorScheme.primary,
+                                        strokeWidth = 2.dp
+                                    )
+                                } else if (imgUploadSuccess) {
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = "Check",
+                                        tint = Color.Green
+                                    )
+                                } else {
+                                    Icon(
+                                        imageVector = Icons.Outlined.FileUpload,
+                                        contentDescription = "Subir imagen",
+                                        tint = Color.Black
+                                    )
+                                }
                             }
                         }
                     }
+
+
                 }
             }
         }

@@ -202,7 +202,7 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, onShowMor
                             if (isLoading.value) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(24.dp),
-                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    color = MaterialTheme.colorScheme.primary,
                                     strokeWidth = 2.dp
                                 )
                             } else {

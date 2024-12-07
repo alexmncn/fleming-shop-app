@@ -2,12 +2,15 @@ package com.alexmncn.flemingshop.data.network
 
 import com.alexmncn.flemingshop.utils.Constans
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONObject
+import java.io.File
 import java.io.IOException
 
 class ApiService(private val client: OkHttpClient) {
@@ -135,5 +138,18 @@ class ApiService(private val client: OkHttpClient) {
     fun hideFamilyArticles(codfam: String, hidden: Boolean = true): Response? {
         val route = "articles/hide?codebar=$codfam&hidden=$hidden"
         return makePostRequest(route)
+    }
+
+    fun uploadArticleImage(codebar: String, file: File): Response? {
+        val route = "upload/articles/images?codebar=$codebar"
+        val body = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart(
+                "file",
+                file.name,
+                file.asRequestBody("image/*".toMediaTypeOrNull())
+            )
+            .build()
+        return makePostRequest(route, body)
     }
 }
