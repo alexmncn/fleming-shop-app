@@ -28,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -40,12 +41,15 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 
 @Composable
 fun HomeScreen(navController: NavController) {
     val configuration = LocalConfiguration.current
-    var isCollapsed by remember { mutableStateOf(false) } // Estado de si está colapsado o no
+    val collapsibleGreetingViewModel: CollapsibleGreetingViewModel = viewModel() // Instancia del viewmodel
+    val isCollapsed by collapsibleGreetingViewModel.isCollapsed // Estado de si está colapsado o no
     var offsetY by remember { mutableFloatStateOf(0f) } // Desplazamiento temporal durante el gesto
     var finalHeight by remember { mutableStateOf(configuration.screenHeightDp.dp) } // Altura final
 
@@ -82,7 +86,7 @@ fun HomeScreen(navController: NavController) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(animatedHeight) // Usamos el valor animado para la altura
+                .height(if (isCollapsed) targetHeight else animatedHeight) // Usamos el valor animado para la altura/ Controlamos cuando se carga ya colapsado
                 .background(MaterialTheme.colorScheme.primary)
                 .pointerInput(Unit) {
                     detectVerticalDragGestures(
@@ -90,10 +94,10 @@ fun HomeScreen(navController: NavController) {
                             // Al finalizar el gesto, si el desplazamiento es suficientemente grande, colapsa
                             if (offsetY < 100f) {
                                 finalHeight = targetHeight // Colapsar
-                                isCollapsed = true
+                                collapsibleGreetingViewModel.collapse() // Establecemos el estado a colapsado
                             } else {
                                 finalHeight = configuration.screenHeightDp.dp // Expandir
-                                isCollapsed = false
+                                collapsibleGreetingViewModel.reset() // Reseteamos el estado del viewmodel
                             }
                             offsetY = 0f // Resetear el desplazamiento
                         },
@@ -164,7 +168,7 @@ fun HomeScreen(navController: NavController) {
         }
 
 
-
+        // Options
         Column(
             modifier = Modifier
                 .padding(horizontal = 10.dp)
@@ -247,5 +251,20 @@ fun HomeScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(5.dp))
         }
+    }
+}
+
+// Modelo para el estado del mensaje de bienvenida (para mantener en la sesión)
+class CollapsibleGreetingViewModel : ViewModel() {
+    // El estado se mantiene durante toda la sesión
+    private val _isCollapsed = mutableStateOf(false)
+    val isCollapsed: State<Boolean> = _isCollapsed
+
+    fun collapse() {
+        _isCollapsed.value = true
+    }
+
+    fun reset() {
+        _isCollapsed.value = false
     }
 }
