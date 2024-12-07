@@ -1,7 +1,13 @@
 package com.alexmncn.flemingshop.ui.screens.shared
 
+import android.app.AlertDialog
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -75,6 +81,7 @@ fun DetailArticleScreen(codebar: String) {
     fun checkTags(article: Article?) {
         if (article != null) {
             // Comprobamos las etiquetas
+            // Oculto
             if (article.hidden) {
                 tags++
             }
@@ -105,6 +112,7 @@ fun DetailArticleScreen(codebar: String) {
     }
 
 
+    // Al destacar el articulo
     fun onFeature() {
         var messageStatus = ""
         CoroutineScope(Dispatchers.IO).launch {
@@ -149,6 +157,7 @@ fun DetailArticleScreen(codebar: String) {
         }
     }
 
+    // Al ocultar el artículp
     fun onHide() {
         var messageStatus = ""
         CoroutineScope(Dispatchers.IO).launch {
@@ -188,6 +197,41 @@ fun DetailArticleScreen(codebar: String) {
         }
     }
 
+
+    // Seleccionar imagen de galería
+    val pickImageLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let {
+            val inputStream = context.contentResolver.openInputStream(it)
+            val bitmap = BitmapFactory.decodeStream(inputStream)
+            inputStream?.close()
+            //processBarcodeFromBitmap(bitmap, onScan = { codebar -> onScan(codebar) })
+        }
+    }
+
+    // Tomar foto
+    val takePictureLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) { bitmap: Bitmap? ->
+        bitmap?.let { capturedImage ->
+            // Convierte el Bitmap a un archivo y luego lo subes
+            //uploadImageFromBitmap(capturedImage, context)
+        }
+    }
+
+    fun onUploadImage() {
+        val options = arrayOf("Cámara", "Galería")
+        AlertDialog.Builder(context)
+            .setTitle("Seleccionar imagen")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> takePictureLauncher.launch(null) // Abrir cámara
+                    1 -> pickImageLauncher.launch("image/*") // Seleccionar desde galería
+                }
+            }
+            .show()
+    }
 
     article?.let {
         Column (
@@ -381,7 +425,7 @@ fun DetailArticleScreen(codebar: String) {
                                 .shadow(4.dp, shape = RoundedCornerShape(10.dp))
                                 .clip(RoundedCornerShape(10.dp))
                                 .background(Color.White)
-                                .clickable {  }
+                                .clickable { onUploadImage() }
                         ) {
                             Row(
                                 modifier = Modifier
