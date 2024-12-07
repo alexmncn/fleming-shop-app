@@ -1,6 +1,5 @@
 package com.alexmncn.flemingshop.ui.screens
 
-import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -33,9 +32,11 @@ fun UserPanelScreen(navController: NavController) {
     fun logout() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = authRepository.logout()
-                AuthManager.clearSession(context)
+                authRepository.logout() // Peticion de logout
 
+                AuthManager.clearSession(context) // Limpia datos de sesión
+
+                // Redirige a inicio
                 withContext(Dispatchers.Main) {
                     navController.navigate("home")
                     Toast.makeText(context, "Has cerrado sesión", Toast.LENGTH_SHORT).show()

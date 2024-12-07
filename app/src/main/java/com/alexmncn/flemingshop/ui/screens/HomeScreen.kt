@@ -62,12 +62,11 @@ fun HomeScreen(navController: NavController) {
     // Animación solo cuando se "fija" el tamaño al final del gesto, es decir, con el tamaño cuando soltamos el dedo
     val animatedHeight by animateDpAsState(
         targetValue = height, // Usar el valor calculado directamente
-        animationSpec = tween(durationMillis = 300) // Animación de la altura
+        animationSpec = tween(durationMillis = 300), label = "colapse" // Animación de la altura
     )
 
-
     // Animación flotante
-    val offsetY_2 by rememberInfiniteTransition(label = "").animateFloat(
+    val offsetY2 by rememberInfiniteTransition(label = "floating").animateFloat(
         initialValue = 0f,
         targetValue = 10f, // La distancia que se mueve hacia arriba y hacia abajo
         animationSpec = infiniteRepeatable(
@@ -146,7 +145,7 @@ fun HomeScreen(navController: NavController) {
                         .align(Alignment.BottomCenter)
                         .padding(bottom = 30.dp)
                         .fillMaxWidth()
-                        .offset(y = offsetY_2.dp),
+                        .offset(y = offsetY2.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Icon(
@@ -188,7 +187,7 @@ fun HomeScreen(navController: NavController) {
                         .padding(20.dp)
                 ) {
                     Text(text = "Articulos destacados", style = MaterialTheme.typography.titleSmall)
-                    Text(text = "En esta sección puedes encontrar artículos seleccionados que te pueden interesar", style = MaterialTheme.typography.bodyMedium,)
+                    Text(text = "En esta sección puedes encontrar artículos seleccionados que te pueden interesar", style = MaterialTheme.typography.bodyMedium)
                 }
             }
 
@@ -206,7 +205,7 @@ fun HomeScreen(navController: NavController) {
                         .padding(20.dp)
                 ) {
                     Text(text = "Novedades", style = MaterialTheme.typography.titleSmall)
-                    Text(text = "En esta sección puedes encontrar articulos que han llegado recientemente a la tienda", style = MaterialTheme.typography.bodyMedium,)
+                    Text(text = "En esta sección puedes encontrar articulos que han llegado recientemente a la tienda", style = MaterialTheme.typography.bodyMedium)
                 }
             }
 
@@ -224,7 +223,7 @@ fun HomeScreen(navController: NavController) {
                         .padding(20.dp)
                 ) {
                     Text(text = "Familias", style = MaterialTheme.typography.titleSmall)
-                    Text(text = "En esta sección puedes encontrar articulos agrupados por familias", style = MaterialTheme.typography.bodyMedium,)
+                    Text(text = "En esta sección puedes encontrar articulos agrupados por familias", style = MaterialTheme.typography.bodyMedium)
                 }
             }
 
@@ -242,7 +241,7 @@ fun HomeScreen(navController: NavController) {
                         .padding(20.dp)
                 ) {
                     Text(text = "Buscar articulos", style = MaterialTheme.typography.titleSmall)
-                    Text(text = "En esta sección puedes buscar entre mas de 8000 articulos por su descripción", style = MaterialTheme.typography.bodyMedium,)
+                    Text(text = "En esta sección puedes buscar entre mas de 8000 articulos por su descripción", style = MaterialTheme.typography.bodyMedium)
                 }
             }
 
@@ -259,9 +258,5 @@ class CollapsibleGreetingViewModel : ViewModel() {
 
     fun collapse() {
         _isCollapsed.value = true
-    }
-
-    fun reset() {
-        _isCollapsed.value = false
     }
 }
