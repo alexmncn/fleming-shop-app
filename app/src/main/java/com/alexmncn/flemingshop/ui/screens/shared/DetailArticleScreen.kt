@@ -243,8 +243,8 @@ fun DetailArticleScreen(codebar: String) {
     val takePictureLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
     ) { bitmap: Bitmap? ->
-        bitmap?.let { capturedImage ->
-            uploadImage(bitmap)
+        bitmap?.let {
+            uploadImage(it)
         }
     }
 
