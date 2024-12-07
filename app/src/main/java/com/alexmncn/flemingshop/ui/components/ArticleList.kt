@@ -3,6 +3,7 @@ package com.alexmncn.flemingshop.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -73,9 +74,12 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, onShowMor
                 .background(MaterialTheme.colorScheme.primary)
         ) {
             // Padding
-            Column(
+            Row(
                 modifier = Modifier
-                    .padding(10.dp)
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                Arrangement.SpaceBetween,
+                Alignment.CenterVertically
             ) {
                 // Encabezado
                 Text(text = listName, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onPrimary)

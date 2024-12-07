@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.alexmncn.flemingshop.data.model.Family
+import com.alexmncn.flemingshop.utils.capitalizeText
 
 @Composable
 fun FamilyCard(family: Family, onShowFamily: (codfam: Int, nomfam: String) -> Unit) {
@@ -23,6 +24,6 @@ fun FamilyCard(family: Family, onShowFamily: (codfam: Int, nomfam: String) -> Un
             .clickable { onShowFamily(family.codfam, family.nomfam) },
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Text(text = family.nomfam, modifier = Modifier.padding(10.dp))
+        Text(text = capitalizeText(family.nomfam), modifier = Modifier.padding(10.dp))
     }
 }

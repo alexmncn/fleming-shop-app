@@ -26,6 +26,7 @@ import com.alexmncn.flemingshop.data.network.ApiService
 import com.alexmncn.flemingshop.data.repository.CatalogRepository
 import com.alexmncn.flemingshop.ui.components.ArticleList
 import com.alexmncn.flemingshop.ui.components.FamilyList
+import com.alexmncn.flemingshop.utils.capitalizeText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -121,7 +122,7 @@ fun FamilyArticlesScreen(codfam: Int, nomfam: String, navController: NavControll
     ArticleList(
         articles = familyArticles,
         total = familyArticlesTotal,
-        listName = nomfam,
+        listName = capitalizeText(nomfam),
         onShowMore = { loadFamilyArticles() },
         navController = navController
     )

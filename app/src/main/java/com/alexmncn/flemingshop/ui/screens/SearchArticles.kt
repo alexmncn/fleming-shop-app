@@ -126,13 +126,15 @@ fun SearchArticlesScreen(navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
     ) {
+        // Contenedor para padding con fondo
         Column (
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.primary)
         ) {
+            // Barra de busqueda + escaner
             Row(
                 modifier = Modifier
-                    .padding(10.dp),
+                    .padding(top = 10.dp, bottom = 5.dp, start = 10.dp, end = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 CustomSearchBar(
@@ -142,11 +144,12 @@ fun SearchArticlesScreen(navController: NavController) {
                     placeholder = placeholder,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(6f),
+                        .weight(8f),
                 )
 
                 Spacer(modifier = Modifier.width(10.dp))
 
+                // Boton de escaner
                 Icon(
                     imageVector = Icons.Default.QrCodeScanner,
                     contentDescription = "Escaner",
