@@ -1,6 +1,11 @@
 package com.alexmncn.flemingshop.ui.screens
 
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,12 +20,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -37,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -59,6 +59,20 @@ fun HomeScreen(navController: NavController) {
     val animatedHeight by animateDpAsState(
         targetValue = height, // Usar el valor calculado directamente
         animationSpec = tween(durationMillis = 300) // Animación de la altura
+    )
+
+
+    // Animación flotante
+    val offsetY_2 by rememberInfiniteTransition(label = "").animateFloat(
+        initialValue = 0f,
+        targetValue = 10f, // La distancia que se mueve hacia arriba y hacia abajo
+        animationSpec = infiniteRepeatable(
+            animation = tween(
+                durationMillis = 1500, // Duración
+                easing = EaseIn
+            ),
+            repeatMode = RepeatMode.Reverse // Movimiento de ida y vuelta
+        ), label = ""
     )
 
     Column(
@@ -94,8 +108,6 @@ fun HomeScreen(navController: NavController) {
                 }
         ) {
             // Texto de bienvenida
-
-
             Column (
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -131,8 +143,9 @@ fun HomeScreen(navController: NavController) {
                 Column(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .padding(bottom = 20.dp)
-                        .fillMaxWidth(),
+                        .padding(bottom = 30.dp)
+                        .fillMaxWidth()
+                        .offset(y = offsetY_2.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Icon(
