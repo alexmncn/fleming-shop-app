@@ -1,6 +1,7 @@
 package com.alexmncn.flemingshop.ui.screens
 
 import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloat
@@ -71,8 +72,8 @@ fun HomeScreen(navController: NavController) {
         targetValue = 10f, // La distancia que se mueve hacia arriba y hacia abajo
         animationSpec = infiniteRepeatable(
             animation = tween(
-                durationMillis = 1500, // Duración
-                easing = EaseIn
+                durationMillis = 1000, // Duración
+                easing = EaseOut
             ),
             repeatMode = RepeatMode.Reverse // Movimiento de ida y vuelta
         ), label = ""

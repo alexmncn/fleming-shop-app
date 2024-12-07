@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -97,116 +98,139 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, onShowMor
             }
         }
 
-        // Articles
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 10.dp)  // Margen vertical para todos los elementos sin dejar huecos en el desp.
-        ) {
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Artículos en cuadricula
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(gridColumns),
-                state = gridState,
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier.heightIn(max = screenHeight), // Limita el alto del grid para que el scroll no cause errores
-            ) {
-                items(articles.size) { index ->
-                    ArticleCard(
-                        article = articles[index],
-                        navController = navController
-                    )
-                }
-            }
-
-            // Barra progreso y boton subir
-            Box(
+        if (articles.isNotEmpty()) {
+            // Articles
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 10.dp),
+                    .padding(horizontal = 10.dp)  // Margen vertical para todos los elementos sin dejar huecos en el desp.
             ) {
-                // Contenedor para alineamiento
-                Column(
-                    horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier
-                        .fillMaxSize(),
-                ){
-                    // Boton para volver arriba
-                    IconButton(
-                        onClick = {
-                            coroutineScope.launch {
-                                gridState.animateScrollToItem(0)
-                                scrollState.animateScrollTo(0)
-                            }
-                        },
-                        modifier = Modifier
-                            .background(MaterialTheme.colorScheme.primary , CircleShape)
-                            .size(35.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowUpward,
-                            contentDescription = "Subir",
-                            tint = MaterialTheme.colorScheme.onPrimary
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Artículos en cuadricula
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(gridColumns),
+                    state = gridState,
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier.heightIn(max = screenHeight), // Limita el alto del grid para que el scroll no cause errores
+                ) {
+                    items(articles.size) { index ->
+                        ArticleCard(
+                            article = articles[index],
+                            navController = navController
                         )
                     }
                 }
 
-                // Barra de progreso
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
+                // Barra progreso y boton subir
+                Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .align(Alignment.Center),
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp),
                 ) {
-                    Text(
-                        text = "${articles.size} de $total artículos",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    LinearProgressIndicator(
-                        progress = { articlesLoadedProgress },
-                        modifier = Modifier
-                            .width(200.dp)
-                            .height(4.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                    )
-                }
-            }
-
-            // Botón "Mostrar más"
-            if (articles.size < total) {
-                Card(
-                    onClick = {
-                        isLoading.value = true
-                        onShowMore()
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    enabled = !isLoading.value, // Deshabilita el boton si se estan cargango artículos
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
-                ) {
+                    // Contenedor para alineamiento
                     Column(
+                        horizontalAlignment = Alignment.End,
+                        verticalArrangement = Arrangement.Center,
                         modifier = Modifier
-                            .padding(10.dp)
-                            .fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-
-                    ) {
-                        if (isLoading.value) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                strokeWidth = 2.dp
+                            .fillMaxSize(),
+                    ){
+                        // Boton para volver arriba
+                        IconButton(
+                            onClick = {
+                                coroutineScope.launch {
+                                    gridState.animateScrollToItem(0)
+                                    scrollState.animateScrollTo(0)
+                                }
+                            },
+                            modifier = Modifier
+                                .background(MaterialTheme.colorScheme.primary , CircleShape)
+                                .size(35.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowUpward,
+                                contentDescription = "Subir",
+                                tint = MaterialTheme.colorScheme.onPrimary
                             )
-                        } else {
-                            Text("Mostrar más", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
                         }
                     }
+
+                    // Barra de progreso
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .align(Alignment.Center),
+                    ) {
+                        Text(
+                            text = "${articles.size} de $total artículos",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        LinearProgressIndicator(
+                            progress = { articlesLoadedProgress },
+                            modifier = Modifier
+                                .width(200.dp)
+                                .height(4.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                        )
+                    }
+                }
+
+                // Botón "Mostrar más"
+                if (articles.size < total) {
+                    Card(
+                        onClick = {
+                            isLoading.value = true
+                            onShowMore()
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        enabled = !isLoading.value, // Deshabilita el boton si se estan cargango artículos
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+
+                        ) {
+                            if (isLoading.value) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(24.dp),
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    strokeWidth = 2.dp
+                                )
+                            } else {
+                                Text("Mostrar más", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxSize(),
+            ){
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.SearchOff,
+                        contentDescription = "Sin resultados",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(40.dp)
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(text = "No se han encontrado artículos", style = MaterialTheme.typography.bodyLarge)
                 }
             }
         }
