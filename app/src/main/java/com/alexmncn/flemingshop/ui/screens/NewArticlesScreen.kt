@@ -53,16 +53,11 @@ fun NewArticlesScreen(navController: NavController) {
         loadNewArticles()
     }
 
-    Column (
-        modifier = Modifier
-            .padding(horizontal = 10.dp) // Horizontal margin for the content only
-    ) {
-        ArticleList (
-            articles = newArticles,
-            total = newArticlesTotal,
-            listName = newAListName,
-            onShowMore = { loadNewArticles() },
-            navController = navController
-        )
-    }
+    ArticleList (
+        articles = newArticles,
+        total = newArticlesTotal,
+        listName = newAListName,
+        onShowMore = { loadNewArticles() },
+        navController = navController
+    )
 }

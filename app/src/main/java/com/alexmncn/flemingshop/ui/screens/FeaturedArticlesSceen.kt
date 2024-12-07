@@ -53,16 +53,11 @@ fun FeaturedArticlesScreen(navController: NavController) {
         loadFeaturedArticles()
     }
 
-    Column (
-        modifier = Modifier
-            .padding(horizontal = 10.dp) // Horizontal margin for the content only
-    ) {
-        ArticleList (
-            articles = featuredArticles,
-            total = featuredArticlesTotal,
-            listName = featuredAListName,
-            onShowMore = { loadFeaturedArticles() },
-            navController = navController
-        )
-    }
+    ArticleList (
+        articles = featuredArticles,
+        total = featuredArticlesTotal,
+        listName = featuredAListName,
+        onShowMore = { loadFeaturedArticles() },
+        navController = navController
+    )
 }

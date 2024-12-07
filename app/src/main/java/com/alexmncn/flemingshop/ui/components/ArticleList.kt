@@ -1,5 +1,6 @@
 package com.alexmncn.flemingshop.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -62,68 +65,96 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, onShowMor
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(vertical = 10.dp)  // Margen vertical para todos los elementos sin dejar huecos en el desp.
     ) {
-        // Encabezado
-        Text(text = listName, style = MaterialTheme.typography.titleMedium)
-        Text(text = "$total artículos", style = MaterialTheme.typography.bodyMedium)
-        Spacer(modifier = Modifier.height(10.dp))
-
-        // LazyVerticalGrid para mostrar los artículos en cuadricula
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier.heightIn(max = screenHeight) // Limita el alto del grid para que el scroll no cause errores
-        ) {
-            items(articles.size) { index ->
-                ArticleCard(
-                    article = articles[index],
-                    navController = navController
-                )
-            }
-        }
-
-        // Barra de progreso
+        // Header
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .background(MaterialTheme.colorScheme.primary)
         ) {
-            Text(
-                text = "${articles.size} de $total artículos",
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Spacer(modifier = Modifier.height(5.dp))
-            LinearProgressIndicator(
-                progress = { articlesLoadedProgress },
+            // Padding
+            Column(
                 modifier = Modifier
-                    .width(200.dp)
-                    .height(4.dp)
-                    .clip(RoundedCornerShape(10.dp))
-            )
+                    .padding(10.dp)
+            ) {
+                // Encabezado
+                Text(text = listName, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onPrimary)
+                Text(text = "$total artículos", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimary)
+            }
         }
 
-        // Botón "Mostrar más"
-        if (articles.size < total) {
-            Button(
-                onClick = {
-                    isLoading.value = true
-                    onShowMore()
-                },
-                modifier = Modifier
-                    .fillMaxWidth(),
-                enabled = !isLoading.value // Deshabilita el boton si se estan cargango artículos
+        // Articles
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 10.dp)  // Margen vertical para todos los elementos sin dejar huecos en el desp.
+        ) {
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // LazyVerticalGrid para mostrar los artículos en cuadricula
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.heightIn(max = screenHeight) // Limita el alto del grid para que el scroll no cause errores
             ) {
-                if (isLoading.value) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        strokeWidth = 2.dp
+                items(articles.size) { index ->
+                    ArticleCard(
+                        article = articles[index],
+                        navController = navController
                     )
-                } else {
-                    Text("Mostrar más", fontWeight = FontWeight.Bold)
+                }
+            }
+
+            // Barra de progreso
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "${articles.size} de $total artículos",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Spacer(modifier = Modifier.height(5.dp))
+                LinearProgressIndicator(
+                    progress = { articlesLoadedProgress },
+                    modifier = Modifier
+                        .width(200.dp)
+                        .height(4.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                )
+            }
+
+            // Botón "Mostrar más"
+            if (articles.size < total) {
+                Card(
+                    onClick = {
+                        isLoading.value = true
+                        onShowMore()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    enabled = !isLoading.value, // Deshabilita el boton si se estan cargango artículos
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(10.dp)
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+
+                    ) {
+                        if (isLoading.value) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text("Mostrar más", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
+                        }
+                    }
                 }
             }
         }

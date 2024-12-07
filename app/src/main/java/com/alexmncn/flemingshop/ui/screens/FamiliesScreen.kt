@@ -83,15 +83,10 @@ fun FamilyListScreen(onShowFamily: (codfam: Int, nomfam: String) -> Unit) {
         loadFamilies()
     }
 
-    Column(
-        modifier = Modifier
-            .padding(horizontal = 10.dp) // Horizontal margin for the content only
-    ) {
-        FamilyList(
-            families = families,
-            onShowFamily = { codfam, nomfam -> onShowFamily(codfam, nomfam) }
-        )
-    }
+    FamilyList(
+        families = families,
+        onShowFamily = { codfam, nomfam -> onShowFamily(codfam, nomfam) }
+    )
 }
 
 @Composable
@@ -123,16 +118,11 @@ fun FamilyArticlesScreen(codfam: Int, nomfam: String, navController: NavControll
         loadFamilyArticles()
     }
 
-    Column(
-        modifier = Modifier
-            .padding(horizontal = 10.dp) // Horizontal margin for the content only
-    ) {
-        ArticleList(
-            articles = familyArticles,
-            total = familyArticlesTotal,
-            listName = nomfam,
-            onShowMore = { loadFamilyArticles() },
-            navController = navController
-        )
-    }
+    ArticleList(
+        articles = familyArticles,
+        total = familyArticlesTotal,
+        listName = nomfam,
+        onShowMore = { loadFamilyArticles() },
+        navController = navController
+    )
 }

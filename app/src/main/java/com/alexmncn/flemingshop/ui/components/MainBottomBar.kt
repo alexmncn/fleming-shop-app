@@ -2,6 +2,7 @@ package com.alexmncn.flemingshop.ui.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
@@ -27,7 +28,7 @@ fun MainBottomBar(navController: NavController) {
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
     BottomAppBar(
-        modifier = Modifier.height(60.dp),
+        modifier = Modifier.height(54.dp),
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = Color.White,
         contentPadding = PaddingValues(vertical = 10.dp)
@@ -47,7 +48,8 @@ fun MainBottomBar(navController: NavController) {
                 Icon(
                     imageVector = Icons.Default.Home,
                     contentDescription = "Inicio",
-                    tint = Color.White
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
                 )
             },
             label = {
@@ -76,7 +78,8 @@ fun MainBottomBar(navController: NavController) {
                 Icon(
                     imageVector = Icons.Default.Star,
                     contentDescription = "Articulos Destacados",
-                    tint = Color.White
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
                 )
             },
             label = {
@@ -105,7 +108,8 @@ fun MainBottomBar(navController: NavController) {
                 Icon(
                     imageVector = Icons.Default.FiberNew,
                     contentDescription = "Novedades",
-                    tint = Color.White
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
                 )
             },
             label = {
@@ -134,7 +138,8 @@ fun MainBottomBar(navController: NavController) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.List,
                     contentDescription = "Familias",
-                    tint = Color.White
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
                 )
             },
             label = {
@@ -163,7 +168,8 @@ fun MainBottomBar(navController: NavController) {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Buscar",
-                    tint = Color.White
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
                 )
             },
             label = {
