@@ -95,9 +95,6 @@ fun HomeScreen(navController: NavController) {
                             if (offsetY < 100f) {
                                 finalHeight = targetHeight // Colapsar
                                 collapsibleGreetingViewModel.collapse() // Establecemos el estado a colapsado
-                            } else {
-                                finalHeight = configuration.screenHeightDp.dp // Expandir
-                                collapsibleGreetingViewModel.reset() // Reseteamos el estado del viewmodel
                             }
                             offsetY = 0f // Resetear el desplazamiento
                         },
