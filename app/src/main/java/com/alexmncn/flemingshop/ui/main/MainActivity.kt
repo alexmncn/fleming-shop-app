@@ -71,10 +71,7 @@ fun FlemingShopApp() {
                 }
             },
             bottomBar = {
-                val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
-                if (currentDestination != "home") {
                     MainBottomBar(navController)
-                }
             }
         )
     }
