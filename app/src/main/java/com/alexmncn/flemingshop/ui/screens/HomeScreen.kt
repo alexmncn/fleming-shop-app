@@ -1,6 +1,5 @@
 package com.alexmncn.flemingshop.ui.screens
 
-import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateDpAsState
@@ -46,24 +45,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 
+
 @Composable
 fun HomeScreen(navController: NavController) {
     val configuration = LocalConfiguration.current
     val collapsibleGreetingViewModel: CollapsibleGreetingViewModel = viewModel() // Instancia del viewmodel
     val isCollapsed by collapsibleGreetingViewModel.isCollapsed // Estado de si está colapsado o no
     var offsetY by remember { mutableFloatStateOf(0f) } // Desplazamiento temporal durante el gesto
-    var finalHeight by remember { mutableStateOf(configuration.screenHeightDp.dp) } // Altura final
-
-    // Definir la altura final del Box cuando está colapsado
+    val screenHeight = configuration.screenHeightDp.dp
+    val initialHeight = screenHeight
     val targetHeight = 100.dp
 
-    // Para controlar el desplazamiento real durante el gesto
-    val height = (finalHeight + offsetY.dp).coerceIn(targetHeight, configuration.screenHeightDp.dp)
-
-    // Animación solo cuando se "fija" el tamaño al final del gesto, es decir, con el tamaño cuando soltamos el dedo
+    // Altura animada al final del gesto
     val animatedHeight by animateDpAsState(
-        targetValue = height, // Usar el valor calculado directamente
-        animationSpec = tween(durationMillis = 300), label = "colapse" // Animación de la altura
+        targetValue = if (isCollapsed) targetHeight else initialHeight,
+        animationSpec = tween(durationMillis = 500),
+        label = "animatedHeight"
     )
 
     // Animación flotante
@@ -86,28 +83,30 @@ fun HomeScreen(navController: NavController) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(if (isCollapsed) targetHeight else animatedHeight) // Usamos el valor animado para la altura/ Controlamos cuando se carga ya colapsado
+                .height(if (isCollapsed) animatedHeight else initialHeight) // Usamos el valor animado para la altura/ Controlamos cuando se carga ya colapsado
                 .background(MaterialTheme.colorScheme.primary)
                 .pointerInput(Unit) {
                     detectVerticalDragGestures(
                         onDragEnd = {
-                            // Al finalizar el gesto, si el desplazamiento es suficientemente grande, colapsa
-                            if (offsetY < 100f) {
-                                finalHeight = targetHeight // Colapsar
-                                collapsibleGreetingViewModel.collapse() // Establecemos el estado a colapsado
+                            if (offsetY < -(screenHeight.value - targetHeight.value) / 4) {
+                                // Si se desliza suficiente hacia arriba, colapsar
+                                collapsibleGreetingViewModel.collapse()
+                                offsetY = 0f
+                            } else {
+                                // Si no, volver al estado original
+                                offsetY = 0f
                             }
-                            offsetY = 0f // Resetear el desplazamiento
                         },
                         onDragCancel = {
                             offsetY = 0f // Resetear el desplazamiento si se cancela el gesto
                         },
                         onVerticalDrag = { _, dragAmount ->
-                            // Actualizar el desplazamiento mientras el usuario desliza
                             offsetY += dragAmount
                         }
                     )
                 }
         ) {
+
             // Texto de bienvenida
             Column (
                 modifier = Modifier
