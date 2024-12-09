@@ -139,8 +139,8 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, onShowMor
                         IconButton(
                             onClick = {
                                 coroutineScope.launch {
-                                    gridState.animateScrollToItem(0)
-                                    scrollState.animateScrollTo(0)
+                                    scrollState.animateScrollTo(0) // Scroll principal
+                                    gridState.animateScrollToItem(0) // Scroll grid
                                 }
                             },
                             modifier = Modifier
