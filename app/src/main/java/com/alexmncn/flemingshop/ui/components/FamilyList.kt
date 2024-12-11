@@ -3,6 +3,7 @@ package com.alexmncn.flemingshop.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +17,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
@@ -38,12 +40,17 @@ fun FamilyList(families: List<Family>, onShowFamily: (codfam: Int, nomfam: Strin
                 .background(MaterialTheme.colorScheme.primary)
         ) {
             // Padding
-            Column(
+            Row(
                 modifier = Modifier
-                    .padding(10.dp)
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                Arrangement.SpaceBetween,
+                Alignment.CenterVertically
             ) {
                 // Encabezado
-                Text(text = "Familias", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onPrimary)
+                Text(text = "Familias", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onPrimary)
+                Text(text = "${families.size} familias", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimary)
+
             }
         }
 

@@ -29,10 +29,13 @@ fun NewArticlesScreen(navController: NavController) {
     var newArticles by remember { mutableStateOf<List<Article>>(emptyList()) }
     var newArticlesTotal by remember { mutableIntStateOf(0) }
     var currentPage by remember { mutableIntStateOf(1) }
+    var isLoading by remember { mutableStateOf(false) }
 
     // Funcion para cargar articulos, por pagina
     fun loadNewArticles() {
         CoroutineScope(Dispatchers.IO).launch {
+            isLoading = true
+
             try {
                 newArticlesTotal = catalogRepository.getNewArticlesTotal()
                 val articles = catalogRepository.getNewArticles(page=currentPage)
@@ -41,6 +44,8 @@ fun NewArticlesScreen(navController: NavController) {
             } catch (e: Exception) {
                 Log.e("error", e.toString())
             }
+
+            isLoading = false
         }
     }
 
@@ -53,6 +58,7 @@ fun NewArticlesScreen(navController: NavController) {
         articles = newArticles,
         total = newArticlesTotal,
         listName = newAListName,
+        isLoading = isLoading,
         onShowMore = { loadNewArticles() },
         navController = navController
     )

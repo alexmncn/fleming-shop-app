@@ -50,28 +50,13 @@ import com.alexmncn.flemingshop.data.model.Article
 import kotlinx.coroutines.launch
 
 @Composable
-fun ArticleList(total: Int, articles: List<Article>, listName: String, onShowMore: () -> Unit, navController: NavController) {
+fun ArticleList(total: Int, articles: List<Article>, listName: String, isLoading: Boolean = false, onShowMore: () -> Unit, navController: NavController) {
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp  // Altura de la pantalla
     val scrollState = rememberScrollState() // Scroll principal
     val gridState = rememberLazyGridState() // Scroll del grid de articulos
     val coroutineScope = rememberCoroutineScope()
     val gridColumns = 2 // Numero de columnas en el grid de articulos
-
-    // Progreso de la barra que muestra la cantidad de artículos cargados
-    val articlesLoadedProgress = articles.size.toFloat() / total.toFloat()
-
-    // Guardamos el tamaño anterior de la lista de articulos
-    var previousArticleCount by remember { mutableIntStateOf(articles.size) }
-    val isLoading = remember { mutableStateOf(false) }
-
-    //Comparamos el tamaño de la lista de articulos con el tamaño anterior para determinar
-    // si se ha terminado de cargar articulos
-    LaunchedEffect(articles.size) {
-        if (articles.size > previousArticleCount) {
-            isLoading.value = false
-            previousArticleCount = articles.size
-        }
-    }
+    val articlesLoadedProgress = articles.size.toFloat() / total.toFloat() // Progreso de la barra que muestra la cantidad de artículos cargados
 
     Column(
         modifier = Modifier
@@ -98,7 +83,7 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, onShowMor
             }
         }
 
-        if (articles.isNotEmpty()) {
+        if (articles.isNotEmpty()) { // Si hay articulos
             // Articles
             Column(
                 modifier = Modifier
@@ -184,12 +169,11 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, onShowMor
                 if (articles.size < total) {
                     Card(
                         onClick = {
-                            isLoading.value = true
                             onShowMore()
                         },
                         modifier = Modifier
                             .fillMaxWidth(),
-                        enabled = !isLoading.value, // Deshabilita el boton si se estan cargango artículos
+                        enabled = !isLoading, // Deshabilita el boton si se estan cargango artículos
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
                         Column(
@@ -199,7 +183,7 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, onShowMor
                             horizontalAlignment = Alignment.CenterHorizontally
 
                         ) {
-                            if (isLoading.value) {
+                            if (isLoading) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(24.dp),
                                     color = MaterialTheme.colorScheme.primary,
@@ -212,7 +196,7 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, onShowMor
                     }
                 }
             }
-        } else {
+        } else { // Si no hay articulos
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -223,14 +207,22 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, onShowMor
                         .align(Alignment.Center),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.SearchOff,
-                        contentDescription = "Sin resultados",
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(40.dp)
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Text(text = "No se han encontrado artículos", style = MaterialTheme.typography.bodyLarge)
+                    if (isLoading) { // Si esta cargando
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(40.dp),
+                            color = MaterialTheme.colorScheme.primary,
+                            strokeWidth = 2.dp
+                        )
+                    } else { // Si no esta cargando -> no hay resultados | Otro error
+                        Icon(
+                            imageVector = Icons.Default.SearchOff,
+                            contentDescription = "Sin resultados",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(40.dp)
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(text = "No se han encontrado artículos", style = MaterialTheme.typography.bodyLarge)
+                    }
                 }
             }
         }

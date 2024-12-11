@@ -48,6 +48,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -69,7 +70,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun DetailArticleScreen(codebar: String) {
+fun DetailArticleScreen(codebar: String, navController: NavController) {
     val context = LocalContext.current
     val apiClient = ApiClient.provideOkHttpClient(context)
     val catalogRepository: CatalogRepository by lazy { CatalogRepository(ApiService(apiClient)) }
@@ -298,7 +299,7 @@ fun DetailArticleScreen(codebar: String) {
 
                     // Destacado
                     if (article!!.destacado) {
-                        FeaturedLabel(modifier = Modifier.shadow(2.dp, shape = RoundedCornerShape(20.dp)))
+                        FeaturedLabel(modifier = Modifier.shadow(2.dp, shape = RoundedCornerShape(20.dp)), navController)
                     }
                 }
             }

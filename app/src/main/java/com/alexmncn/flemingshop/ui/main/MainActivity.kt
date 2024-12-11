@@ -65,7 +65,7 @@ fun FlemingShopApp() {
                         arguments = listOf(navArgument("codebar") { type = NavType.StringType })
                     ) {
                         val codebar = it.arguments?.getString("codebar") ?: ""
-                        DetailArticleScreen(codebar)
+                        DetailArticleScreen(codebar, navController)
                     }
                 }
             },

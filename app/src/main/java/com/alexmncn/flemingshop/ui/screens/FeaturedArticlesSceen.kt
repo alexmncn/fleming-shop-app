@@ -29,10 +29,13 @@ fun FeaturedArticlesScreen(navController: NavController) {
     var featuredArticles by remember { mutableStateOf<List<Article>>(emptyList()) }
     var featuredArticlesTotal by remember { mutableIntStateOf(0) }
     var currentPage by remember { mutableIntStateOf(1) }
+    var isLoading by remember { mutableStateOf(false) }
 
     // Funcion para cargar articulos, por pagina
     fun loadFeaturedArticles() {
         CoroutineScope(Dispatchers.IO).launch {
+            isLoading = true
+
             try {
                 featuredArticlesTotal = catalogRepository.getFeaturedArticlesTotal()
                 val articles = catalogRepository.getFeaturedArticles(page=currentPage)
@@ -41,6 +44,8 @@ fun FeaturedArticlesScreen(navController: NavController) {
             } catch (e: Exception) {
                 Log.e("error", e.toString())
             }
+
+            isLoading = false
         }
     }
 
@@ -53,6 +58,7 @@ fun FeaturedArticlesScreen(navController: NavController) {
         articles = featuredArticles,
         total = featuredArticlesTotal,
         listName = featuredAListName,
+        isLoading = isLoading,
         onShowMore = { loadFeaturedArticles() },
         navController = navController
     )

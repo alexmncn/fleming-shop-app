@@ -38,6 +38,7 @@ import com.alexmncn.flemingshop.data.network.ApiClient
 import com.alexmncn.flemingshop.data.network.ApiService
 import com.alexmncn.flemingshop.data.repository.CatalogRepository
 import com.alexmncn.flemingshop.ui.components.ArticleList
+import com.alexmncn.flemingshop.ui.components.CustomSearchBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -53,6 +54,7 @@ fun SearchArticlesScreen(navController: NavController) {
     var searchArticlesTotal by remember { mutableIntStateOf(0) }
     var searchArticles by remember { mutableStateOf<List<Article>>(emptyList()) }
     var currentPage by remember { mutableIntStateOf(1) }
+    var isLoading by remember { mutableStateOf(false) }
 
     var placeholder by remember { mutableStateOf("Buscar entre todos los artículos") }
     var query by remember { mutableStateOf("") }
@@ -61,6 +63,8 @@ fun SearchArticlesScreen(navController: NavController) {
 
     fun loadArticlesTotal() {
         CoroutineScope(Dispatchers.IO).launch {
+            isLoading = true
+
             try {
                 allArticlesTotal = catalogRepository.getAllArticlesTotal()
 
@@ -68,6 +72,8 @@ fun SearchArticlesScreen(navController: NavController) {
             } catch (e: Exception) {
                 Log.e("error", e.toString())
             }
+
+            isLoading = false
         }
     }
 
@@ -79,6 +85,8 @@ fun SearchArticlesScreen(navController: NavController) {
         if (query != lastQuery) {
             currentPage = 1
             CoroutineScope(Dispatchers.IO).launch {
+                isLoading = true
+
                 try {
                     searchArticlesTotal = catalogRepository.getSearchArticlesTotal(search = query)
                     searchArticles = catalogRepository.getSearchArticles(search = query, page = currentPage)
@@ -87,9 +95,13 @@ fun SearchArticlesScreen(navController: NavController) {
                     Log.e("error", e.toString())
                     searchArticles = emptyList()
                 }
+
+                isLoading = false
             }
         } else {
             CoroutineScope(Dispatchers.IO).launch {
+                isLoading = true
+
                 try {
                     val articles = catalogRepository.getSearchArticles(search = query, page = currentPage)
                     searchArticles = searchArticles + articles
@@ -97,6 +109,8 @@ fun SearchArticlesScreen(navController: NavController) {
                 } catch (e: Exception) {
                     Log.e("error", e.toString())
                 }
+
+                isLoading = false
             }
         }
         lastQuery = query
@@ -158,51 +172,9 @@ fun SearchArticlesScreen(navController: NavController) {
             articles = searchArticles,
             total = searchArticlesTotal,
             listName = searchAListName,
+            isLoading = isLoading,
             onShowMore = { loadSearchArticles() },
             navController = navController
         )
-    }
-}
-
-@Composable
-fun CustomSearchBar(
-    query: String,
-    onQueryChange: (String) -> Unit,
-    onSearch: () -> Unit,
-    placeholder: String,
-    modifier: Modifier = Modifier,
-
-) {
-    Box(
-        modifier = modifier
-            .background(MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(8.dp))
-            .padding(10.dp)
-    ) {
-
-        BasicTextField(
-            value = query,
-            onValueChange = onQueryChange,
-            textStyle = MaterialTheme.typography.bodyLarge,
-            singleLine = true,
-            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-            decorationBox = { innerTextField ->
-                if (query.isEmpty()) {
-                    Text(
-                        text = placeholder,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
-                innerTextField()
-            },
-            modifier = Modifier
-                .onKeyEvent {
-                    if (it.nativeKeyEvent.keyCode == android.view.KeyEvent.KEYCODE_ENTER) {
-                        onSearch()
-                        true
-                    } else false
-                }
-        )
-
     }
 }

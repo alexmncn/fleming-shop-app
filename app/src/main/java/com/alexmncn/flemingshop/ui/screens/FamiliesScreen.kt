@@ -95,10 +95,13 @@ fun FamilyArticlesScreen(codfam: Int, nomfam: String, navController: NavControll
     var familyArticles by remember { mutableStateOf<List<Article>>(emptyList()) }
     var familyArticlesTotal by remember { mutableIntStateOf(0) }
     var currentPage by remember { mutableIntStateOf(1) }
+    var isLoading by remember { mutableStateOf(false) }
 
     // Funcion para cargar articulos, por pagina
     fun loadFamilyArticles() {
         CoroutineScope(Dispatchers.IO).launch {
+            isLoading = true
+
             try {
                 familyArticlesTotal = catalogRepository.getFamilyArticlesTotal(codfam)
                 val articles = catalogRepository.getFamilyArticles(familyId = codfam, page = currentPage)
@@ -107,6 +110,8 @@ fun FamilyArticlesScreen(codfam: Int, nomfam: String, navController: NavControll
             } catch (e: Exception) {
                 Log.e("error", e.toString())
             }
+
+            isLoading = false
         }
     }
 
@@ -119,6 +124,7 @@ fun FamilyArticlesScreen(codfam: Int, nomfam: String, navController: NavControll
         articles = familyArticles,
         total = familyArticlesTotal,
         listName = capitalizeText(nomfam),
+        isLoading = isLoading,
         onShowMore = { loadFamilyArticles() },
         navController = navController
     )

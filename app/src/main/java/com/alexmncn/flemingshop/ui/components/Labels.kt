@@ -1,6 +1,7 @@
 package com.alexmncn.flemingshop.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -21,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 
 @Composable
 fun StockLabel(stock: Int, modifier: Modifier) {
@@ -65,7 +67,7 @@ fun StockLabel(stock: Int, modifier: Modifier) {
 }
 
 @Composable
-fun FeaturedLabel(modifier: Modifier) {
+fun FeaturedLabel(modifier: Modifier, navController: NavController) {
     Box(
         modifier = modifier
             .wrapContentSize()
@@ -77,6 +79,7 @@ fun FeaturedLabel(modifier: Modifier) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .padding(top = 3.dp, bottom = 3.dp, start = 6.dp, end = 6.dp)
+                .clickable { navController.navigate("featured_articles") }
         ) {
             Icon(
                 imageVector = Icons.Default.Star,
