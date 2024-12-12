@@ -7,6 +7,10 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,9 +27,17 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddShoppingCart
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.outlined.FileUpload
+import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -48,6 +60,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -81,6 +94,8 @@ fun DetailArticleScreen(codebar: String, navController: NavController) {
     var tags by remember { mutableIntStateOf(0) }
     var uploadingImg by remember { mutableStateOf(false) }
     var imgUploadSuccess by remember { mutableStateOf(false) }
+    var shoppingListCount by remember { mutableIntStateOf(0) }
+    var addShoppListUnfold by remember { mutableStateOf(false) }
 
     fun checkTags(article: Article?) {
         if (article != null) {
@@ -263,6 +278,22 @@ fun DetailArticleScreen(codebar: String, navController: NavController) {
             .show()
     }
 
+    fun addShoppingList() {
+        if (addShoppListUnfold) {
+            shoppingListCount++
+        } else {
+            addShoppListUnfold = true
+        }
+    }
+
+    fun removeShoppingList() {
+        if (addShoppListUnfold) {
+            shoppingListCount--
+        } else {
+            addShoppListUnfold = true
+        }
+    }
+
 
     article?.let {
         Column (
@@ -363,7 +394,110 @@ fun DetailArticleScreen(codebar: String, navController: NavController) {
                         .align(Alignment.End)
                 ) {
                     // Etiqueta de Stock
-                    StockLabel(article!!.stock, modifier = Modifier.shadow(2.dp, shape = RoundedCornerShape(20.dp)))
+                    StockLabel(article!!.stock, modifier = Modifier)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Add to shopping list button
+            Card(
+                modifier = Modifier
+                    .animateContentSize(
+                        animationSpec = tween(durationMillis = 300)
+                    )
+                    .align(Alignment.End) // Fijado a la derecha (si esta plegado)
+                    .padding(10.dp)
+                    .shadow(6.dp, shape = RoundedCornerShape(10.dp)),
+                colors = CardDefaults.cardColors(containerColor = if (shoppingListCount > 0) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        // Ocupa todo el ancho si esta desplegado
+                        .then(if (addShoppListUnfold) Modifier.fillMaxWidth() else Modifier)
+                        .padding(10.dp)
+                ) {
+                    if (shoppingListCount == 0) { // Si no esta añadido a la lista
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                // Ocupa todo el ancho si esta desplegado
+                                .then(if (addShoppListUnfold) Modifier.fillMaxWidth() else Modifier)
+                                .clickable { addShoppingList() }
+                        ) {
+                            if (addShoppListUnfold) {
+                                Text(
+                                    "Añadir a la lista de la compra",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
+
+                            Icon(
+                                imageVector = Icons.Default.AddShoppingCart,
+                                contentDescription = "Añadir",
+                                tint = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+                    } else { // Si esta añadido a la lista
+                        if (addShoppListUnfold) { // Si esta desplegado
+                            if (shoppingListCount == 1) { // Si hay solo uno en la lista
+                                Icon(
+                                    imageVector = Icons.Default.DeleteForever,
+                                    contentDescription = "Eliminar",
+                                    tint = Color.Red,
+                                    modifier = Modifier
+                                        .clickable { removeShoppingList() }
+                                )
+                            } else { // Si hay mas de uno
+                                Icon(
+                                    imageVector = Icons.Default.Remove,
+                                    contentDescription = "Eliminar",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier
+                                        .clickable { removeShoppingList() }
+                                )
+                            }
+
+                            // shoppingList count
+                            Text(
+                                shoppingListCount.toString(),
+                                style = MaterialTheme.typography.titleSmall.copy(fontSize = 18.sp),
+                                color = MaterialTheme.colorScheme.primary
+                            )
+
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Añadir",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier
+                                    .clickable { addShoppingList() }
+                            )
+                        } else { // Si está plegado
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                modifier =  Modifier
+                                    .clickable { addShoppingList() }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.ShoppingCart,
+                                    contentDescription = "Añadir",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+
+                                // shoppingList count
+                                Text(
+                                    shoppingListCount.toString(),
+                                    style = MaterialTheme.typography.titleSmall.copy(fontSize = 18.sp),
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+                    }
                 }
             }
 

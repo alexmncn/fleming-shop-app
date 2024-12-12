@@ -29,7 +29,7 @@ fun StockLabel(stock: Int, modifier: Modifier) {
     Box(
         modifier = modifier
             .wrapContentSize()
-            .shadow(6.dp, shape = RoundedCornerShape(20.dp))
+            .shadow(4.dp, shape = RoundedCornerShape(20.dp))
             .clip(RoundedCornerShape(20.dp))
             .background(Color.White) // Fondo blanco
     ) {
@@ -73,7 +73,7 @@ fun FeaturedLabel(modifier: Modifier, navController: NavController) {
             .wrapContentSize()
             .shadow(6.dp, shape = RoundedCornerShape(20.dp))
             .clip(RoundedCornerShape(20.dp))
-            .background(MaterialTheme.colorScheme.primary), // !!! PROVISIONAL !!!
+            .background(Color(0xFFFFCC00)), // !!! PROVISIONAL !!!
     ) {
         Row (
             verticalAlignment = Alignment.CenterVertically,
