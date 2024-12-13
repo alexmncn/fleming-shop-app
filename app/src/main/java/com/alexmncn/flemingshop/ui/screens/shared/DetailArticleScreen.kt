@@ -65,12 +65,14 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.alexmncn.flemingshop.data.db.AppDatabase
 import com.alexmncn.flemingshop.data.model.Article
 import com.alexmncn.flemingshop.data.network.ApiClient
 import com.alexmncn.flemingshop.data.network.ApiService
 import com.alexmncn.flemingshop.data.network.AuthManager
 import com.alexmncn.flemingshop.data.repository.AdminActionsRepository
 import com.alexmncn.flemingshop.data.repository.CatalogRepository
+import com.alexmncn.flemingshop.data.repository.ShoppingListRepository
 import com.alexmncn.flemingshop.ui.components.FeaturedLabel
 import com.alexmncn.flemingshop.ui.components.HiddenLabel
 import com.alexmncn.flemingshop.ui.components.StockLabel
@@ -83,11 +85,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun DetailArticleScreen(codebar: String, navController: NavController) {
+fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDatabase) {
     val context = LocalContext.current
     val apiClient = ApiClient.provideOkHttpClient(context)
     val catalogRepository: CatalogRepository by lazy { CatalogRepository(ApiService(apiClient)) }
     val adminActionsRepository: AdminActionsRepository by lazy { AdminActionsRepository(ApiService(apiClient)) }
+    val shoppingListRepository: ShoppingListRepository by lazy { ShoppingListRepository(db) }
 
     var article by remember { mutableStateOf<Article?>(null) }
     val imageUrl = Constans.IMAGES_URL + "articles/${article?.codebar}.webp"

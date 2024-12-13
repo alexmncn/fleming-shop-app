@@ -43,13 +43,13 @@ class MainActivity : AppCompatActivity() {
         AuthManager.initialize(this)
 
         setContent {
-            FlemingShopApp()
+            FlemingShopApp(db)
         }
     }
 }
 
 @Composable
-fun FlemingShopApp() {
+fun FlemingShopApp(db: AppDatabase) {
     val navController = rememberNavController()
 
     FlemingShopTheme {
@@ -73,7 +73,7 @@ fun FlemingShopApp() {
                         arguments = listOf(navArgument("codebar") { type = NavType.StringType })
                     ) {
                         val codebar = it.arguments?.getString("codebar") ?: ""
-                        DetailArticleScreen(codebar, navController)
+                        DetailArticleScreen(codebar, navController, db)
                     }
                 }
             },
