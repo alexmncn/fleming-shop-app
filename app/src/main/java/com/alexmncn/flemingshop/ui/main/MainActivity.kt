@@ -12,6 +12,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.alexmncn.flemingshop.data.db.AppDatabase
+import com.alexmncn.flemingshop.data.db.DatabaseProvider
 import com.alexmncn.flemingshop.data.network.AuthManager
 import com.alexmncn.flemingshop.ui.components.MainBottomBar
 import com.alexmncn.flemingshop.ui.components.MainTopBar
@@ -27,9 +29,15 @@ import com.alexmncn.flemingshop.ui.screens.shared.DetailArticleScreen
 import com.alexmncn.flemingshop.ui.theme.FlemingShopTheme
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var db: AppDatabase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide() // Hide default topbar with app name
+
+        // Inicializar la base de datos
+        db = DatabaseProvider.getDatabase(this)
 
         // Inicializamos la autenticación
         AuthManager.initialize(this)
