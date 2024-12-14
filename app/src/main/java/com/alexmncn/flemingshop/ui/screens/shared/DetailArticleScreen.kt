@@ -153,9 +153,8 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
                     val response =
                         adminActionsRepository.unfeatureArticle(article!!.codebar.toString())
                     if (response) {
-                        article =
-                            article!!.copy(destacado = false) // Actualiza el estado local del parametro
-                        checkTags(article) // Actualiza las
+                        article = article!!.copy(destacado = false) // Actualiza el estado local del parametro
+                        checkTags(article) // Actualiza las etiquetas
                         messageStatus = "Articulo eliminado de destacados"
                     } else {
                         messageStatus = "Error al eliminar el articulo de destacados"
@@ -328,6 +327,7 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
     article?.let {
         Column (
             modifier = Modifier
+                .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .background(Color.White)
         ) {
