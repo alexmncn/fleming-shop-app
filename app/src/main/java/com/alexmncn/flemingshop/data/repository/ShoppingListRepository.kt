@@ -2,17 +2,22 @@ package com.alexmncn.flemingshop.data.repository
 
 import com.alexmncn.flemingshop.data.db.AppDatabase
 import com.alexmncn.flemingshop.data.db.ArticleItem
+import kotlinx.coroutines.flow.Flow
 import java.math.BigInteger
 
 class ShoppingListRepository(db: AppDatabase) {
     private val articleItemDao = db.articleItemDao()
 
-    suspend fun getAllArticles(): List<ArticleItem> {
+    suspend fun getAllArticles(): Flow<List<ArticleItem>> {
         return articleItemDao.getAll()
     }
 
-    suspend fun getArticleByCodebar(codebar: BigInteger): ArticleItem? {
-        return articleItemDao.getByCodebar(codebar.toLong())
+    suspend fun deleteAllArticles() {
+        articleItemDao.deleteAll()
+    }
+
+    fun getArticleByCodebar(codebar: BigInteger): Flow<ArticleItem?> {
+        return articleItemDao.getByCodebarFlow(codebar.toLong())
     }
 
     suspend fun deleteArticleByCodebar(codebar: BigInteger) {
@@ -35,7 +40,6 @@ class ShoppingListRepository(db: AppDatabase) {
             } else {
                 // Sino, lo eliminamos
                 articleItemDao.deleteByCodebar(articleItem.codebar)
-
             }
         }
     }
