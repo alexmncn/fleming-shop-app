@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -105,7 +106,8 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
     var uploadingImg by remember { mutableStateOf(false) }
     var imgUploadSuccess by remember { mutableStateOf(false) }
     var addShoppListUnfold by remember { mutableStateOf(false) }
-    val quantityInShoppingList by shoppingListViewModel.getArticleQuantityByCodebar(codebar.toBigInteger()).collectAsState()
+    val quantityInShoppingList by shoppingListViewModel.getArticleQuantityByCodebar(BigInteger(codebar)).collectAsState(initial = 0)
+    var lastQuantityInShoppingList by remember { mutableIntStateOf(quantityInShoppingList) }
 
     fun checkTags(article: Article?) {
         if (article != null) {
@@ -293,17 +295,29 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
             // Creamos el articleItem
             val newArticleItem = ArticleItem((article!!.codebar).toLong(), article!!.detalle, article!!.pvp, 1)
             shoppingListViewModel.insertArticle(newArticleItem)
+
+            lastQuantityInShoppingList = quantityInShoppingList
         } else {
             // Desplegar
             addShoppListUnfold = true
         }
     }
 
-    fun removeShoppingList() {
+    fun removeShoppingList(delete: Boolean = false) {
         if (addShoppListUnfold) {
-            // Creamos el articleItem (Con cantidad negativa, para restar una unidad)
-            val newArticleItem = ArticleItem((article!!.codebar).toLong(), article!!.detalle, article!!.pvp, -1)
-            shoppingListViewModel.insertArticle(newArticleItem)
+            if (delete) {
+                // Borramos el articulo de la lista
+                shoppingListViewModel.deleteArticleByCodebar(article!!.codebar)
+
+                addShoppListUnfold = false
+                lastQuantityInShoppingList = -1
+            } else {
+                // Creamos el articleItem (Con cantidad negativa, para restar una unidad)
+                val newArticleItem = ArticleItem((article!!.codebar).toLong(), article!!.detalle, article!!.pvp, -1)
+                shoppingListViewModel.insertArticle(newArticleItem)
+
+                lastQuantityInShoppingList = quantityInShoppingList
+            }
         } else {
             // Desplegar
             addShoppListUnfold = true
@@ -416,94 +430,77 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Add to shopping list button
-            Card(
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(0.dp),
                 modifier = Modifier
-                    .animateContentSize(
-                        animationSpec = tween(durationMillis = 300)
-                    )
-                    .align(Alignment.End) // Fijado a la derecha (si esta plegado)
-                    .padding(10.dp)
-                    .shadow(6.dp, shape = RoundedCornerShape(10.dp)),
-                colors = CardDefaults.cardColors(containerColor = if (quantityInShoppingList > 0) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary)
+                    .wrapContentWidth() // Ajusta el ancho al contenido
+                    .align(Alignment.End) // Lleva el Row al extremo derecho
+                    .then(if (addShoppListUnfold) Modifier.fillMaxWidth() else Modifier)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                // Add to shopping list button
+                Card(
                     modifier = Modifier
-                        // Ocupa todo el ancho si esta desplegado
-                        .then(if (addShoppListUnfold) Modifier.fillMaxWidth() else Modifier)
-                        .padding(10.dp)
+                        .animateContentSize(
+                            animationSpec = tween(durationMillis = 300)
+                        )
+                        .then(if (addShoppListUnfold) Modifier.weight(1f) else Modifier)
+                        .padding(start = 10.dp, end = if (addShoppListUnfold) 5.dp else 10.dp, top = 10.dp, bottom = 10.dp)
+                        .align(Alignment.CenterVertically) // Fijado a la derecha (si esta plegado)
+                        .shadow(6.dp, shape = RoundedCornerShape(10.dp))
+                        .clickable{ if (!addShoppListUnfold || lastQuantityInShoppingList == -1 || quantityInShoppingList <= 0) addShoppingList() },
+                    colors = CardDefaults.cardColors(containerColor = if (quantityInShoppingList > 0 && lastQuantityInShoppingList != -1) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary)
                 ) {
-                    if (quantityInShoppingList == 0) { // Si no esta añadido a la lista
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier
-                                // Ocupa todo el ancho si esta desplegado
-                                .then(if (addShoppListUnfold) Modifier.fillMaxWidth() else Modifier)
-                                .clickable { addShoppingList() }
-                        ) {
-                            if (addShoppListUnfold) {
-                                Text(
-                                    "Añadir a la lista de la compra",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    color = MaterialTheme.colorScheme.onPrimary
-                                )
-                            }
-
-                            Icon(
-                                imageVector = Icons.Default.AddShoppingCart,
-                                contentDescription = "Añadir",
-                                tint = MaterialTheme.colorScheme.onPrimary
-                            )
-                        }
-                    } else { // Si esta añadido a la lista
-                        if (addShoppListUnfold) { // Si esta desplegado
-                            if (quantityInShoppingList == 1) { // Si hay solo uno en la lista
-                                Icon(
-                                    imageVector = Icons.Default.DeleteForever,
-                                    contentDescription = "Eliminar",
-                                    tint = Color.Red,
-                                    modifier = Modifier
-                                        .clickable { removeShoppingList() }
-                                )
-                            } else { // Si hay mas de uno
-                                Icon(
-                                    imageVector = Icons.Default.Remove,
-                                    contentDescription = "Eliminar",
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier
-                                        .clickable { removeShoppingList() }
-                                )
-                            }
-
-                            // shoppingList count
-                            Text(
-                                quantityInShoppingList.toString(),
-                                style = MaterialTheme.typography.titleSmall.copy(fontSize = 18.sp),
-                                color = MaterialTheme.colorScheme.primary
-                            )
-
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = "Añadir",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier
-                                    .clickable { addShoppingList() }
-                            )
-                        } else { // Si está plegado
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            // Ocupa todo el ancho si esta desplegado
+                            .then(if (addShoppListUnfold) Modifier.fillMaxWidth() else Modifier)
+                            .padding(10.dp)
+                    ) {
+                        if (quantityInShoppingList <= 0 || lastQuantityInShoppingList == -1) { // Si no esta añadido a la lista
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                                modifier =  Modifier
-                                    .clickable { addShoppingList() }
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                modifier = Modifier
+                                    // Ocupa todo el ancho si esta desplegado
+                                    .then(if (addShoppListUnfold) Modifier.fillMaxWidth() else Modifier)
+                                    //.clickable { addShoppingList() }
                             ) {
+                                if (addShoppListUnfold) {
+                                    Text(
+                                        "Añadir a la lista de la compra",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        color = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                }
+
                                 Icon(
-                                    imageVector = Icons.Outlined.ShoppingCart,
+                                    imageVector = Icons.Default.AddShoppingCart,
                                     contentDescription = "Añadir",
-                                    tint = MaterialTheme.colorScheme.primary
+                                    tint = MaterialTheme.colorScheme.onPrimary
                                 )
+                            }
+                        } else { // Si esta añadido a la lista
+                            if (addShoppListUnfold) { // Si esta desplegado
+                                if (quantityInShoppingList == 1) { // Si hay solo uno en la lista
+                                    Icon(
+                                        imageVector = Icons.Default.DeleteForever,
+                                        contentDescription = "Eliminar",
+                                        tint = Color.Red,
+                                        modifier = Modifier
+                                            .clickable { removeShoppingList(true) }
+                                    )
+                                } else { // Si hay mas de uno
+                                    Icon(
+                                        imageVector = Icons.Default.Remove,
+                                        contentDescription = "Eliminar",
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier
+                                            .clickable { removeShoppingList() }
+                                    )
+                                }
 
                                 // shoppingList count
                                 Text(
@@ -511,8 +508,55 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
                                     style = MaterialTheme.typography.titleSmall.copy(fontSize = 18.sp),
                                     color = MaterialTheme.colorScheme.primary
                                 )
+
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Añadir",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier
+                                        .clickable { addShoppingList() }
+                                )
+                            } else { // Si está plegado
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                    modifier = Modifier
+                                        //.clickable { addShoppingList() }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.ShoppingCart,
+                                        contentDescription = "Añadir",
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+
+                                    // shoppingList count
+                                    Text(
+                                        quantityInShoppingList.toString(),
+                                        style = MaterialTheme.typography.titleSmall.copy(fontSize = 18.sp),
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
                             }
                         }
+                    }
+                }
+
+                // Check
+                if (addShoppListUnfold && quantityInShoppingList > 0 && lastQuantityInShoppingList != -1) {
+                    Card(
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .padding(start = 5.dp, end = 10.dp, top = 10.dp, bottom = 10.dp)
+                            .shadow(6.dp, shape = RoundedCornerShape(10.dp))
+                            .clickable { addShoppListUnfold = false }, // Lo pliega al confirmar
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Confirmar",
+                            tint = Color.White,
+                            modifier = Modifier.padding(10.dp)
+                        )
                     }
                 }
             }
