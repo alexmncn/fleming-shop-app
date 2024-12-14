@@ -28,8 +28,6 @@ class ShoppingListRepository(db: AppDatabase) {
     suspend fun insertArticle(articleItem: ArticleItem) {
         val existingArticle = articleItemDao.getByCodebar(articleItem.codebar)
 
-        Log.d("existingArticle", existingArticle.toString())
-
         if (existingArticle == null && articleItem.quantity > 0) {
             // Si no existe y la cantidad es positiva, lo insertamos
             articleItemDao.insert(articleItem)
