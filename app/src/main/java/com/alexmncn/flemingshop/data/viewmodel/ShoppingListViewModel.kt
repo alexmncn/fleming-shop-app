@@ -4,9 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alexmncn.flemingshop.data.db.ArticleItem
 import com.alexmncn.flemingshop.data.repository.ShoppingListRepository
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -48,15 +53,12 @@ class ShoppingListViewModel(repository: ShoppingListRepository) : ViewModel() {
         return articleItemFlow
     }
 
-    // Devuelve la cantidad de un artículo (0 si no existe)
-    fun getArticleQuantityByCodebar(codebar: BigInteger): StateFlow<Int> {
-        return shoppingListRepository.getArticleByCodebar(codebar)
-            .map { article -> article?.quantity ?: 0 } // Mapea el artículo para devolver 0 si es null
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.Lazily,
-                initialValue = 0 // Valor inicial
-            )
+    // Devuelve la cantidad de un artículo, si es distinto de 0
+    fun getArticleQuantityByCodebar(codebar: BigInteger): Flow<Int> {
+        return shoppingListRepository.getArticleByCodebar(codebar).map { article ->
+            article?.quantity ?: 0
+        }
+            .filter { it != 0 }
     }
 
     // Eliminar un artículo de la lista
