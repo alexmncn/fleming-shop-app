@@ -46,6 +46,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -61,6 +62,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -74,6 +76,8 @@ import com.alexmncn.flemingshop.data.network.AuthManager
 import com.alexmncn.flemingshop.data.repository.AdminActionsRepository
 import com.alexmncn.flemingshop.data.repository.CatalogRepository
 import com.alexmncn.flemingshop.data.repository.ShoppingListRepository
+import com.alexmncn.flemingshop.data.viewmodel.ShoppingListViewModel
+import com.alexmncn.flemingshop.data.viewmodel.ShoppingListViewModelFactory
 import com.alexmncn.flemingshop.ui.components.FeaturedLabel
 import com.alexmncn.flemingshop.ui.components.HiddenLabel
 import com.alexmncn.flemingshop.ui.components.StockLabel
@@ -93,14 +97,15 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
     val catalogRepository: CatalogRepository by lazy { CatalogRepository(ApiService(apiClient)) }
     val adminActionsRepository: AdminActionsRepository by lazy { AdminActionsRepository(ApiService(apiClient)) }
     val shoppingListRepository: ShoppingListRepository by lazy { ShoppingListRepository(db) }
+    val shoppingListViewModel: ShoppingListViewModel = viewModel(factory = ShoppingListViewModelFactory(shoppingListRepository))
 
     var article by remember { mutableStateOf<Article?>(null) }
     val imageUrl = Constans.IMAGES_URL + "articles/${article?.codebar}.webp"
     var tags by remember { mutableIntStateOf(0) }
     var uploadingImg by remember { mutableStateOf(false) }
     var imgUploadSuccess by remember { mutableStateOf(false) }
-    var shoppingListCount by remember { mutableIntStateOf(0) }
     var addShoppListUnfold by remember { mutableStateOf(false) }
+    val quantityInShoppingList by shoppingListViewModel.getArticleQuantityByCodebar(codebar.toBigInteger()).collectAsState()
 
     fun checkTags(article: Article?) {
         if (article != null) {
@@ -286,13 +291,8 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
     fun addShoppingList() {
         if (addShoppListUnfold) {
             // Creamos el articleItem
-            val articleItem = ArticleItem((article!!.codebar).toLong(), article!!.detalle, article!!.pvp, 1)
-
-            // Añadimos a la db en hilo sec.
-            CoroutineScope(Dispatchers.IO).launch {
-                shoppingListRepository.insertArticle(articleItem)
-                shoppingListCount++
-            }
+            val newArticleItem = ArticleItem((article!!.codebar).toLong(), article!!.detalle, article!!.pvp, 1)
+            shoppingListViewModel.insertArticle(newArticleItem)
         } else {
             // Desplegar
             addShoppListUnfold = true
@@ -302,13 +302,8 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
     fun removeShoppingList() {
         if (addShoppListUnfold) {
             // Creamos el articleItem (Con cantidad negativa, para restar una unidad)
-            val articleItem = ArticleItem((article!!.codebar).toLong(), article!!.detalle, article!!.pvp, -1)
-
-            // Añadimos a la db en hilo sec.
-            CoroutineScope(Dispatchers.IO).launch {
-                shoppingListRepository.insertArticle(articleItem)
-                shoppingListCount--
-            }
+            val newArticleItem = ArticleItem((article!!.codebar).toLong(), article!!.detalle, article!!.pvp, -1)
+            shoppingListViewModel.insertArticle(newArticleItem)
         } else {
             // Desplegar
             addShoppListUnfold = true
@@ -430,7 +425,7 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
                     .align(Alignment.End) // Fijado a la derecha (si esta plegado)
                     .padding(10.dp)
                     .shadow(6.dp, shape = RoundedCornerShape(10.dp)),
-                colors = CardDefaults.cardColors(containerColor = if (shoppingListCount > 0) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary)
+                colors = CardDefaults.cardColors(containerColor = if (quantityInShoppingList > 0) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -440,7 +435,7 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
                         .then(if (addShoppListUnfold) Modifier.fillMaxWidth() else Modifier)
                         .padding(10.dp)
                 ) {
-                    if (shoppingListCount == 0) { // Si no esta añadido a la lista
+                    if (quantityInShoppingList == 0) { // Si no esta añadido a la lista
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -465,7 +460,7 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
                         }
                     } else { // Si esta añadido a la lista
                         if (addShoppListUnfold) { // Si esta desplegado
-                            if (shoppingListCount == 1) { // Si hay solo uno en la lista
+                            if (quantityInShoppingList == 1) { // Si hay solo uno en la lista
                                 Icon(
                                     imageVector = Icons.Default.DeleteForever,
                                     contentDescription = "Eliminar",
@@ -485,7 +480,7 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
 
                             // shoppingList count
                             Text(
-                                shoppingListCount.toString(),
+                                quantityInShoppingList.toString(),
                                 style = MaterialTheme.typography.titleSmall.copy(fontSize = 18.sp),
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -512,7 +507,7 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
 
                                 // shoppingList count
                                 Text(
-                                    shoppingListCount.toString(),
+                                    quantityInShoppingList.toString(),
                                     style = MaterialTheme.typography.titleSmall.copy(fontSize = 18.sp),
                                     color = MaterialTheme.colorScheme.primary
                                 )
