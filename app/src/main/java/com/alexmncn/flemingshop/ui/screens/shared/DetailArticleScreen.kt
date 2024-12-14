@@ -448,8 +448,14 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
                         .padding(start = 10.dp, end = if (addShoppListUnfold) 5.dp else 10.dp, top = 10.dp, bottom = 10.dp)
                         .align(Alignment.CenterVertically) // Fijado a la derecha (si esta plegado)
                         .shadow(6.dp, shape = RoundedCornerShape(10.dp))
-                        .clickable{ if (!addShoppListUnfold || lastQuantityInShoppingList == -1 || quantityInShoppingList <= 0) addShoppingList() },
-                    colors = CardDefaults.cardColors(containerColor = if (quantityInShoppingList > 0 && lastQuantityInShoppingList != -1) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary)
+                        .clickable{
+                            // Desplegar (controlado  por la func)
+                            if (!addShoppListUnfold || lastQuantityInShoppingList == -1 || quantityInShoppingList <= 0) addShoppingList()
+                                  },
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (quantityInShoppingList > 0 && lastQuantityInShoppingList != -1) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else MaterialTheme.colorScheme.primary)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -466,7 +472,6 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
                                 modifier = Modifier
                                     // Ocupa todo el ancho si esta desplegado
                                     .then(if (addShoppListUnfold) Modifier.fillMaxWidth() else Modifier)
-                                    //.clickable { addShoppingList() }
                             ) {
                                 if (addShoppListUnfold) {
                                     Text(
@@ -485,6 +490,7 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
                         } else { // Si esta añadido a la lista
                             if (addShoppListUnfold) { // Si esta desplegado
                                 if (quantityInShoppingList == 1) { // Si hay solo uno en la lista
+                                    // Eliminar
                                     Icon(
                                         imageVector = Icons.Default.DeleteForever,
                                         contentDescription = "Eliminar",
@@ -493,6 +499,7 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
                                             .clickable { removeShoppingList(true) }
                                     )
                                 } else { // Si hay mas de uno
+                                    // Añadir
                                     Icon(
                                         imageVector = Icons.Default.Remove,
                                         contentDescription = "Eliminar",
@@ -509,6 +516,7 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
                                     color = MaterialTheme.colorScheme.primary
                                 )
 
+                                // Restar
                                 Icon(
                                     imageVector = Icons.Default.Add,
                                     contentDescription = "Añadir",
@@ -521,7 +529,6 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                                     modifier = Modifier
-                                        //.clickable { addShoppingList() }
                                 ) {
                                     Icon(
                                         imageVector = Icons.Outlined.ShoppingCart,
