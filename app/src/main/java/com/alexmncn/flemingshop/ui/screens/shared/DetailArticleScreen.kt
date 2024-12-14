@@ -66,6 +66,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.alexmncn.flemingshop.data.db.AppDatabase
+import com.alexmncn.flemingshop.data.db.ArticleItem
 import com.alexmncn.flemingshop.data.model.Article
 import com.alexmncn.flemingshop.data.network.ApiClient
 import com.alexmncn.flemingshop.data.network.ApiService
@@ -83,6 +84,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.math.BigInteger
 
 @Composable
 fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDatabase) {
@@ -283,16 +285,32 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
 
     fun addShoppingList() {
         if (addShoppListUnfold) {
-            shoppingListCount++
+            // Creamos el articleItem
+            val articleItem = ArticleItem((article!!.codebar).toLong(), article!!.detalle, article!!.pvp, 1)
+
+            // Añadimos a la db en hilo sec.
+            CoroutineScope(Dispatchers.IO).launch {
+                shoppingListRepository.insertArticle(articleItem)
+                shoppingListCount++
+            }
         } else {
+            // Desplegar
             addShoppListUnfold = true
         }
     }
 
     fun removeShoppingList() {
         if (addShoppListUnfold) {
-            shoppingListCount--
+            // Creamos el articleItem (Con cantidad negativa, para restar una unidad)
+            val articleItem = ArticleItem((article!!.codebar).toLong(), article!!.detalle, article!!.pvp, -1)
+
+            // Añadimos a la db en hilo sec.
+            CoroutineScope(Dispatchers.IO).launch {
+                shoppingListRepository.insertArticle(articleItem)
+                shoppingListCount--
+            }
         } else {
+            // Desplegar
             addShoppListUnfold = true
         }
     }

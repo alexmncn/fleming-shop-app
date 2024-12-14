@@ -6,7 +6,7 @@ import java.math.BigInteger
 
 @Entity(tableName = "shoppingList")
 data class ArticleItem(
-    @PrimaryKey(autoGenerate = false) val codebar: Int,
+    @PrimaryKey(autoGenerate = false) val codebar: Long,
     val detalle: String,
     val pvp: Float,
     val quantity: Int
