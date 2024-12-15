@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.alexmncn.flemingshop.data.model.Article
@@ -72,8 +73,21 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, isLoading
                 Alignment.CenterVertically
             ) {
                 // Encabezado
-                Text(text = listName, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onPrimary)
-                Text(text = "$total artículos", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimary)
+                Text(
+                    text = listName,
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = "$total artículos",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier
+                        .padding(start = 5.dp)
+                )
             }
         }
 

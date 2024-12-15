@@ -3,7 +3,6 @@ package com.alexmncn.flemingshop.ui.screens
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,13 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,8 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -49,8 +43,13 @@ fun SearchArticlesScreen(navController: NavController) {
     val apiClient = ApiClient.provideOkHttpClient(context)
     val catalogRepository: CatalogRepository by lazy { CatalogRepository(ApiService(apiClient)) }
 
+    // Todos los articulos
+    val allAListName = "Todos"
     var allArticlesTotal by remember { mutableIntStateOf(0) }
-    val searchAListName = "Resultados"
+    var allArticles by remember { mutableStateOf<List<Article>>(emptyList()) }
+    var currentPageAll by remember { mutableIntStateOf(1) }
+
+    // Articulos de busqueda
     var searchArticlesTotal by remember { mutableIntStateOf(0) }
     var searchArticles by remember { mutableStateOf<List<Article>>(emptyList()) }
     var currentPage by remember { mutableIntStateOf(1) }
@@ -59,14 +58,16 @@ fun SearchArticlesScreen(navController: NavController) {
     var placeholder by remember { mutableStateOf("Buscar entre todos los artículos") }
     var query by remember { mutableStateOf("") }
     var lastQuery by remember { mutableStateOf("def") }
+    val searchAListName = "Resultados de '${query}'"
 
-
-    fun loadArticlesTotal() {
+    fun loadAllArticles() {
         CoroutineScope(Dispatchers.IO).launch {
             isLoading = true
 
             try {
                 allArticlesTotal = catalogRepository.getAllArticlesTotal()
+                var articles = catalogRepository.getAllArticles(page = currentPageAll)
+                allArticles = allArticles + articles
 
                 placeholder = "Buscar entre $allArticlesTotal artículos"
             } catch (e: Exception) {
@@ -78,7 +79,7 @@ fun SearchArticlesScreen(navController: NavController) {
     }
 
     LaunchedEffect(Unit) {
-        loadArticlesTotal()
+        loadAllArticles()
     }
 
     fun loadSearchArticles() {
@@ -169,11 +170,11 @@ fun SearchArticlesScreen(navController: NavController) {
         }
 
         ArticleList (
-            articles = searchArticles,
-            total = searchArticlesTotal,
-            listName = searchAListName,
+            articles = if (query.isEmpty() && searchArticles.isEmpty()) allArticles else searchArticles,
+            total = if (query.isEmpty() && searchArticles.isEmpty()) allArticlesTotal else searchArticlesTotal,
+            listName = if (query.isEmpty() && searchArticles.isEmpty()) allAListName else searchAListName,
             isLoading = isLoading,
-            onShowMore = { loadSearchArticles() },
+            onShowMore = { if (query.isEmpty() && searchArticles.isEmpty()) loadAllArticles() else loadSearchArticles() },
             navController = navController
         )
     }
