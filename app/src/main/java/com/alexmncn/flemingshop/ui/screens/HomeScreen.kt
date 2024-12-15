@@ -14,6 +14,7 @@ import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,7 +25,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.List
+import androidx.compose.material.icons.filled.FiberNew
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.outlined.NewReleases
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -45,6 +52,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
@@ -73,7 +81,7 @@ fun HomeScreen(navController: NavController) {
     var offsetY by remember { mutableFloatStateOf(0f) } // Desplazamiento temporal durante el gesto
     val screenHeight = configuration.screenHeightDp.dp
     val initialHeight = screenHeight
-    val targetHeight = 100.dp
+    val targetHeight = 50.dp
     val scrollState = rememberScrollState()
 
     // Altura animada al final del gesto
@@ -199,11 +207,18 @@ fun HomeScreen(navController: NavController) {
             // Texto de bienvenida
             Column (
                 modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(horizontal = 20.dp),
+                    .align(if (isCollapsed && animatedHeight < 300.dp) Alignment.CenterStart else Alignment.Center)
+                    .padding(horizontal = 15.dp),
                 Arrangement.spacedBy(5.dp)
             ) {
-                if (!isCollapsed) {
+                if (isCollapsed && animatedHeight < 300.dp) {
+                    // Linea 1
+                    Text(
+                        text = "Catálogo",
+                        color = Color.White,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                } else {
                     // Linea 1
                     Text(
                         text = "Bienvenido/a a",
@@ -216,13 +231,6 @@ fun HomeScreen(navController: NavController) {
                         text = "Tienda Fleming",
                         color = Color.White,
                         style = MaterialTheme.typography.titleLarge.copy(fontSize = 30.sp),
-                    )
-                } else {
-                    // Linea 1
-                    Text(
-                        text = "Catálogo",
-                        color = Color.White,
-                        style = MaterialTheme.typography.titleLarge
                     )
                 }
             }
@@ -269,14 +277,39 @@ fun HomeScreen(navController: NavController) {
                     .fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
-                Column(
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
+                        .fillMaxWidth()
                         .padding(top = 10.dp, bottom = 10.dp, start = 13.dp, end = 13.dp)
+                        .clickable { navController.navigate("featured_articles") },
                 ) {
-                    Text(text = "Articulos destacados", style = MaterialTheme.typography.titleSmall)
-                    Text(text = "En esta sección puedes encontrar artículos seleccionados que te pueden interesar", style = MaterialTheme.typography.bodyMedium)
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 30.dp),
+                    ) {
+                        // Titulo
+                        Text(text = "Destacados", style = MaterialTheme.typography.titleSmall)
+                        // Descripción
+                        Text(
+                            text = "En esta sección puedes encontrar artículos seleccionados que te pueden interesar",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+
+                    Icon(
+                        imageVector = Icons.Outlined.StarBorder,
+                        contentDescription = "Destacado",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .size(30.dp)
+                            .weight(0.2f)
+                    )
                 }
 
+                // Tira de articulos
                 ArticleCarousel(
                     total = featuredArticlesTotal,
                     articles = featuredArticles,
@@ -294,21 +327,42 @@ fun HomeScreen(navController: NavController) {
             Card(
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { navController.navigate("new_articles") },
+                    .fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
             ) {
-                Column(
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
+                        .fillMaxWidth()
                         .padding(top = 10.dp, bottom = 10.dp, start = 13.dp, end = 13.dp)
+                        .clickable { navController.navigate("new_articles") },
                 ) {
-                    Text(text = "Novedades", style = MaterialTheme.typography.titleSmall)
-                    Text(
-                        text = "En esta sección puedes encontrar articulos que han llegado recientemente a la tienda",
-                        style = MaterialTheme.typography.bodyMedium
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 30.dp),
+                    ) {
+                        // Titulo
+                        Text(text = "Novedades", style = MaterialTheme.typography.titleSmall)
+                        // Descripción
+                        Text(
+                            text = "En esta sección puedes encontrar articulos que han llegado recientemente a la tienda",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+
+                    Icon(
+                        imageVector = Icons.Outlined.NewReleases,
+                        contentDescription = "Novedades",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .size(30.dp)
+                            .weight(0.2f)
                     )
                 }
 
+                // Tira de articulos
                 ArticleCarousel(
                     total = newArticlesTotal,
                     articles =  newArticles,
@@ -329,14 +383,36 @@ fun HomeScreen(navController: NavController) {
                     .fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
             ) {
-                Column(
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
+                        .fillMaxWidth()
                         .padding(top = 10.dp, bottom = 10.dp, start = 13.dp, end = 13.dp)
+                        .clickable { navController.navigate("families") },
                 ) {
-                    Text(text = "Familias", style = MaterialTheme.typography.titleSmall)
-                    Text(text = "En esta sección puedes encontrar articulos agrupados por familias", style = MaterialTheme.typography.bodyMedium)
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 50.dp),
+                    ) {
+                        // Titulo
+                        Text(text = "Familias", style = MaterialTheme.typography.titleSmall)
+                        // Descripción
+                        Text(text = "En esta sección puedes encontrar articulos agrupados por familias", style = MaterialTheme.typography.bodyMedium)
+                    }
+
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.List,
+                        contentDescription = "Familias",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .size(30.dp)
+                            .weight(0.2f)
+                    )
                 }
 
+                // Tira de familias
                 FamilyCarousel(
                     families = families.shuffled().take(limitFamilies),
                     isLoading = isLoadingFamilies,
@@ -356,13 +432,76 @@ fun HomeScreen(navController: NavController) {
                     .clickable { navController.navigate("search_articles") },
                 elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
             ) {
-                Column(
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
+                        .fillMaxWidth()
                         .padding(top = 10.dp, bottom = 10.dp, start = 13.dp, end = 13.dp)
                 ) {
-                    Text(text = "Buscar articulos", style = MaterialTheme.typography.titleSmall)
-                    Text(text = "En esta sección puedes buscar entre mas de 8000 articulos por su descripción", style = MaterialTheme.typography.bodyMedium)
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 50.dp),
+                    ) {
+                        // Titulo
+                        Text(text = "Buscar articulos", style = MaterialTheme.typography.titleSmall)
+                        // Descripción
+                        Text(text = "En esta sección puedes buscar entre mas de 8000 articulos por su descripción", style = MaterialTheme.typography.bodyMedium, overflow = TextOverflow.Clip)
+                    }
+
+                    Icon(
+                        imageVector = Icons.Outlined.Search,
+                        contentDescription = "Buscar",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .size(30.dp)
+                            .weight(0.2f)
+                    )
                 }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Lista Compra
+            Card (
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { navController.navigate("shopping_list") },
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+            ) {
+               Row(
+                   verticalAlignment = Alignment.CenterVertically,
+                   horizontalArrangement = Arrangement.SpaceBetween,
+                   modifier = Modifier
+                       .fillMaxWidth()
+                       .padding(top = 10.dp, bottom = 10.dp, start = 13.dp, end = 13.dp)
+               ) {
+                   Column(
+                       modifier = Modifier
+                           .weight(1f)
+                           .padding(end = 50.dp)
+                   ) {
+                       // Titulo
+                       Text(text = "Lista de compra", style = MaterialTheme.typography.titleSmall)
+                       // Descripción
+                       Text(
+                           text = "Aquí puedes ver los artículos que has agregado a tu lista de compra",
+                           style = MaterialTheme.typography.bodyMedium,
+                           overflow = TextOverflow.Clip
+                       )
+                   }
+
+                   Icon(
+                       imageVector = Icons.Outlined.ShoppingCart,
+                       contentDescription = "Lista de compra",
+                       tint = MaterialTheme.colorScheme.primary,
+                       modifier = Modifier
+                           .size(30.dp)
+                           .weight(0.2f)
+                   )
+               }
             }
 
             Spacer(modifier = Modifier.height(15.dp))
