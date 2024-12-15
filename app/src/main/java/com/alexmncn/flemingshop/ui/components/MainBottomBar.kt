@@ -85,7 +85,6 @@ fun MainBottomBar(navController: NavController) {
                         .offset { IntOffset(0, animatedOffsetY.roundToPx()) },
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = Color.White,
-                    contentPadding = PaddingValues(vertical = 10.dp)
                 ) {
                     // Home
                     NavigationBarItem(
@@ -103,7 +102,7 @@ fun MainBottomBar(navController: NavController) {
                                 imageVector = Icons.Default.Home,
                                 contentDescription = "Inicio",
                                 tint = Color.White,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(18.dp)
                             )
                         },
                         label = {
@@ -135,7 +134,7 @@ fun MainBottomBar(navController: NavController) {
                                 imageVector = Icons.Default.Star,
                                 contentDescription = "Articulos Destacados",
                                 tint = Color.White,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(18.dp)
                             )
                         },
                         label = {
@@ -167,7 +166,7 @@ fun MainBottomBar(navController: NavController) {
                                 imageVector = Icons.Default.FiberNew,
                                 contentDescription = "Novedades",
                                 tint = Color.White,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(19.dp)
                             )
                         },
                         label = {
@@ -231,7 +230,7 @@ fun MainBottomBar(navController: NavController) {
                                 imageVector = Icons.Default.Search,
                                 contentDescription = "Buscar",
                                 tint = Color.White,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(18.dp)
                             )
                         },
                         label = {

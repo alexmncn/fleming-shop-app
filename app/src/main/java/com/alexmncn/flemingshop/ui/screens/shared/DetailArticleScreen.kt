@@ -430,6 +430,7 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
 
             Spacer(modifier = Modifier.height(10.dp))
 
+            // Shopping list control
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(0.dp),
@@ -567,6 +568,8 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(10.dp))
 
             // Admin Section
             if (AuthManager.isAuthenticated()) {
