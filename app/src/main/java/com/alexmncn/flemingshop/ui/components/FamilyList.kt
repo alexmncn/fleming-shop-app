@@ -27,6 +27,7 @@ import com.alexmncn.flemingshop.data.model.Family
 fun FamilyList(families: List<Family>, onShowFamily: (codfam: Int, nomfam: String) -> Unit) {
     val scrollState = rememberScrollState()  // Estado de desplazamiento general
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp  // Altura de la pantalla
+    val gridColumns = 2 // Numero de columnas en el grid
 
     Column(
         modifier = Modifier
@@ -56,7 +57,7 @@ fun FamilyList(families: List<Family>, onShowFamily: (codfam: Int, nomfam: Strin
 
         Column(
             modifier = Modifier
-                .padding(10.dp)
+                .padding(horizontal = 10.dp)
         ) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -64,11 +65,24 @@ fun FamilyList(families: List<Family>, onShowFamily: (codfam: Int, nomfam: Strin
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier.heightIn(max = screenHeight) // Limita el alto del grid para que el scroll no cause errores
             ) {
+                // Margen superior vertical contenido
+                // Añade el numero de 'gridColumns' en espaciadores, siendo los elementos de la primera fila espacios,
+                // pero puediendo desplazarlos, y no dejando huecos blancos al scrollear
+                items(gridColumns) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
+
+                // Familias
                 items(families.size) { index ->
                     FamilyCard(
                         family = families[index],
                         onShowFamily = { codfam, nomfam -> onShowFamily(codfam, nomfam) }
                     )
+                }
+
+                // Margen inferior vertical contenido
+                items(gridColumns) {
+                    Spacer(modifier = Modifier.height(10.dp))
                 }
             }
         }
