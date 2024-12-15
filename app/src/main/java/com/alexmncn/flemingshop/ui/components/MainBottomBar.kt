@@ -4,10 +4,15 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.FiberNew
@@ -37,12 +42,10 @@ import kotlinx.coroutines.delay
 fun MainBottomBar(navController: NavController) {
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
-    // Control de inicialización
+    val maxHeight = 70.dp
     var isInitialized by remember { mutableStateOf(false) }
-
-    // Controlar la visibilidad del BottomAppBar
     val isHome = currentRoute == "home"
-    var isVisible by remember { mutableStateOf(!isHome) }
+    var isVisible by remember { mutableStateOf(!isHome) } // Visble/Oculta segun la ruta actual
 
     // Lanzar efecto solo al inicio para configurar correctamente el estado
     LaunchedEffect(currentRoute) {
@@ -59,11 +62,11 @@ fun MainBottomBar(navController: NavController) {
     }
 
     // Altura condicional (instantánea) según `isVisible`
-    val height = if (isVisible) 54.dp else 0.dp
+    val height = if (isVisible) maxHeight else 0.dp
 
     // Desplazamiento animado del BottomAppBar
     val animatedOffsetY by animateDpAsState(
-        targetValue = if (isVisible) 0.dp else 54.dp,
+        targetValue = if (isVisible) 0.dp else maxHeight,
         animationSpec = tween(durationMillis = 500), // Duración de la animación
         label = "BottomBarSlide"
     )

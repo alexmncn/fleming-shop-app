@@ -41,10 +41,9 @@ fun MainTopBar(navController: NavController) {
         title = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
-                    .fillMaxHeight()
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 // Logo
                 Image(
@@ -57,15 +56,16 @@ fun MainTopBar(navController: NavController) {
                 )
 
                 // User
-                Row (
+                Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
                         .padding(end = 16.dp)
                         .clickable {
+                            // Si esta autenticado se redirige al panel de usuario, sino al login
                             if (authState.isAuthenticated) {
                                 navController.navigate("user_panel")
-                            } else { navController.navigate("login") }
+                            } else navController.navigate("login")
                         }
                 ) {
                     Icon(
@@ -91,6 +91,7 @@ fun MainTopBar(navController: NavController) {
             containerColor = Color.White,
             titleContentColor = Color.Black
         ),
-        modifier = Modifier.height(50.dp)
+        modifier = Modifier
+            .height(60.dp)
     )
 }
