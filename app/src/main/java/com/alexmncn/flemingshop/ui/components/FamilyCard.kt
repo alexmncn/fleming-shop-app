@@ -2,7 +2,9 @@ package com.alexmncn.flemingshop.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -21,6 +23,21 @@ fun FamilyCard(family: Family, onShowFamily: (codfam: Int, nomfam: String) -> Un
         modifier = Modifier
             .padding(top = 2.dp, bottom = 4.dp) // Safe zone for card shadow
             .fillMaxWidth()
+            .clickable { onShowFamily(family.codfam, family.nomfam) },
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Text(text = capitalizeText(family.nomfam), modifier = Modifier.padding(10.dp))
+    }
+}
+
+@Composable
+fun VariantFamilyCard(family: Family, onShowFamily: (codfam: Int, nomfam: String) -> Unit) {
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(35.dp)
             .clickable { onShowFamily(family.codfam, family.nomfam) },
         elevation = CardDefaults.cardElevation(4.dp)
     ) {

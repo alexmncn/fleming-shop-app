@@ -21,6 +21,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Card
@@ -49,10 +51,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.alexmncn.flemingshop.data.model.Article
+import com.alexmncn.flemingshop.data.model.Family
 import com.alexmncn.flemingshop.data.network.ApiClient
 import com.alexmncn.flemingshop.data.network.ApiService
 import com.alexmncn.flemingshop.data.repository.CatalogRepository
 import com.alexmncn.flemingshop.ui.components.ArticleCarousel
+import com.alexmncn.flemingshop.ui.components.FamilyCarousel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -70,6 +74,7 @@ fun HomeScreen(navController: NavController) {
     val screenHeight = configuration.screenHeightDp.dp
     val initialHeight = screenHeight
     val targetHeight = 100.dp
+    val scrollState = rememberScrollState()
 
     // Altura animada al final del gesto
     val animatedHeight by animateDpAsState(
@@ -91,7 +96,7 @@ fun HomeScreen(navController: NavController) {
         ), label = ""
     )
 
-    // Aticulos carousels
+    // Aticulos/Familias carousels
     var limit = 10;
 
     // Destacados
@@ -134,9 +139,30 @@ fun HomeScreen(navController: NavController) {
         }
     }
 
+    // Familias
+    var families by remember { mutableStateOf<List<Family>>(emptyList()) }
+    var isLoadingFamilies by remember { mutableStateOf(false) }
+    val limitFamilies = 15;
+
+    fun loadFamilies() {
+        CoroutineScope(Dispatchers.IO).launch {
+            isLoadingFamilies = true
+
+            try {
+                families = catalogRepository.getFamilies()
+            } catch (e: Exception) {
+                Log.e("error", e.toString())
+            }
+
+            isLoadingFamilies = false
+        }
+    }
+
+
     LaunchedEffect(Unit) {
         loadFeaturedArticles()
         loadNewArticles()
+        loadFamilies()
     }
 
 
@@ -170,7 +196,6 @@ fun HomeScreen(navController: NavController) {
                     )
                 }
         ) {
-
             // Texto de bienvenida
             Column (
                 modifier = Modifier
@@ -231,11 +256,11 @@ fun HomeScreen(navController: NavController) {
         // Options
         Column(
             modifier = Modifier
+                .verticalScroll(scrollState)
                 .padding(horizontal = 10.dp)
                 .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            Spacer(modifier = Modifier.height(5.dp))
+            Spacer(modifier = Modifier.height(15.dp))
 
             // Featured Articles
             Card(
@@ -263,13 +288,15 @@ fun HomeScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(10.dp))
             }
 
+            Spacer(modifier = Modifier.height(20.dp))
+
             // New Articles
             Card(
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { navController.navigate("new_articles") },
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
             ) {
                 Column(
                     modifier = Modifier
@@ -293,13 +320,14 @@ fun HomeScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(10.dp))
             }
 
+            Spacer(modifier = Modifier.height(20.dp))
+
             // Families
             Card(
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { navController.navigate("families") },
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    .fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
             ) {
                 Column(
                     modifier = Modifier
@@ -308,7 +336,17 @@ fun HomeScreen(navController: NavController) {
                     Text(text = "Familias", style = MaterialTheme.typography.titleSmall)
                     Text(text = "En esta sección puedes encontrar articulos agrupados por familias", style = MaterialTheme.typography.bodyMedium)
                 }
+
+                FamilyCarousel(
+                    families = families.shuffled().take(limitFamilies),
+                    isLoading = isLoadingFamilies,
+                    navController = navController
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
             }
+
+            Spacer(modifier = Modifier.height(20.dp))
 
             // Search Articles
             Card (
@@ -316,7 +354,7 @@ fun HomeScreen(navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { navController.navigate("search_articles") },
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
             ) {
                 Column(
                     modifier = Modifier
@@ -327,7 +365,7 @@ fun HomeScreen(navController: NavController) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(5.dp))
+            Spacer(modifier = Modifier.height(15.dp))
         }
     }
 }

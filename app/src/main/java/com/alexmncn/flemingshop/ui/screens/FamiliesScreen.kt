@@ -28,9 +28,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun FamiliesScreen(navController: NavController) {
+fun FamiliesScreen(navController: NavController, route: String = "") {
     // Navegador entre componentes en la misma activity
     val navControllerInt = rememberNavController()
+
+    LaunchedEffect(Unit) {
+        if (route.isNotEmpty()) {
+            navControllerInt.navigate(route)
+        }
+    }
 
     NavHost(
         navController = navControllerInt,
@@ -49,9 +55,9 @@ fun FamiliesScreen(navController: NavController) {
                 navArgument("codfam") { type = NavType.IntType },
                 navArgument("nomfam") { type = NavType.StringType }
             )
-        ) { backStackEntry ->
-            val codfam = backStackEntry.arguments?.getInt("codfam") ?: 0
-            val nomfam = backStackEntry.arguments?.getString("nomfam") ?: ""
+        ) {
+            val codfam = it.arguments?.getInt("codfam") ?: 0
+            val nomfam = it.arguments?.getString("nomfam") ?: ""
 
             FamilyArticlesScreen(codfam, nomfam, navController)
         }

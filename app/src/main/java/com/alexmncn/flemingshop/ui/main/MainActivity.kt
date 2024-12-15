@@ -1,6 +1,7 @@
 package com.alexmncn.flemingshop.ui.main
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.padding
@@ -29,7 +30,6 @@ import com.alexmncn.flemingshop.ui.screens.shared.DetailArticleScreen
 import com.alexmncn.flemingshop.ui.theme.FlemingShopTheme
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var db: AppDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,6 +67,18 @@ fun FlemingShopApp(db: AppDatabase) {
                     composable("featured_articles") { FeaturedArticlesScreen(navController) }
                     composable("new_articles") { NewArticlesScreen(navController) }
                     composable("families") { FamiliesScreen(navController) }
+                    composable("families/family_articles/{codfam}/{nomfam}",
+                            arguments = listOf(
+                                navArgument("codfam") { type = NavType.IntType },
+                                navArgument("nomfam") { type = NavType.StringType }
+                            )
+                    ) {
+                        val codfam = it.arguments?.getInt("codfam") ?: 0
+                        val nomfam = it.arguments?.getString("nomfam") ?: ""
+                        val route = "family_articles/$codfam/$nomfam"
+
+                        FamiliesScreen(navController, route)
+                    }
                     composable("search_articles") { SearchArticlesScreen(navController) }
                     composable("barcode_scanner") { BarcodeScannerScreen(navController) }
                     composable("article_detail/{codebar}",
