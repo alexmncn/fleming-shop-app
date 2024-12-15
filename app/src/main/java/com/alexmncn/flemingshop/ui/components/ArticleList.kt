@@ -87,10 +87,8 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, isLoading
             // Articles
             Column(
                 modifier = Modifier
-                    .padding(horizontal = 10.dp)  // Margen vertical para todos los elementos sin dejar huecos en el desp.
+                    .padding(10.dp) // Margen
             ) {
-                Spacer(modifier = Modifier.height(10.dp))
-
                 // Artículos en cuadricula
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(gridColumns),
@@ -124,6 +122,7 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, isLoading
                         IconButton(
                             onClick = {
                                 coroutineScope.launch {
+                                    // Scroll hacia arriba
                                     scrollState.animateScrollTo(0) // Scroll principal
                                     gridState.animateScrollToItem(0) // Scroll grid
                                 }
@@ -153,7 +152,7 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, isLoading
                             style = MaterialTheme.typography.bodyMedium
                         )
 
-                        Spacer(modifier = Modifier.height(5.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
                         LinearProgressIndicator(
                             progress = { articlesLoadedProgress },
