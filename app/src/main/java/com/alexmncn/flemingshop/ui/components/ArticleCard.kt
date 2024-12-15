@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Card
@@ -19,6 +21,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -111,6 +115,63 @@ fun ArticleCard(article: Article, navController: NavController) {
                 modifier = Modifier
                     .padding(top = 6.dp, bottom = 2.dp)
             )
+        }
+    }
+}
+
+@Composable
+fun ReducedArticleCard(article: Article, navController: NavController) {
+    val imageUrl = Constans.IMAGES_URL + "articles/${article.codebar}.webp"
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                navController.navigate("article_detail/${article.codebar}")
+            },
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        // Usamos un Box para superponer elementos
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .size(120.dp)
+        ) {
+            // Imagen
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(imageUrl)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = "Imagen del artículo",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+
+            // Precio flotante
+            Box( // Contenedor de Alineamiento
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(4.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .shadow(2.dp, shape = RoundedCornerShape(20.dp))
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(Color.White) // Fondo blanco
+                        .padding(top = 2.dp, bottom = 2.dp, start = 8.dp, end = 8.dp)
+                ) {
+                    Text(
+                        text = article.pvp.toString() + " €",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+            }
+
         }
     }
 }

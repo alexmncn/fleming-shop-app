@@ -1,5 +1,6 @@
 package com.alexmncn.flemingshop.ui.screens
 
+import android.util.Log
 import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateDpAsState
@@ -28,9 +29,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,16 +42,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.alexmncn.flemingshop.data.model.Article
+import com.alexmncn.flemingshop.data.network.ApiClient
+import com.alexmncn.flemingshop.data.network.ApiService
+import com.alexmncn.flemingshop.data.repository.CatalogRepository
+import com.alexmncn.flemingshop.ui.components.ArticleCarousel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 @Composable
 fun HomeScreen(navController: NavController) {
     val configuration = LocalConfiguration.current
+    val context = LocalContext.current
+    val apiClient = ApiClient.provideOkHttpClient(context)
+    val catalogRepository: CatalogRepository by lazy { CatalogRepository(ApiService(apiClient)) }
     val collapsibleGreetingViewModel: CollapsibleGreetingViewModel = viewModel() // Instancia del viewmodel
     val isCollapsed by collapsibleGreetingViewModel.isCollapsed // Estado de si está colapsado o no
     var offsetY by remember { mutableFloatStateOf(0f) } // Desplazamiento temporal durante el gesto
@@ -75,6 +90,55 @@ fun HomeScreen(navController: NavController) {
             repeatMode = RepeatMode.Reverse // Movimiento de ida y vuelta
         ), label = ""
     )
+
+    // Aticulos carousels
+    var limit = 10;
+
+    // Destacados
+    var featuredArticlesTotal by remember { mutableIntStateOf(0) }
+    var featuredArticles by remember { mutableStateOf<List<Article>>(emptyList()) }
+    var isLoadingFeaturedArticles by remember { mutableStateOf(false) }
+
+    fun loadFeaturedArticles() {
+        CoroutineScope(Dispatchers.IO).launch {
+            isLoadingFeaturedArticles = true
+
+            try {
+                featuredArticlesTotal = catalogRepository.getFeaturedArticlesTotal()
+                featuredArticles = catalogRepository.getFeaturedArticles(perPage = limit)
+            } catch (e: Exception) {
+                Log.e("error", e.toString())
+            }
+
+            isLoadingFeaturedArticles = false
+        }
+    }
+
+    // Novedades
+    var newArticlesTotal by remember { mutableIntStateOf(0) }
+    var newArticles by remember { mutableStateOf<List<Article>>(emptyList()) }
+    var isLoadingNewArticles by remember { mutableStateOf(false) }
+
+    fun loadNewArticles() {
+        CoroutineScope(Dispatchers.IO).launch {
+            isLoadingNewArticles = true
+
+            try {
+                newArticlesTotal = catalogRepository.getNewArticlesTotal()
+                newArticles = catalogRepository.getNewArticles(perPage = limit)
+            } catch (e: Exception) {
+                Log.e("error", e.toString())
+            }
+
+            isLoadingNewArticles = false
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        loadFeaturedArticles()
+        loadNewArticles()
+    }
+
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -177,18 +241,26 @@ fun HomeScreen(navController: NavController) {
             Card(
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .clickable { navController.navigate("featured_articles") },
+                    .fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 Column(
                     modifier = Modifier
-                        .padding(20.dp)
+                        .padding(top = 10.dp, bottom = 10.dp, start = 13.dp, end = 13.dp)
                 ) {
                     Text(text = "Articulos destacados", style = MaterialTheme.typography.titleSmall)
                     Text(text = "En esta sección puedes encontrar artículos seleccionados que te pueden interesar", style = MaterialTheme.typography.bodyMedium)
                 }
+
+                ArticleCarousel(
+                    total = featuredArticlesTotal,
+                    articles = featuredArticles,
+                    isLoading = isLoadingFeaturedArticles,
+                    showMoreRoute = "featured_articles",
+                    navController = navController
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
             }
 
             // New Articles
@@ -196,17 +268,29 @@ fun HomeScreen(navController: NavController) {
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
                     .clickable { navController.navigate("new_articles") },
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 Column(
                     modifier = Modifier
-                        .padding(20.dp)
+                        .padding(top = 10.dp, bottom = 10.dp, start = 13.dp, end = 13.dp)
                 ) {
                     Text(text = "Novedades", style = MaterialTheme.typography.titleSmall)
-                    Text(text = "En esta sección puedes encontrar articulos que han llegado recientemente a la tienda", style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        text = "En esta sección puedes encontrar articulos que han llegado recientemente a la tienda",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
+
+                ArticleCarousel(
+                    total = newArticlesTotal,
+                    articles =  newArticles,
+                    isLoading = isLoadingNewArticles,
+                    showMoreRoute = "new_articles",
+                    navController = navController
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
             }
 
             // Families
@@ -214,13 +298,12 @@ fun HomeScreen(navController: NavController) {
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
                     .clickable { navController.navigate("families") },
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 Column(
                     modifier = Modifier
-                        .padding(20.dp)
+                        .padding(top = 10.dp, bottom = 10.dp, start = 13.dp, end = 13.dp)
                 ) {
                     Text(text = "Familias", style = MaterialTheme.typography.titleSmall)
                     Text(text = "En esta sección puedes encontrar articulos agrupados por familias", style = MaterialTheme.typography.bodyMedium)
@@ -232,13 +315,12 @@ fun HomeScreen(navController: NavController) {
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
                     .clickable { navController.navigate("search_articles") },
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 Column(
                     modifier = Modifier
-                        .padding(20.dp)
+                        .padding(top = 10.dp, bottom = 10.dp, start = 13.dp, end = 13.dp)
                 ) {
                     Text(text = "Buscar articulos", style = MaterialTheme.typography.titleSmall)
                     Text(text = "En esta sección puedes buscar entre mas de 8000 articulos por su descripción", style = MaterialTheme.typography.bodyMedium)
