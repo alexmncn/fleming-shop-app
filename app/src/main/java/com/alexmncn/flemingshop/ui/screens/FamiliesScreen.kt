@@ -65,14 +65,19 @@ fun FamilyListScreen(onShowFamily: (codfam: Int, nomfam: String) -> Unit) {
     val apiClient = ApiClient.provideOkHttpClient(context)
     val catalogRepository: CatalogRepository by lazy { CatalogRepository(ApiService(apiClient)) }
     var families by remember { mutableStateOf<List<Family>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(false) }
 
     fun loadFamilies() {
         CoroutineScope(Dispatchers.IO).launch {
+            isLoading = true
+
             try {
                 families = catalogRepository.getFamilies()
             } catch (e: Exception) {
                 Log.e("error", e.toString())
             }
+
+            isLoading = false
         }
     }
 
@@ -82,6 +87,7 @@ fun FamilyListScreen(onShowFamily: (codfam: Int, nomfam: String) -> Unit) {
 
     FamilyList(
         families = families,
+        isLoading = isLoading,
         onShowFamily = { codfam, nomfam -> onShowFamily(codfam, nomfam) }
     )
 }
