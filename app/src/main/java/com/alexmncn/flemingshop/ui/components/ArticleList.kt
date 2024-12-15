@@ -87,7 +87,7 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, isLoading
             // Articles
             Column(
                 modifier = Modifier
-                    .padding(10.dp) // Margen
+                    .padding(horizontal = 10.dp) // Margen horizontal contenido
             ) {
                 // Artículos en cuadricula
                 LazyVerticalGrid(
@@ -97,6 +97,14 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, isLoading
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier.heightIn(max = screenHeight), // Limita el alto del grid para que el scroll no cause errores
                 ) {
+                    // Margen superior vertical contenido
+                    // Añade el numero de 'gridColumns' en espaciadores, siendo los elementos de la primera fila espacios,
+                    // pero puediendo desplazarlos, y no dejando huecos blancos al scrollear
+                    items(gridColumns) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
+
+                    // Articulos
                     items(articles.size) { index ->
                         ArticleCard(
                             article = articles[index],
@@ -193,6 +201,7 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, isLoading
                             }
                         }
                     }
+                    Spacer(modifier = Modifier.height(5.dp))
                 }
             }
         } else { // Si no hay articulos
