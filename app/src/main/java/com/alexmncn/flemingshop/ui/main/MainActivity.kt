@@ -25,6 +25,7 @@ import com.alexmncn.flemingshop.ui.screens.HomeScreen
 import com.alexmncn.flemingshop.ui.screens.LoginScreen
 import com.alexmncn.flemingshop.ui.screens.NewArticlesScreen
 import com.alexmncn.flemingshop.ui.screens.SearchArticlesScreen
+import com.alexmncn.flemingshop.ui.screens.ShoppingListScreen
 import com.alexmncn.flemingshop.ui.screens.UserPanelScreen
 import com.alexmncn.flemingshop.ui.screens.shared.DetailArticleScreen
 import com.alexmncn.flemingshop.ui.theme.FlemingShopTheme
@@ -87,6 +88,7 @@ fun FlemingShopApp(db: AppDatabase) {
                         val codebar = it.arguments?.getString("codebar") ?: ""
                         DetailArticleScreen(codebar, navController, db)
                     }
+                    composable("shopping_list") { ShoppingListScreen(db, navController) }
                 }
             },
             bottomBar = {
