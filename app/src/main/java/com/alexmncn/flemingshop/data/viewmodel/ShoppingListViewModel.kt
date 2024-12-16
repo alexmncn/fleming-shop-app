@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.math.BigInteger
+import kotlin.math.roundToInt
 
 
 class ShoppingListViewModel(repository: ShoppingListRepository) : ViewModel() {
@@ -79,6 +80,8 @@ class ShoppingListViewModel(repository: ShoppingListRepository) : ViewModel() {
         return articleItems.map { articles ->
             articles.fold(0f) { acc, article ->
                 acc + (article.pvp * article.quantity)
+            }.let { price ->
+                (price * 100).roundToInt() / 100f
             }
         }
     }
