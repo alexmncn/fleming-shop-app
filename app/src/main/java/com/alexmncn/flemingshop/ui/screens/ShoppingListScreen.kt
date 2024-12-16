@@ -67,7 +67,7 @@ fun ShoppingListScreen(db: AppDatabase, navController: NavController) {
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
             ) {
                 // Title
                 Column(
@@ -117,7 +117,7 @@ fun ShoppingListScreen(db: AppDatabase, navController: NavController) {
                             text = "Detalle",
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.End,
+                            textAlign = TextAlign.Start,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1,
                             modifier = Modifier
@@ -143,6 +143,7 @@ fun ShoppingListScreen(db: AppDatabase, navController: NavController) {
                     state = rememberLazyListState(),
                     modifier = Modifier
                         .fillMaxWidth()
+                        .weight(1f)
                 ) {
                     items(shoppingList.value.size) { index ->
                         val item = shoppingList.value[index]
@@ -150,41 +151,39 @@ fun ShoppingListScreen(db: AppDatabase, navController: NavController) {
                         HorizontalDivider(color = Color(0xFFE9E9E9), thickness = 1.dp) // !!!! PROVISIONAL !!!!
                     }
                 }
-            }
 
-            // Total
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.White)
-            ) {
-                Row(
+                // Total
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 15.dp, horizontal = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                        .background(Color.White)
                 ) {
-                    Text(
-                        text = "Total",
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Start,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1,
+                    HorizontalDivider(color = Color.LightGray, thickness = 1.dp) // !!!! PROVISIONAL !!!!
+                    Row(
                         modifier = Modifier
-                            .weight(0.7f)
-                    )
+                            .fillMaxWidth()
+                            .padding(vertical = 15.dp, horizontal = 30.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Total",
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Start,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
+                        )
 
-                    Text(
-                        text = finalPrize.value.toString() + " €",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold,
-                        overflow =  TextOverflow.Ellipsis,
-                        maxLines = 1,
-                        modifier = Modifier
-                            .weight(0.3f)
-                    )
+                        Text(
+                            text = finalPrize.value.toString() + " €",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            overflow =  TextOverflow.Ellipsis,
+                            maxLines = 1,
+                        )
+                    }
                 }
             }
         }

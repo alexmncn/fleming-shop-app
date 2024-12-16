@@ -77,7 +77,7 @@ class ShoppingListViewModel(repository: ShoppingListRepository) : ViewModel() {
 
     fun getFinalPrice(): Flow<Float> {
         return articleItems.map { articles ->
-            articles.fold(0.00f) { acc, article ->
+            articles.fold(0f) { acc, article ->
                 acc + (article.pvp * article.quantity)
             }
         }
