@@ -12,19 +12,31 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,6 +54,7 @@ import com.alexmncn.flemingshop.data.repository.ShoppingListRepository
 import com.alexmncn.flemingshop.data.viewmodel.ShoppingListViewModel
 import com.alexmncn.flemingshop.data.viewmodel.ShoppingListViewModelFactory
 import com.alexmncn.flemingshop.ui.theme.Blue100
+import com.alexmncn.flemingshop.ui.theme.Blue200
 import com.alexmncn.flemingshop.ui.theme.Blue50
 import com.alexmncn.flemingshop.utils.capitalizeText
 
@@ -51,6 +64,11 @@ fun ShoppingListScreen(db: AppDatabase, navController: NavController) {
     val shoppingListViewModel: ShoppingListViewModel = viewModel(factory = ShoppingListViewModelFactory(shoppingListRepository))
     val shoppingList = shoppingListViewModel.articleItems.collectAsState()
     val finalPrize = shoppingListViewModel.getFinalPrice().collectAsState(initial = 0.0)
+    var editMode by remember { mutableStateOf(false) }
+
+    fun editModeToggle() {
+        editMode = !editMode
+    }
 
     Box(
         contentAlignment = Alignment.Center,
@@ -87,6 +105,26 @@ fun ShoppingListScreen(db: AppDatabase, navController: NavController) {
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.onPrimary
                         )
+
+                        if (editMode) {
+                            Icon(
+                                imageVector = Icons.Outlined.Check,
+                                contentDescription = "Confirmar cambios",
+                                tint = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .clickable { editModeToggle() }
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Editar lista",
+                                tint = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .clickable { editModeToggle() }
+                            )
+                        }
                     }
                 }
 
@@ -147,7 +185,7 @@ fun ShoppingListScreen(db: AppDatabase, navController: NavController) {
                 ) {
                     items(shoppingList.value.size) { index ->
                         val item = shoppingList.value[index]
-                        ShoppingListItem(item, onClick = { codebar -> navController.navigate("article_detail/$codebar") })
+                        ShoppingListItem(item, editMode = editMode, onClick = { codebar -> navController.navigate("article_detail/$codebar") })
                         HorizontalDivider(color = Color(0xFFE9E9E9), thickness = 1.dp) // !!!! PROVISIONAL !!!!
                     }
                 }
@@ -191,11 +229,13 @@ fun ShoppingListScreen(db: AppDatabase, navController: NavController) {
 }
 
 @Composable
-fun ShoppingListItem(articleItem: ArticleItem, onClick: (codebar: Long) -> Unit) {
+fun ShoppingListItem(articleItem: ArticleItem, editMode: Boolean = false, onClick: (codebar: Long) -> Unit) {
+    var isChecked by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick(articleItem.codebar) }
+            .clickable { if (editMode) isChecked = !isChecked else onClick(articleItem.codebar) }
     ) {
         Row(
             modifier = Modifier
@@ -203,16 +243,29 @@ fun ShoppingListItem(articleItem: ArticleItem, onClick: (codebar: Long) -> Unit)
                 .padding(vertical = 15.dp, horizontal = 5.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = articleItem.quantity.toString(),
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.End,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .weight(0.15f)
-                    .padding(end = 15.dp)
-            )
+            if (editMode) {
+                Checkbox(
+                    checked = isChecked,
+                    onCheckedChange = { isChecked = !isChecked },
+                    modifier = Modifier
+                        .size(10.dp)
+                        .weight(0.15f)
+                        .padding(end = 15.dp),
+                )
+
+
+            } else {
+                Text(
+                    text = articleItem.quantity.toString(),
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.End,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .weight(0.15f)
+                        .padding(end = 15.dp)
+                )
+            }
 
             Text(
                 text = capitalizeText(articleItem.detalle),
