@@ -29,6 +29,7 @@ import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.ShoppingBasket
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.Card
@@ -493,7 +494,7 @@ fun HomeScreen(navController: NavController) {
                    }
 
                    Icon(
-                       imageVector = Icons.Outlined.ShoppingCart,
+                       imageVector = Icons.Outlined.ShoppingBasket,
                        contentDescription = "Lista de compra",
                        tint = MaterialTheme.colorScheme.primary,
                        modifier = Modifier

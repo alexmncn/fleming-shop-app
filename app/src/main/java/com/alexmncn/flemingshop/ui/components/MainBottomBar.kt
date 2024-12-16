@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.ShoppingBasket
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -187,15 +188,15 @@ fun MainBottomBar(navController: NavController) {
                         },
                         icon = {
                             Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = "Buscar",
+                                imageVector = Icons.Outlined.ShoppingBasket,
+                                contentDescription = "Lista de compra",
                                 tint = Color.White,
                                 modifier = Modifier.size(18.dp)
                             )
                         },
                         label = {
                             Text(
-                                text = "Buscar",
+                                text = "Lista de compra",
                                 color = Color.White,
                                 style = MaterialTheme.typography.labelSmall,
                                 maxLines = 1
