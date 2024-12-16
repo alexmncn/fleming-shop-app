@@ -69,6 +69,7 @@ fun SearchArticlesScreen(navController: NavController) {
                 var articles = catalogRepository.getAllArticles(page = currentPageAll)
                 allArticles = allArticles + articles
 
+                currentPageAll++
                 placeholder = "Buscar entre $allArticlesTotal artículos"
             } catch (e: Exception) {
                 Log.e("error", e.toString())
@@ -167,6 +168,8 @@ fun SearchArticlesScreen(navController: NavController) {
                         }
                 )
             }
+
+            Spacer(modifier = Modifier.size(5.dp))
         }
 
         ArticleList (

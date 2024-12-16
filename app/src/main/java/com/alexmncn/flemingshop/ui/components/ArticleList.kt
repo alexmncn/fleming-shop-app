@@ -205,7 +205,12 @@ fun ArticleList(total: Int, articles: List<Article>, listName: String, isLoading
                                     strokeWidth = 2.dp
                                 )
                             } else {
-                                Text("Mostrar más", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
+                                Text(
+                                    text = "Mostrar más",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
                             }
                         }
                     }

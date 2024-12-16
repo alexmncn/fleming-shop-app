@@ -13,6 +13,7 @@ val Pink40 = Color(0xFF7D5260)
 
 // Custom colors
 val BackgroundWhite = Color(0xFFF8FAFC)
+val Blue50 = Color(0xFFE8F1FB)
 val Blue100 = Color(0xFFD0E3F9)
 val Blue200 = Color(0xFFA1C6F3)
 val Blue300 = Color(0xFF72AAED)

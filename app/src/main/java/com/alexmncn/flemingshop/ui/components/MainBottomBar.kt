@@ -35,7 +35,7 @@ import kotlinx.coroutines.delay
 fun MainBottomBar(navController: NavController) {
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
-    val maxHeight = 70.dp
+    val maxHeight = 64.dp
     var isInitialized by remember { mutableStateOf(false) }
     val isHome = currentRoute == "home"
     var isVisible by remember { mutableStateOf(!isHome) } // Visble/Oculta segun la ruta actual
