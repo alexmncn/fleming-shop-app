@@ -103,7 +103,7 @@ fun FamilyCarousel(families: List<Family>, isLoading: Boolean, navController: Na
             ) {
                 if (isLoading) { // Si esta cargando
                     CircularProgressIndicator(
-                        modifier = Modifier.size(40.dp),
+                        modifier = Modifier.size(30.dp),
                         color = MaterialTheme.colorScheme.primary,
                         strokeWidth = 2.dp
                     )
@@ -112,10 +112,10 @@ fun FamilyCarousel(families: List<Family>, isLoading: Boolean, navController: Na
                         imageVector = Icons.Default.SearchOff,
                         contentDescription = "Sin resultados",
                         tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(40.dp)
+                        modifier = Modifier.size(30.dp)
                     )
                     Spacer(modifier = Modifier.height(10.dp))
-                    Text(text = "No se han encontrado artículos", style = MaterialTheme.typography.bodyLarge)
+                    Text(text = "No se han encontrado familias", style = MaterialTheme.typography.bodyLarge)
                 }
             }
         }

@@ -95,34 +95,34 @@ fun FamilyList(families: List<Family>, isLoading: Boolean, onShowFamily: (codfam
                 }
             }
         } else { // Si no hay familias
-                Box(
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxSize(),
+            ){
+                Column(
                     modifier = Modifier
-                        .weight(1f)
-                        .fillMaxSize(),
-                ){
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.Center),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        if (isLoading) { // Si esta cargando
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(40.dp),
-                                color = MaterialTheme.colorScheme.primary,
-                                strokeWidth = 2.dp
-                            )
-                        } else { // Si no esta cargando -> no hay resultados | Otro error
-                            Icon(
-                                imageVector = Icons.Default.SearchOff,
-                                contentDescription = "Sin resultados",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(40.dp)
-                            )
-                            Spacer(modifier = Modifier.height(10.dp))
-                            Text(text = "No se han encontrado familias", style = MaterialTheme.typography.bodyLarge)
-                        }
+                        .align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    if (isLoading) { // Si esta cargando
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(40.dp),
+                            color = MaterialTheme.colorScheme.primary,
+                            strokeWidth = 2.dp
+                        )
+                    } else { // Si no esta cargando -> no hay resultados | Otro error
+                        Icon(
+                            imageVector = Icons.Default.SearchOff,
+                            contentDescription = "Sin resultados",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(40.dp)
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(text = "No se han encontrado familias", style = MaterialTheme.typography.bodyLarge)
                     }
                 }
+            }
         }
     }
 }

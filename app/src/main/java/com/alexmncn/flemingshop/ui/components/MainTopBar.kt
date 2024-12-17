@@ -36,6 +36,7 @@ import com.alexmncn.flemingshop.data.network.AuthManager
 @Composable
 fun MainTopBar(navController: NavController) {
     val authState by AuthManager.authState.collectAsState()
+    var height = 90.dp // 60
 
     TopAppBar(
         title = {
@@ -93,6 +94,6 @@ fun MainTopBar(navController: NavController) {
             titleContentColor = Color.Black
         ),
         modifier = Modifier
-            .height(60.dp)
+            .height(height)
     )
 }

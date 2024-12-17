@@ -83,6 +83,7 @@ fun HomeScreen(navController: NavController) {
     val targetHeight = 50.dp
     val scrollState = rememberScrollState()
 
+
     // Altura animada al final del gesto
     val animatedHeight by animateDpAsState(
         targetValue = if (isCollapsed) targetHeight else initialHeight,
@@ -102,6 +103,12 @@ fun HomeScreen(navController: NavController) {
             repeatMode = RepeatMode.Reverse // Movimiento de ida y vuelta
         ), label = ""
     )
+
+    val sectionDesc1 = "Explora los artículos más populares y recomendados de nuestra tienda"
+    val sectionDesc2 = "Descubre los productos más recientes que hemos añadido a nuestro catálogo"
+    val sectionDesc3 = "Navega por nuestras categorías organizadas para encontrar justo lo que necesitas"
+    val sectionDesc4 = "Accede a nuestra colección de más de 8000 artículos y encuentra lo que buscas al instante"
+    val sectionDesc5 = "Gestiona fácilmente tus artículos seleccionados y organiza tus compras de manera eficiente"
 
     // Aticulos/Familias carousels
     var limit = 10;
@@ -293,7 +300,7 @@ fun HomeScreen(navController: NavController) {
                         Text(text = "Destacados", style = MaterialTheme.typography.titleSmall)
                         // Descripción
                         Text(
-                            text = "En esta sección puedes encontrar artículos seleccionados que te pueden interesar",
+                            text = sectionDesc1,
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
@@ -346,7 +353,7 @@ fun HomeScreen(navController: NavController) {
                         Text(text = "Novedades", style = MaterialTheme.typography.titleSmall)
                         // Descripción
                         Text(
-                            text = "En esta sección puedes encontrar articulos que han llegado recientemente a la tienda",
+                            text = sectionDesc2,
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
@@ -398,7 +405,7 @@ fun HomeScreen(navController: NavController) {
                         // Titulo
                         Text(text = "Familias", style = MaterialTheme.typography.titleSmall)
                         // Descripción
-                        Text(text = "En esta sección puedes encontrar articulos agrupados por familias", style = MaterialTheme.typography.bodyMedium)
+                        Text(text = sectionDesc3, style = MaterialTheme.typography.bodyMedium)
                     }
 
                     Icon(
@@ -446,7 +453,7 @@ fun HomeScreen(navController: NavController) {
                         // Titulo
                         Text(text = "Buscar articulos", style = MaterialTheme.typography.titleSmall)
                         // Descripción
-                        Text(text = "En esta sección puedes buscar entre mas de 8000 articulos por su descripción", style = MaterialTheme.typography.bodyMedium, overflow = TextOverflow.Clip)
+                        Text(text = sectionDesc4, style = MaterialTheme.typography.bodyMedium, overflow = TextOverflow.Clip)
                     }
 
                     Icon(
@@ -486,7 +493,7 @@ fun HomeScreen(navController: NavController) {
                        Text(text = "Lista de compra", style = MaterialTheme.typography.titleSmall)
                        // Descripción
                        Text(
-                           text = "Aquí puedes ver los artículos que has agregado a tu lista de compra",
+                           text = sectionDesc5,
                            style = MaterialTheme.typography.bodyMedium,
                            overflow = TextOverflow.Clip
                        )
