@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,12 +23,12 @@ fun CustomSearchBar(
     placeholder: String,
     modifier: Modifier = Modifier,
 ) {
-    Box(
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onPrimary),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         modifier = modifier
             .background(MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(8.dp))
-            .padding(10.dp)
     ) {
-
         BasicTextField(
             value = query,
             onValueChange = onQueryChange,
@@ -44,6 +46,7 @@ fun CustomSearchBar(
                 innerTextField()
             },
             modifier = Modifier
+                .padding(10.dp)
                 .onKeyEvent {
                     if (it.nativeKeyEvent.keyCode == android.view.KeyEvent.KEYCODE_ENTER) {
                         onSearch()

@@ -80,6 +80,12 @@ fun FlemingShopApp(db: AppDatabase) {
                         FamiliesScreen(navController, route)
                     }
                     composable("search_articles") { SearchArticlesScreen(navController) }
+                    composable("search_articles/{query}",
+                        arguments = listOf(navArgument("query") { type = NavType.StringType })
+                    ) {
+                        val query = it.arguments?.getString("query") ?: ""
+                        SearchArticlesScreen(navController, query)
+                    }
                     composable("barcode_scanner") { BarcodeScannerScreen(navController) }
                     composable("article_detail/{codebar}",
                         arguments = listOf(navArgument("codebar") { type = NavType.StringType })

@@ -47,6 +47,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
@@ -63,10 +64,12 @@ import com.alexmncn.flemingshop.data.network.ApiClient
 import com.alexmncn.flemingshop.data.network.ApiService
 import com.alexmncn.flemingshop.data.repository.CatalogRepository
 import com.alexmncn.flemingshop.ui.components.ArticleCarousel
+import com.alexmncn.flemingshop.ui.components.CustomSearchBar
 import com.alexmncn.flemingshop.ui.components.FamilyCarousel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlin.collections.plus
 
 
 @Composable
@@ -104,11 +107,31 @@ fun HomeScreen(navController: NavController) {
         ), label = ""
     )
 
+    // Sections descriptons
     val sectionDesc1 = "Explora los artículos más populares y recomendados de nuestra tienda"
     val sectionDesc2 = "Descubre los productos más recientes que hemos añadido a nuestro catálogo"
     val sectionDesc3 = "Navega por nuestras categorías organizadas para encontrar justo lo que necesitas"
     val sectionDesc4 = "Accede a nuestra colección de más de 8000 artículos y encuentra lo que buscas al instante"
     val sectionDesc5 = "Gestiona fácilmente tus artículos seleccionados y organiza tus compras de manera eficiente"
+
+    // Search bar in search section
+    var query by remember { mutableStateOf("") }
+    var placeholder by remember { mutableStateOf("Buscar entre todos los artículos") }
+
+    // Total articles
+    var allArticlesTotal by remember { mutableIntStateOf(0) }
+
+    fun loadAllArticlesTotal() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                allArticlesTotal = catalogRepository.getAllArticlesTotal()
+
+                placeholder = "Buscar entre $allArticlesTotal artículos"
+            } catch (e: Exception) {
+                Log.e("error", e.toString())
+            }
+        }
+    }
 
     // Aticulos/Familias carousels
     var limit = 10;
@@ -174,6 +197,7 @@ fun HomeScreen(navController: NavController) {
 
 
     LaunchedEffect(Unit) {
+        loadAllArticlesTotal()
         loadFeaturedArticles()
         loadNewArticles()
         loadFamilies()
@@ -434,8 +458,7 @@ fun HomeScreen(navController: NavController) {
             Card (
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { navController.navigate("search_articles") },
+                    .fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
             ) {
                 Row(
@@ -444,6 +467,7 @@ fun HomeScreen(navController: NavController) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 10.dp, bottom = 10.dp, start = 13.dp, end = 13.dp)
+                        .clickable { navController.navigate("search_articles") },
                 ) {
                     Column(
                         modifier = Modifier
@@ -463,6 +487,21 @@ fun HomeScreen(navController: NavController) {
                         modifier = Modifier
                             .size(30.dp)
                             .weight(0.2f)
+                    )
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp),
+                ) {
+                    CustomSearchBar(
+                        query = query,
+                        onQueryChange = { query = it },
+                        onSearch = { navController.navigate("search_articles/$query") },
+                        placeholder = placeholder,
+                        modifier = Modifier
+                            .fillMaxWidth()
                     )
                 }
             }

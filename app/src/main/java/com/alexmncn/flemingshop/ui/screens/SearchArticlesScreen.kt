@@ -38,7 +38,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun SearchArticlesScreen(navController: NavController) {
+fun SearchArticlesScreen(navController: NavController, query_: String = "") {
     val context = LocalContext.current
     val apiClient = ApiClient.provideOkHttpClient(context)
     val catalogRepository: CatalogRepository by lazy { CatalogRepository(ApiService(apiClient)) }
@@ -77,10 +77,6 @@ fun SearchArticlesScreen(navController: NavController) {
 
             isLoading = false
         }
-    }
-
-    LaunchedEffect(Unit) {
-        loadAllArticles()
     }
 
     fun loadSearchArticles() {
@@ -122,6 +118,15 @@ fun SearchArticlesScreen(navController: NavController) {
         if (query != lastQuery) {
             loadSearchArticles()
         }
+    }
+
+    LaunchedEffect(Unit) {
+        if (query_.isNotEmpty()) {
+            query = query_
+            loadSearchArticles()
+        }
+
+        loadAllArticles()
     }
 
     Column(
