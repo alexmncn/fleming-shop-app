@@ -38,7 +38,7 @@ fun VariantFamilyCard(family: Family, onShowFamily: (codfam: Int, nomfam: String
             .fillMaxWidth()
             .height(35.dp)
             .clickable { onShowFamily(family.codfam, family.nomfam) },
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(3.dp)
     ) {
         Text(text = capitalizeText(family.nomfam), modifier = Modifier.padding(10.dp))
     }
