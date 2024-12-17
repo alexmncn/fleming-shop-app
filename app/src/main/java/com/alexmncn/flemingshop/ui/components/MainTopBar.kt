@@ -43,7 +43,8 @@ fun MainTopBar(navController: NavController) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .fillMaxHeight(),
             ) {
                 // Logo
                 Image(

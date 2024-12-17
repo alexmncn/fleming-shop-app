@@ -2,14 +2,11 @@ package com.alexmncn.flemingshop.ui.screens
 
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -57,7 +54,9 @@ fun UserPanelScreen(navController: NavController) {
                 }
 
             } catch (e: Exception) {
-                Log.e("error", e.toString())
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, e.message.toString(), Toast.LENGTH_SHORT).show()
+                }
             }
 
             isLoading = false

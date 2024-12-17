@@ -8,8 +8,6 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,7 +32,6 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.outlined.FileUpload
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Card
@@ -409,7 +406,7 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
                 Box(
                     modifier = Modifier
                         .padding(top = 6.dp, bottom = 2.dp)
-                        .align(Alignment.End)
+                        .align(Alignment.Start)
                 ) {
                     Text(
                         text = article?.pvp.toString() + " €",
@@ -421,14 +418,12 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
 
                 Box(
                     modifier = Modifier
-                        .align(Alignment.End)
+                        .align(Alignment.Start)
                 ) {
                     // Etiqueta de Stock
                     StockLabel(article!!.stock, modifier = Modifier)
                 }
             }
-
-            Spacer(modifier = Modifier.height(10.dp))
 
             // Shopping list control
             Row(

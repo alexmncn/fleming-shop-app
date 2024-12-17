@@ -1,6 +1,5 @@
 package com.alexmncn.flemingshop.ui.screens
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,13 +9,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,7 +24,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -33,6 +31,7 @@ import com.alexmncn.flemingshop.data.network.ApiClient
 import com.alexmncn.flemingshop.data.network.ApiService
 import com.alexmncn.flemingshop.data.network.AuthManager
 import com.alexmncn.flemingshop.data.repository.AuthRepository
+import com.alexmncn.flemingshop.ui.theme.Blue50
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -61,7 +60,9 @@ fun LoginScreen(navController: NavController) {
                     Toast.makeText(context, "Has iniciado sesión", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                Log.e("error", e.toString())
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, e.message.toString(), Toast.LENGTH_SHORT).show()
+                }
             }
 
             isLoading = false
@@ -80,6 +81,10 @@ fun LoginScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(20.dp))
 
         TextField(
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Blue50,
+                unfocusedContainerColor = Blue50,
+            ),
             value = username.value,
             onValueChange = { username.value = it },
             label = { Text("Usuario") },
@@ -89,6 +94,10 @@ fun LoginScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         TextField(
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Blue50,
+                unfocusedContainerColor = Blue50,
+            ),
             value = password.value,
             onValueChange = { password.value = it },
             label = { Text("Contraseña") },

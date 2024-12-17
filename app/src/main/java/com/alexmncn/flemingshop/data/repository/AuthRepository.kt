@@ -14,7 +14,7 @@ class AuthRepository(private val apiService: ApiService) {
             val responseData = response.body?.string()
             return gson.fromJson(responseData, LoginResponse::class.java)
         } else if (response?.code == 401) {
-            throw Exception("Unauthorized: Incorrect username or password")
+            throw Exception("Unauthorized: Usuario o contraseña incorrectos")
         } else {
             throw Exception("Failed to login: ${response?.message}")
         }
