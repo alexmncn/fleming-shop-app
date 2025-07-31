@@ -39,8 +39,6 @@ import com.alexmncn.flemingshop.utils.capitalizeText
 
 @Composable
 fun ArticleCard(article: Article, navController: NavController) {
-    val imageUrl = Constans.IMAGES_URL + "articles/${article.codebar}.webp"
-
     Card(
         colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = Modifier
@@ -60,7 +58,7 @@ fun ArticleCard(article: Article, navController: NavController) {
             // Imagen
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(imageUrl)
+                    .data(article.image_url)
                     .crossfade(true)
                     .build(),
                 contentDescription = "Imagen del artículo",
@@ -128,8 +126,6 @@ fun ArticleCard(article: Article, navController: NavController) {
 
 @Composable
 fun ReducedArticleCard(article: Article, navController: NavController) {
-    val imageUrl = Constans.IMAGES_URL + "articles/${article.codebar}.webp"
-
     Card(
         colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = Modifier
@@ -148,7 +144,7 @@ fun ReducedArticleCard(article: Article, navController: NavController) {
             // Imagen
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(imageUrl)
+                    .data(article.image_url)
                     .crossfade(true)
                     .build(),
                 contentDescription = "Imagen del artículo",

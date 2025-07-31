@@ -17,12 +17,12 @@ class ShoppingListRepository(db: AppDatabase) {
         articleItemDao.deleteAll()
     }
 
-    fun getArticleByCodebar(codebar: BigInteger): Flow<ArticleItem?> {
-        return articleItemDao.getByCodebarFlow(codebar.toLong())
+    fun getArticleByCodebar(codebar: String): Flow<ArticleItem?> {
+        return articleItemDao.getByCodebarFlow(codebar)
     }
 
-    suspend fun deleteArticleByCodebar(codebar: BigInteger) {
-        articleItemDao.deleteByCodebar(codebar.toLong())
+    suspend fun deleteArticleByCodebar(codebar: String) {
+        articleItemDao.deleteByCodebar(codebar)
     }
 
     suspend fun insertArticle(articleItem: ArticleItem) {

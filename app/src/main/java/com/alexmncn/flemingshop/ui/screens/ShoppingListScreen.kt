@@ -63,7 +63,7 @@ fun ShoppingListScreen(db: AppDatabase, navController: NavController) {
     val shoppingList = shoppingListViewModel.articleItems.collectAsState()
     val finalPrize = shoppingListViewModel.getFinalPrice().collectAsState(initial = 0.0)
     var editMode by remember { mutableStateOf(false) }
-    val selectedArticleItems = remember { mutableStateMapOf<Long, ArticleItem>() }
+    val selectedArticleItems = remember { mutableStateMapOf<String, ArticleItem>() }
     var removedArticlesVisible by remember { mutableStateOf(true) }
     val deleteAnimationTime = 500
 
@@ -81,7 +81,7 @@ fun ShoppingListScreen(db: AppDatabase, navController: NavController) {
                     withContext(Dispatchers.Main) {
                         // Se eliminan
                         selectedArticleItems.forEach { (_, article) ->
-                            shoppingListViewModel.deleteArticleByCodebar(article.codebar.toBigInteger())
+                            shoppingListViewModel.deleteArticleByCodebar(article.codebar)
                         }
                     }
 
@@ -332,7 +332,7 @@ fun ShoppingListScreen(db: AppDatabase, navController: NavController) {
 }
 
 @Composable
-fun ShoppingListItem(articleItem: ArticleItem, editMode: Boolean = false, isChecked: Boolean = false, onClick: (codebar: Long) -> Unit, onSelectionChanged: (Boolean, ArticleItem) -> Unit) {
+fun ShoppingListItem(articleItem: ArticleItem, editMode: Boolean = false, isChecked: Boolean = false, onClick: (codebar: String) -> Unit, onSelectionChanged: (Boolean, ArticleItem) -> Unit) {
 
     Column(
         modifier = Modifier

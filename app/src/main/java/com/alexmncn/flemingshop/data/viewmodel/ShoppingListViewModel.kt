@@ -44,7 +44,7 @@ class ShoppingListViewModel(repository: ShoppingListRepository) : ViewModel() {
     }
 
     // Obtener un solo artículo por su codebar
-    fun getArticleByCodebar(codebar: BigInteger): StateFlow<ArticleItem?> {
+    fun getArticleByCodebar(codebar: String): StateFlow<ArticleItem?> {
         val articleItemFlow = MutableStateFlow<ArticleItem?>(null)
         viewModelScope.launch {
             shoppingListRepository.getArticleByCodebar(codebar).collect { article ->
@@ -55,7 +55,7 @@ class ShoppingListViewModel(repository: ShoppingListRepository) : ViewModel() {
     }
 
     // Devuelve la cantidad de un artículo, si es distinto de 0
-    fun getArticleQuantityByCodebar(codebar: BigInteger): Flow<Int> {
+    fun getArticleQuantityByCodebar(codebar: String): Flow<Int> {
         return shoppingListRepository.getArticleByCodebar(codebar).map { article ->
             article?.quantity ?: 0
         }
@@ -63,7 +63,7 @@ class ShoppingListViewModel(repository: ShoppingListRepository) : ViewModel() {
     }
 
     // Eliminar un artículo de la lista
-    fun deleteArticleByCodebar(codebar: BigInteger) {
+    fun deleteArticleByCodebar(codebar: String) {
         viewModelScope.launch {
             shoppingListRepository.deleteArticleByCodebar(codebar)
         }

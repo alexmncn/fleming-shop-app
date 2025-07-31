@@ -98,12 +98,11 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
     val shoppingListViewModel: ShoppingListViewModel = viewModel(factory = ShoppingListViewModelFactory(shoppingListRepository))
 
     var article by remember { mutableStateOf<Article?>(null) }
-    val imageUrl = Constans.IMAGES_URL + "articles/${article?.codebar}.webp"
     var tags by remember { mutableIntStateOf(0) }
     var uploadingImg by remember { mutableStateOf(false) }
     var imgUploadSuccess by remember { mutableStateOf(false) }
     var addShoppListUnfold by remember { mutableStateOf(false) }
-    val quantityInShoppingList by shoppingListViewModel.getArticleQuantityByCodebar(BigInteger(codebar)).collectAsState(initial = 0)
+    val quantityInShoppingList by shoppingListViewModel.getArticleQuantityByCodebar(codebar).collectAsState(initial = 0)
     var lastQuantityInShoppingList by remember { mutableIntStateOf(quantityInShoppingList) }
 
     fun checkTags(article: Article?) {
@@ -289,7 +288,7 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
     fun addShoppingList() {
         if (addShoppListUnfold) {
             // Creamos el articleItem
-            val newArticleItem = ArticleItem((article!!.codebar).toLong(), article!!.detalle, article!!.pvp, 1)
+            val newArticleItem = ArticleItem(article!!.codebar, article!!.detalle, article!!.pvp, 1)
             shoppingListViewModel.insertArticle(newArticleItem)
 
             lastQuantityInShoppingList = quantityInShoppingList
@@ -309,7 +308,7 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
                 lastQuantityInShoppingList = -1
             } else {
                 // Creamos el articleItem (Con cantidad negativa, para restar una unidad)
-                val newArticleItem = ArticleItem((article!!.codebar).toLong(), article!!.detalle, article!!.pvp, -1)
+                val newArticleItem = ArticleItem(article!!.codebar, article!!.detalle, article!!.pvp, -1)
                 shoppingListViewModel.insertArticle(newArticleItem)
 
                 lastQuantityInShoppingList = quantityInShoppingList
@@ -330,7 +329,7 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(imageUrl)
+                    .data(article!!.image_url)
                     .crossfade(true)
                     .build(),
                 contentDescription = "Imagen del artículo",

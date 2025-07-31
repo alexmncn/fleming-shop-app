@@ -1,5 +1,6 @@
 package com.alexmncn.flemingshop.data.db
 
+import androidx.camera.video.StreamInfo
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -16,17 +17,17 @@ interface ArticleItemDao  {
     suspend fun deleteAll()
 
     @Query("SELECT * FROM shoppingList WHERE codebar = :codebar")
-    fun getByCodebarFlow(codebar: Long): Flow<ArticleItem?>
+    fun getByCodebarFlow(codebar: String): Flow<ArticleItem?>
 
     @Query("SELECT * FROM shoppingList WHERE codebar = :codebar")
-    suspend fun getByCodebar(codebar: Long): ArticleItem?
+    suspend fun getByCodebar(codebar: String): ArticleItem?
 
     @Query("DELETE FROM shoppingList WHERE codebar = :codebar")
-    suspend fun deleteByCodebar(codebar: Long)
+    suspend fun deleteByCodebar(codebar: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(articleItem: ArticleItem)
 
     @Query("UPDATE shoppingList SET quantity = :quantity WHERE codebar = :codebar")
-    suspend fun updateQuantity(codebar: Long, quantity: Int)
+    suspend fun updateQuantity(codebar: String, quantity: Int)
 }
