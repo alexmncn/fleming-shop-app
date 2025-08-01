@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -62,8 +63,11 @@ fun ArticleCard(article: Article, navController: NavController) {
                     .crossfade(true)
                     .build(),
                 contentDescription = "Imagen del artículo",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(7.dp)
+                    .align(alignment = Alignment.Center),
+                contentScale = ContentScale.FillHeight
             )
 
             // Etiqueta flotante de Stock
@@ -148,7 +152,9 @@ fun ReducedArticleCard(article: Article, navController: NavController) {
                     .crossfade(true)
                     .build(),
                 contentDescription = "Imagen del artículo",
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(5.dp),
                 contentScale = ContentScale.Crop
             )
 

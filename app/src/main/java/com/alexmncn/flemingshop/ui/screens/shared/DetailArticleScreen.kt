@@ -334,7 +334,8 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
                     .build(),
                 contentDescription = "Imagen del artículo",
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(10.dp),
                 contentScale = ContentScale.FillWidth
             )
 
