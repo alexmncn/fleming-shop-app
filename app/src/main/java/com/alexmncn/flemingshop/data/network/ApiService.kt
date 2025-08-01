@@ -102,11 +102,12 @@ class ApiService(private val client: OkHttpClient) {
 
 
     // Auth routes
-    fun login(username: String, password: String): Response? {
+    fun login(username: String, password: String, turnstileToken: String = ""): Response? {
         val route = "login"
         val jsonBody = JSONObject()
         jsonBody.put("username", username)
         jsonBody.put("password", password)
+        jsonBody.put("turnstileResponse", turnstileToken)
 
         // Crear el cuerpo de la solicitud con JSON
         val body = jsonBody.toString().toRequestBody("application/json".toMediaTypeOrNull())

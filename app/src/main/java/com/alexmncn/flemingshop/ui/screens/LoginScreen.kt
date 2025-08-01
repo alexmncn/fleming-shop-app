@@ -1,5 +1,10 @@
 package com.alexmncn.flemingshop.ui.screens
 
+import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.content.Context
+import android.webkit.WebChromeClient
+import android.webkit.WebView
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,15 +28,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import com.alexmncn.flemingshop.data.network.ApiClient
 import com.alexmncn.flemingshop.data.network.ApiService
 import com.alexmncn.flemingshop.data.network.AuthManager
 import com.alexmncn.flemingshop.data.repository.AuthRepository
 import com.alexmncn.flemingshop.ui.theme.Blue50
+import com.alexmncn.flemingshop.utils.Constans.TURNSTILE_URL
+import com.alexmncn.flemingshop.utils.JSBridge
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -43,17 +52,16 @@ fun LoginScreen(navController: NavController) {
     val apiClient = ApiClient.provideOkHttpClient(context)
     val authRepository: AuthRepository by lazy { AuthRepository(ApiService(apiClient)) }
     var isLoading by remember { mutableStateOf(false) }
+    var showTurnstile by remember { mutableStateOf(false) }
 
     val username = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
 
-    fun login(username: String, password: String) {
+    fun login(username: String, password: String, turnstileToken: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            isLoading = true
-
             try {
-                val response = authRepository.login(username, password)
-                AuthManager.saveSession(context, response.token) // Guardamos la info de sesion
+                val response = authRepository.login(username, password, turnstileToken)
+                AuthManager.saveSession(context, response.token)
 
                 withContext(Dispatchers.Main) {
                     navController.navigate("home")
@@ -68,6 +76,7 @@ fun LoginScreen(navController: NavController) {
             isLoading = false
         }
     }
+
 
 
     Column(
@@ -109,7 +118,8 @@ fun LoginScreen(navController: NavController) {
 
         Card(
             onClick = {
-                login(username.value, password.value)
+                isLoading = true
+                showTurnstile = true
             },
             modifier = Modifier
                 .fillMaxWidth(),
@@ -134,5 +144,42 @@ fun LoginScreen(navController: NavController) {
                 }
             }
         }
+
+        if (showTurnstile) {
+            TurnstileScreen(
+                onTokenReceived = { token ->
+                    // Aquí haces login con el token
+                    login(username.value, password.value, token)
+                },
+                onDismiss = {
+                    showTurnstile = false
+                }
+            )
+        }
     }
+}
+
+@SuppressLint("SetJavaScriptEnabled")
+@Composable
+fun TurnstileScreen(onTokenReceived: (String) -> Unit, onDismiss: () -> Unit) {
+    val context = LocalContext.current
+    val webView = remember {
+        WebView(context).apply {
+            settings.javaScriptEnabled = true
+            settings.domStorageEnabled = true
+            addJavascriptInterface(JSBridge { token ->
+                onTokenReceived(token)
+                onDismiss()
+            }, "AndroidInterface")
+            webChromeClient = WebChromeClient()
+            loadUrl(TURNSTILE_URL) // Usa https
+        }
+    }
+
+    AndroidView(
+        factory = { webView },
+        modifier = Modifier
+            .size(1.dp)
+            .alpha(0f)
+    )
 }

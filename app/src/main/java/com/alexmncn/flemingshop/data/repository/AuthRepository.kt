@@ -8,8 +8,8 @@ class AuthRepository(private val apiService: ApiService) {
     private val gson = Gson()
 
     // AUTH func
-    fun login(username: String, password: String): LoginResponse {
-        val response = apiService.login(username, password)
+    fun login(username: String, password: String, turnstileToken: String): LoginResponse {
+        val response = apiService.login(username, password, turnstileToken)
         if (response != null && response.isSuccessful) {
             val responseData = response.body?.string()
             return gson.fromJson(responseData, LoginResponse::class.java)
