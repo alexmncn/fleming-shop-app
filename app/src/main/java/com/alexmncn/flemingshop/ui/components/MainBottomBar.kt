@@ -32,10 +32,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import kotlinx.coroutines.delay
 
 @Composable
-fun MainBottomBar(navController: NavController) {
+fun MainBottomBar(navController: NavController, modifier: Modifier = Modifier) {
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
-    val maxHeight = 64.dp
+    val maxHeight = 60.dp
     var isInitialized by remember { mutableStateOf(false) }
     val isHome = currentRoute == "home"
     var isVisible by remember { mutableStateOf(!isHome) } // Visble/Oculta segun la ruta actual
@@ -67,7 +67,7 @@ fun MainBottomBar(navController: NavController) {
     // Evitar renderizar hasta que esté inicializado
     if (isInitialized) {
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .height(height)
                 .fillMaxWidth()
         ) {
@@ -95,7 +95,7 @@ fun MainBottomBar(navController: NavController) {
                                 imageVector = Icons.Default.Home,
                                 contentDescription = "Inicio",
                                 tint = Color.White,
-                                modifier = Modifier.size(18.dp)
+                                modifier = Modifier.size(22.dp)
                             )
                         },
                         label = {
@@ -127,7 +127,7 @@ fun MainBottomBar(navController: NavController) {
                                 imageVector = Icons.AutoMirrored.Filled.List,
                                 contentDescription = "Familias",
                                 tint = Color.White,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(22.dp)
                             )
                         },
                         label = {
@@ -159,7 +159,7 @@ fun MainBottomBar(navController: NavController) {
                                 imageVector = Icons.Default.Search,
                                 contentDescription = "Buscar",
                                 tint = Color.White,
-                                modifier = Modifier.size(18.dp)
+                                modifier = Modifier.size(22.dp)
                             )
                         },
                         label = {
@@ -191,12 +191,12 @@ fun MainBottomBar(navController: NavController) {
                                 imageVector = Icons.Default.ShoppingBasket,
                                 contentDescription = "Lista de compra",
                                 tint = Color.White,
-                                modifier = Modifier.size(18.dp)
+                                modifier = Modifier.size(22.dp)
                             )
                         },
                         label = {
                             Text(
-                                text = "Lista de compra",
+                                text = "Lista Compra",
                                 color = Color.White,
                                 style = MaterialTheme.typography.labelSmall,
                                 maxLines = 1
