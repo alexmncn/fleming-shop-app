@@ -11,8 +11,8 @@ class CatalogRepository(private val apiService: ApiService) {
     private val gson = Gson()
 
     // CATALOG func
-    fun getAllArticles(page: Int = 1, perPage: Int = 20): List<Article> {
-        val response = apiService.getAllArticles(page, perPage)
+    fun getAllArticles(page: Int = 1, perPage: Int = 20, orderBy: String = "detalle", direction: String = "asc"): List<Article> {
+        val response = apiService.getAllArticles(page, perPage, orderBy, direction)
         if (response != null && response.isSuccessful) {
             val responseData = response.body?.string()
             val listType = object : TypeToken<List<Article>>() {}.type
@@ -32,8 +32,19 @@ class CatalogRepository(private val apiService: ApiService) {
         }
     }
 
-    fun getSearchArticles(page: Int = 1, perPage: Int = 20, search: String, filter: String = "detalle"): List<Article> {
-        val response = apiService.getSearchArticles(page, perPage, search, filter)
+    fun getAllArticlesCodebars(): List<String> {
+        val response = apiService.getAllArticlesCodebars()
+        if (response != null && response.isSuccessful) {
+            val responseData = response.body?.string()
+            val listType = object : TypeToken<List<String>>() {}.type
+            return gson.fromJson(responseData, listType)
+        } else {
+            throw Exception("Failed to fetch all articles codebars")
+        }
+    }
+
+    fun getSearchArticles(page: Int = 1, perPage: Int = 20, search: String, filter: String = "detalle", orderBy: String = "detalle", direction: String = "asc", contextFilter: String = "", contextValue: String = ""): List<Article> {
+        val response = apiService.getSearchArticles(page, perPage, search, filter, orderBy, direction, contextFilter, contextValue)
         if (response != null && response.isSuccessful) {
             val responseData = response.body?.string()
             val listType = object : TypeToken<List<Article>>() {}.type
@@ -43,8 +54,8 @@ class CatalogRepository(private val apiService: ApiService) {
         }
     }
 
-    fun getSearchArticlesTotal(search: String, filter: String = "detalle"): Int {
-        val response = apiService.getSearchArticlesTotal(search, filter)
+    fun getSearchArticlesTotal(search: String, filter: String = "detalle", contextFilter: String = "", contextValue: String = ""): Int {
+        val response = apiService.getSearchArticlesTotal(search, filter, contextFilter, contextValue)
         if (response != null && response.isSuccessful) {
             val responseData = response.body?.string()
             return JsonParser.parseString(responseData).asJsonObject.get("total").asInt
@@ -53,8 +64,8 @@ class CatalogRepository(private val apiService: ApiService) {
         }
     }
 
-    fun getFeaturedArticles(page: Int = 1, perPage: Int = 20): List<Article> {
-        val response = apiService.getFeaturedArticles(page, perPage)
+    fun getFeaturedArticles(page: Int = 1, perPage: Int = 20, orderBy: String = "detalle", direction: String = "asc"): List<Article> {
+        val response = apiService.getFeaturedArticles(page, perPage, orderBy, direction)
         if (response != null && response.isSuccessful) {
             val responseData = response.body?.string()
             val listType = object : TypeToken<List<Article>>() {}.type
@@ -74,8 +85,8 @@ class CatalogRepository(private val apiService: ApiService) {
         }
     }
 
-    fun getNewArticles(page: Int = 1, perPage: Int = 20): List<Article> {
-        val response = apiService.getNewArticles(page, perPage)
+    fun getNewArticles(page: Int = 1, perPage: Int = 20, orderBy: String = "detalle", direction: String = "asc"): List<Article> {
+        val response = apiService.getNewArticles(page, perPage, orderBy, direction)
         if (response != null && response.isSuccessful) {
             val responseData = response.body?.string()
             val listType = object : TypeToken<List<Article>>() {}.type
@@ -106,8 +117,8 @@ class CatalogRepository(private val apiService: ApiService) {
         }
     }
 
-    fun getFamilyArticles(page: Int = 1, perPage: Int = 20, familyId: Int): List<Article> {
-        val response = apiService.getFamilyArticles(page, perPage, familyId)
+    fun getFamilyArticles(familyId: Int, page: Int = 1, perPage: Int = 20, orderBy: String = "detalle", direction: String = "asc"): List<Article> {
+        val response = apiService.getFamilyArticles(familyId, page, perPage, orderBy, direction)
         if (response != null && response.isSuccessful) {
             val responseData = response.body?.string()
             val listType = object : TypeToken<List<Article>>() {}.type

@@ -50,18 +50,37 @@ class ApiService(private val client: OkHttpClient) {
         return makeGetRequest(route)
     }
 
-    fun getAllArticles(page: Int = 1, perPage: Int = 20): Response? {
-        val route = "articles/all?page=$page&per_page=$perPage"
+    fun getAllArticlesCodebars(): Response? {
+        val route = "articles/all/codebars"
         return makeGetRequest(route)
     }
 
-    fun getSearchArticlesTotal(search: String, filter: String = "detalle"): Response? {
-        val route = "articles/search/total?search=$search&filter=$filter"
+    fun getAllArticles(page: Int = 1, perPage: Int = 20, orderBy: String = "detalle", direction: String = "asc"): Response? {
+        val route = "articles/all?page=$page&per_page=$perPage&order_by=$orderBy&direction=$direction"
         return makeGetRequest(route)
     }
 
-    fun getSearchArticles(page: Int = 1, perPage: Int = 20, search: String, filter: String = "detalle"): Response? {
-        val route = "articles/search?page=$page&per_page=$perPage&search=$search&filter=$filter"
+    fun getSearchArticlesTotal(search: String, filter: String = "detalle", contextFilter: String = "", contextValue: String = ""): Response? {
+        var route = "articles/search/total?search=$search&filter=$filter"
+        if (contextFilter.isNotEmpty()) {
+            route += "&context_filter=$contextFilter"
+
+            if (contextValue.isNotEmpty()) {
+                route += "&context_value=$contextValue"
+            }
+        }
+        return makeGetRequest(route)
+    }
+
+    fun getSearchArticles(page: Int = 1, perPage: Int = 20, search: String, filter: String = "detalle", orderBy: String = "detalle", direction: String = "asc", contextFilter: String = "", contextValue: String = ""): Response? {
+        var route = "articles/search?page=$page&per_page=$perPage&search=$search&filter=$filter&order_by=$orderBy&direction=$direction"
+        if (contextFilter.isNotEmpty()) {
+            route += "&context_filter=$contextFilter"
+
+            if (contextValue.isNotEmpty()) {
+                route += "&context_value=$contextValue"
+            }
+        }
         return makeGetRequest(route)
     }
 
@@ -70,8 +89,8 @@ class ApiService(private val client: OkHttpClient) {
         return makeGetRequest(route)
     }
 
-    fun getFeaturedArticles(page: Int = 1, perPage: Int = 20): Response? {
-        val route = "articles/featured?page=$page&per_page=$perPage"
+    fun getFeaturedArticles(page: Int = 1, perPage: Int = 20, orderBy: String = "detalle", direction: String = "asc"): Response? {
+        val route = "articles/featured?page=$page&per_page=$perPage&order_by=$orderBy&direction=$direction"
         return makeGetRequest(route)
     }
 
@@ -80,8 +99,8 @@ class ApiService(private val client: OkHttpClient) {
         return makeGetRequest(route)
     }
 
-    fun getNewArticles(page: Int = 1, perPage: Int = 20): Response? {
-        val route = "articles/new?page=$page&per_page=$perPage"
+    fun getNewArticles(page: Int = 1, perPage: Int = 20, orderBy: String = "detalle", direction: String = "asc"): Response? {
+        val route = "articles/new?page=$page&per_page=$perPage&order_by=$orderBy&direction=$direction"
         return makeGetRequest(route)
     }
 
@@ -95,8 +114,8 @@ class ApiService(private val client: OkHttpClient) {
         return makeGetRequest(route)
     }
 
-    fun getFamilyArticles(page: Int = 1, perPage: Int = 20, familyId: Int): Response? {
-        val route = "articles/families/$familyId?page=$page&per_page=$perPage"
+    fun getFamilyArticles(familyId: Int, page: Int = 1, perPage: Int = 20, orderBy: String = "detalle", direction: String = "asc"): Response? {
+        val route = "articles/families/$familyId?page=$page&per_page=$perPage&order_by=$orderBy&direction=$direction"
         return makeGetRequest(route)
     }
 
