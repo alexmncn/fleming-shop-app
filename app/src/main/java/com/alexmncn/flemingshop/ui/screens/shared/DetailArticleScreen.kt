@@ -229,7 +229,7 @@ fun DetailArticleScreen(codebar: String, navController: NavController, db: AppDa
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 uploadingImg = true
-                adminActionsRepository.uploadArticleImage(article!!.codebar.toString(), bitmap, context)
+                adminActionsRepository.uploadArticleImage(context, bitmap, article!!.codebar) // TODO: Falta añadir opciones
                 messageStatus = "Imagen subida correctamente"
                 uploadingImg = false
                 imgUploadSuccess = true

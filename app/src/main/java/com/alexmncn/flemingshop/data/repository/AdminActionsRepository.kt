@@ -2,6 +2,7 @@ package com.alexmncn.flemingshop.data.repository
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.util.Log
 import com.alexmncn.flemingshop.data.network.ApiService
 import com.google.gson.Gson
 import java.io.File
@@ -62,13 +63,14 @@ class AdminActionsRepository(private val apiService: ApiService) {
         return response?.isSuccessful == true
     }
 
-    fun uploadArticleImage(codebar: String, bitmap: Bitmap, context: Context): Boolean {
+    fun uploadArticleImage(context: Context, bitmap: Bitmap, codebar: String, isMain: Boolean = false, convert: Boolean = true, keepOriginal: Boolean = false): Boolean {
         // Convertimos la imagen a archivo
         val file = File(context.cacheDir, "image.jpeg")
         file.outputStream().use { outputStream ->
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
         }
-        val response = apiService.uploadArticleImage(codebar, file)
+        val response = apiService.uploadArticleImage(file, codebar, isMain, convert, keepOriginal)
+        Log.d("images", response.toString())
         return response?.isSuccessful == true
     }
 }

@@ -160,8 +160,8 @@ class ApiService(private val client: OkHttpClient) {
         return makePostRequest(route)
     }
 
-    fun uploadArticleImage(codebar: String, file: File): Response? {
-        val route = "upload/articles/images?codebar=$codebar"
+    fun uploadArticleImage(file: File, codebar: String, isMain: Boolean = false, convert: Boolean = true, keepOriginal: Boolean = false): Response? {
+        val route = "images/articles/upload"
         val body = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart(
@@ -169,6 +169,11 @@ class ApiService(private val client: OkHttpClient) {
                 file.name,
                 file.asRequestBody("image/*".toMediaTypeOrNull())
             )
+            .addFormDataPart("codebar", codebar)
+            .addFormDataPart("is_main", isMain.toString())
+            .addFormDataPart("convert", convert.toString())
+            .addFormDataPart("keep_original", keepOriginal.toString())
+
             .build()
         return makePostRequest(route, body)
     }
